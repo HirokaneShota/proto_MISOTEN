@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MISOTEN_APPLICATION.Screen.SystemSelect;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,18 @@ namespace MISOTEN_APPLICATION
         public MainWindow()
         {
             InitializeComponent();
+            // 子画面を生成します。
+            SystemSelect_Window window = new SystemSelect_Window();
+
+            // 子画面を表示します。
+            window.ShowDialog();
+
+            // 子画面のオーナープロパティにこの画面を設定します。
+            //window.Owner = GetWindow(this);
+
+            // Mainwindowを閉じる
+            this.Close();
+
         }
     }
 }
