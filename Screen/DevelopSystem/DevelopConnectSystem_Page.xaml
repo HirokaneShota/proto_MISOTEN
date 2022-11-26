@@ -37,14 +37,16 @@
         <CheckBox Name="ReceiveConnectCheck" IsChecked="False" Content="スレーブ" Grid.Column="1" Margin="40,42,40,9" Grid.Row="3" FontSize="14"/>
 
         <Button Content="接続" Margin="65,10,91,10" Grid.Row="4" Grid.ColumnSpan="2" FontSize="24" FontWeight="Bold" Click="ConnectButton_Click"/>
-        <Button Content="切断" Margin="91,10,65,10" Grid.Row="4" Grid.ColumnSpan="2" FontSize="24" FontWeight="Bold" Grid.Column="1"/>
+        <Button Content="切断" Margin="91,10,65,10" Grid.Row="4" Grid.ColumnSpan="2" FontSize="24" FontWeight="Bold" Grid.Column="1" Click="CutButton_Click"/>
 
         <Label Content="送信" Grid.Column="1" Margin="34,8,25,0" FontSize="36" FontWeight="Bold" FontFamily="Arial Black" Grid.Row="5"/>
         <Label Content="送信 ON/OFF" Grid.Column="1" Margin="10,5,0,0" FontSize="18" FontWeight="Bold" FontFamily="Arial Black" Grid.Row="6"/>
-        <TextBox Grid.ColumnSpan="3" Margin="80,20,80,24" Grid.Row="8" TextWrapping="Wrap" Text="" FontSize="18"/>
-        <CheckBox Content="マスター" Grid.Column="1" Margin="40,10,40,34" Grid.Row="7" FontSize="14"/>
-        <CheckBox Content="スレーブ" Grid.Column="1" Margin="40,42,40,9" Grid.Row="7" FontSize="14"/>
-        <Button Content="送信" Margin="10,10,10,10" Grid.Row="9" FontSize="24" FontWeight="Bold" Grid.Column="1"/>
+        <TextBox Name="SendText" Grid.ColumnSpan="3" Margin="80,20,80,24" Grid.Row="8" TextWrapping="Wrap" Text="" FontSize="18"/>
+        <CheckBox Name="MasterSendCheck" Content="マスター" Grid.Column="1" Margin="40,10,40,34" Grid.Row="7" FontSize="14"/>
+        <CheckBox Name="ReceiveSendCheck" Content="スレーブ" Grid.Column="1" Margin="40,42,40,9" Grid.Row="7" FontSize="14"/>
+        <Button Content="送信" Margin="10,10,10,10" Grid.Row="9" FontSize="24" FontWeight="Bold" Grid.Column="1" Click="SendButton_Click" />
+        <CheckBox x:Name="Send_BinaryConvertCheck" Content="Binary変換(数値のみ)" Margin="80,0,40,40" Grid.Row="8" FontSize="14" Grid.ColumnSpan="2"/>
+
 
         <Label Content="受信" Grid.Column="4" Margin="24,0,35,0" FontSize="36" FontWeight="Bold" FontFamily="Arial Black" Grid.Row="1"/>
         <Label Content="TEXT表示 ON/OFF" Grid.Column="3" Margin="10,5,100,0" FontSize="18" FontWeight="Bold" FontFamily="Arial Black" Grid.Row="2" Grid.ColumnSpan="2"/>
@@ -56,6 +58,7 @@
         <CheckBox Content="スレーブ" Grid.Column="4" Margin="130,42,90,9" Grid.Row="3" FontSize="14" Grid.ColumnSpan="2"/>
         <Button Content="Open Log Folder" Grid.Column="5" Margin="10,10,35,39" Grid.Row="4" FontWeight="Bold" Click="OpenLogFolderButton_Click"/>
         <TextBox Name="ReceiveText" Grid.ColumnSpan="3" Grid.Column="3" Margin="30,40,35,24" Grid.Row="4" Grid.RowSpan="5" TextWrapping="Wrap" Text="" FontSize="20"/>
-        <Button Content="受信" Margin="10,10,10,10" Grid.Row="9" FontSize="24" FontWeight="Bold" Grid.Column="4"/>
+        <Button Content="受信" Margin="10,10,10,10" Grid.Row="9" FontSize="24" FontWeight="Bold" Grid.Column="4" Click="ReceivedButton_Click"/>
+        <CheckBox x:Name="Receive_BinaryConvertCheck" Content="Binary変換(コマンド値以外)" Margin="30,10,57,30" Grid.Row="4" FontSize="14" Grid.ColumnSpan="2" Grid.Column="3" RenderTransformOrigin="0.425,-3.422"/>
     </Grid>
 </Page>

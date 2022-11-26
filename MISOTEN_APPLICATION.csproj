@@ -55,6 +55,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Screen\CommonClass\CommonClass.cs" />
     <Compile Include="Screen\DevelopSystem\DevelopConnectSystem_Page.xaml.cs">
       <DependentUpon>DevelopConnectSystem_Page.xaml</DependentUpon>
     </Compile>
@@ -144,6 +145,17 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="image\SETTING.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>13.0.2</Version>
+    </PackageReference>
+    <PackageReference Include="System.Text.Encoding">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Text.Json">
+      <Version>7.0.0</Version>
+    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
