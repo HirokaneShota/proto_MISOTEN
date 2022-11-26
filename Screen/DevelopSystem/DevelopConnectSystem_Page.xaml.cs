@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Ports;
 using System.Linq;
@@ -11,6 +12,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
@@ -21,6 +23,7 @@ using Newtonsoft.Json;
 using static System.Net.Mime.MediaTypeNames;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
+
 namespace MISOTEN_APPLICATION.Screen.DevelopSystem
 {
     /// <summary>
@@ -30,12 +33,17 @@ namespace MISOTEN_APPLICATION.Screen.DevelopSystem
     {
         SerialPort MasterPort;
         SerialPort ReceiveProt;
+        List<SerialPortData> product;
+        // 受信データバインディング用class
+        ReciveData_String RString = new ReciveData_String();
+
+        Task LogTask;
+        int Taskend = 0;
 
         public DevelopConnectSystem_Page()
         {
             InitializeComponent();
             ReceiveText.IsReadOnly = true;
-
         }
 
         
@@ -70,9 +78,9 @@ namespace MISOTEN_APPLICATION.Screen.DevelopSystem
         {
 
             //　file読み込み
-            string ResumeJson = File.ReadAllText("..\\..\\Log\\SerialPort.json");
+            string ResumeJson = File.ReadAllText("Json\\SerialPort.json");
             // JSONデータからオブジェクトを復元
-            List<SerialPortData> product = JsonSerializer.Deserialize<List<SerialPortData>>(ResumeJson);
+            product = JsonSerializer.Deserialize<List<SerialPortData>>(ResumeJson);
 
             if ((bool)MasterConnectCheck.IsChecked == true)
             {
@@ -83,6 +91,13 @@ namespace MISOTEN_APPLICATION.Screen.DevelopSystem
                     MasterPort = SettingPort(MasterPort, product[DeviceId.MasterId]);
                     // ポートオープン
                     MasterPort.Open();
+                    ReceiveText.AppendText("マスター接続開始\n");
+                    File.WriteAllText(@"Log\Master_Log.txt", "マスター接続開始" + Environment.NewLine);
+
+                    // 受信処理
+                    MasterPort.DataReceived += new SerialDataReceivedEventHandler(SerialPort_DataReceived);
+
+
                 }
                 catch (Exception ex)
                 {
@@ -98,6 +113,9 @@ namespace MISOTEN_APPLICATION.Screen.DevelopSystem
                     ReceiveProt = SettingPort(ReceiveProt, product[DeviceId.ReceiveId]);
                     // ポートオープン
                     ReceiveProt.Open();
+                    ReceiveText.AppendText("スレーブ接続開始\n");
+                    // 受信処理
+                    ReceiveProt.DataReceived += new SerialDataReceivedEventHandler(SerialPort_DataReceived);
                 }
                 catch (Exception ex)
                 {
@@ -116,6 +134,7 @@ namespace MISOTEN_APPLICATION.Screen.DevelopSystem
                     if (MasterPort.IsOpen == false) return;
                     // ポート切断
                     MasterPort.Close();
+                    ReceiveText.AppendText("マスター切断\n");
                     MasterPort = null;
                 }
                 catch (Exception ex)
@@ -131,6 +150,7 @@ namespace MISOTEN_APPLICATION.Screen.DevelopSystem
                     if (ReceiveProt.IsOpen == false) return;
                     // ポート切断
                     ReceiveProt.Close();
+                    ReceiveText.AppendText("スレーブ切断\n");
                     ReceiveProt = null;
                 }
                 catch (Exception ex)
@@ -150,6 +170,7 @@ namespace MISOTEN_APPLICATION.Screen.DevelopSystem
                     if (MasterPort.IsOpen == false) return;
                     // 送信処理
                     Send(MasterPort, SendText.Text);
+                    ReceiveText.AppendText("マスターへ送信\n");
                 }
                 catch (Exception ex)
                 {
@@ -164,6 +185,7 @@ namespace MISOTEN_APPLICATION.Screen.DevelopSystem
                     if (ReceiveProt.IsOpen == false) return;
                     // 送信処理
                     Send(ReceiveProt, SendText.Text);
+                    ReceiveText.AppendText("レシーブへ送信\n");
 
                 }
                 catch (Exception ex)
@@ -172,41 +194,6 @@ namespace MISOTEN_APPLICATION.Screen.DevelopSystem
                 }
             }
         }
-
-        /* 受信処理 */
-        private void ReceivedButton_Click(object sender, RoutedEventArgs e)
-        {
-            if ((bool)MasterSendCheck.IsChecked == true)
-            {
-                try
-                {
-                    if (MasterPort == null) return;
-                    if (MasterPort.IsOpen == false) return;
-                    // 受信処理
-                    MasterPort.DataReceived += new SerialDataReceivedEventHandler(SerialPort_DataReceived);
-
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }
-            }
-            if ((bool)ReceiveSendCheck.IsChecked == true)
-            {
-                try
-                {
-                    if (ReceiveProt == null) return;
-                    if (ReceiveProt.IsOpen == false) return;
-                    // 受信処理
-                    ReceiveProt.DataReceived += new SerialDataReceivedEventHandler(SerialPort_DataReceived);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }
-            }
-        }
-
 
         /* 受信用関数 */
         private void SerialPort_DataReceived(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
@@ -216,7 +203,7 @@ namespace MISOTEN_APPLICATION.Screen.DevelopSystem
             if (serialPort == null) return;
             if (serialPort.IsOpen == false) return;
 
-            // TextBox表示へ
+            // 受信情報処理
             try
             {
                 // 受信バッファ内のByte数
@@ -225,37 +212,121 @@ namespace MISOTEN_APPLICATION.Screen.DevelopSystem
                 byte[] data = new byte[datanum];
                 // dataへdatanum数分格納
                 Int32 invale = serialPort.Read(data, 0, datanum);
-                // TryParse用変数
-                Int32 check = 0;
                 string inCuf = "";
+                // 数値格納変数
+                ushort[] vale = new ushort[datanum];
 
-                // 送信データ"1byte"ずつ格納
-                for (int count = 0, i = 0; i < invale; i++)
+                Dispatcher.Invoke((Action)(() =>
                 {
-                    // Check有＆数値の場合
-                    if ((bool)Receive_BinaryConvertCheck.IsChecked == true)
-                    {
-                        //vale[0] = (ushort)((data[1] << 8) + (data[2] & 0xff));
-                        //vale[1] = (ushort)((data[3] << 8) + (data[4] & 0xff));
-                    }
-                    else
-                    // Check無の場合、英数字　Stringへ変換
+                    // 送信データ"1byte"ずつ格納
+                    for (int i = 0, j = 0; i < invale; i++, j++)
                     {
                         // 1byte格納
                         byte[] testbyte = new byte[1];
                         testbyte[0] = data[i];
-                        // String型へ格納
-                        inCuf = inCuf + System.Text.Encoding.ASCII.GetString(testbyte);
+
+                        // Check有＆数値の場合
+                        if ((Receive_BinaryConvertCheck.IsChecked == true) && (Encoding.ASCII.GetString(testbyte) != "s" && Encoding.ASCII.GetString(testbyte) != "e"))
+                        {
+                            // 数値変換
+
+                            // ※2byte続きで数値が入っている場合のみ
+                            vale[j] = (ushort)((data[i] << 8) + (data[i++] & 0xff));
+                            inCuf = inCuf + Convert.ToString(vale[j]);
+                            i += 1;
+
+                        }
+                        else
+                        // Check無の場合、英数字　Stringへ変換
+                        {
+                            // String型へ格納
+                            inCuf = inCuf + System.Text.Encoding.ASCII.GetString(testbyte);
+                        }
+
                     }
+                }));
 
-                }
-                // 表示or書き込み関数
-
+                //　受信データ格納
+                RString.Port = serialPort.PortName;
+                RString.ReciveData = inCuf;
+                Received();
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
+        }
+
+        /* 受信処理 */
+        public void Received()
+        {
+
+            Dispatcher.Invoke((Action)(() =>
+            {
+
+                if ((((bool)Master_TextCheck.IsChecked == true) || ((bool)Receive_TextCheck.IsChecked == true)))
+                {
+                    try
+                    {
+                        // ディスプレイ表示
+                        ReciiveDisplay(RString.Port, RString.ReciveData);
+                    }
+                    catch (Exception Ex)
+                    {
+                        MessageBox.Show(Ex.Message);
+                    }
+                }
+                if (((bool)Master_FileCheck.IsChecked == true) || ((bool)Receive_FileCheck.IsChecked == true))
+                {
+                    try
+                    {
+                        // File書き込み
+                        ReciiveFile(RString.Port, RString.ReciveData);
+                    }
+                    catch (Exception Ex)
+                    {
+                        MessageBox.Show(Ex.Message);
+                    }
+                }
+            }));
+        }
+        // 受信情報表示処理
+        public void ReciiveDisplay(string Port, string displayString)
+        {
+            Dispatcher.Invoke((Action)(() =>
+            {
+                if (Port == product[DeviceId.MasterId].comName)
+                {
+                    ReceiveText.AppendText("マスター : ");
+                }
+                else if (Port == product[DeviceId.ReceiveId].comName)
+                {
+                    ReceiveText.AppendText("レシーブ : ");
+                }
+                ReceiveText.AppendText(displayString + "\n");
+
+                //表示制限
+
+                if (ReceiveText.LineCount == 20)
+                {
+                    ReceiveText.Text = "";
+                }
+            }));
+        }
+        // 受信情報File書き込み処理
+        public void ReciiveFile(string Port, string displayString)
+        {
+            Dispatcher.Invoke((Action)(() =>
+            {
+                if (Port == product[DeviceId.MasterId].comName)
+                {
+                    File.AppendAllText(@"Log\Master_Log.txt", "マスター : " + displayString + Environment.NewLine);
+                }
+                else if (Port == product[DeviceId.ReceiveId].comName)
+                {
+                }
+            }));
+
         }
 
         /* 送信用関数 */

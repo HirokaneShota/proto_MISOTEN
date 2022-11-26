@@ -56,6 +56,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Screen\CommonClass\CommonClass.cs" />
+    <Compile Include="Screen\CommonClass\DataClass.cs" />
     <Compile Include="Screen\DevelopSystem\DevelopConnectSystem_Page.xaml.cs">
       <DependentUpon>DevelopConnectSystem_Page.xaml</DependentUpon>
     </Compile>
