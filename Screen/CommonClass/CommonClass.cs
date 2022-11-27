@@ -28,4 +28,27 @@ namespace MISOTEN_APPLICATION.Screen.CommonClass
         // レシーブID
         public const int ReceiveId = 1;
     }
+
+    class Retrun
+    {
+        // マスターID
+        public const int True = 0;
+        // レシーブID
+        public const int False = 1;
+    }
+
+    class Time
+    {
+        // 画面遷移時間 3秒
+        public const int ScreenTrans = 3;
+        // マスターキャリブレーション　伸ばす
+        public const int MECalibration = 10;
+        // マスターキャリブレーション　握る
+        public const int MGCalibration = 10;
+        // スレーブキャリブレーション　伸ばす
+        public const int SECalibration = 10;
+        // スレーブキャリブレーション　握る
+        public const int SGCalibration = 10;
+
+    }
 }

@@ -37,9 +37,6 @@ namespace MISOTEN_APPLICATION.Screen.DevelopSystem
         // 受信データバインディング用class
         ReciveData_String RString = new ReciveData_String();
 
-        Task LogTask;
-        int Taskend = 0;
-
         public DevelopConnectSystem_Page()
         {
             InitializeComponent();
@@ -92,7 +89,7 @@ namespace MISOTEN_APPLICATION.Screen.DevelopSystem
                     // ポートオープン
                     MasterPort.Open();
                     ReceiveText.AppendText("マスター接続開始\n");
-                    File.WriteAllText(@"Log\Master_Log.txt", "マスター接続開始" + Environment.NewLine);
+                    File.WriteAllText(@"Log\DevelopMasterLog.txt", "マスター接続開始" + Environment.NewLine);
 
                     // 受信処理
                     MasterPort.DataReceived += new SerialDataReceivedEventHandler(SerialPort_DataReceived);
@@ -320,7 +317,7 @@ namespace MISOTEN_APPLICATION.Screen.DevelopSystem
             {
                 if (Port == product[DeviceId.MasterId].comName)
                 {
-                    File.AppendAllText(@"Log\Master_Log.txt", "マスター : " + displayString + Environment.NewLine);
+                    File.AppendAllText(@"Log\DevelopMasterLog.txt", "マスター : " + displayString + Environment.NewLine);
                 }
                 else if (Port == product[DeviceId.ReceiveId].comName)
                 {

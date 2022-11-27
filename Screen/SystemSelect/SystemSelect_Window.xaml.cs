@@ -15,46 +15,21 @@ using System.Runtime.InteropServices;
 using System.Windows.Interop;
 using MISOTEN_APPLICATION.Screen.DevelopSystem;
 using MISOTEN_APPLICATION.Screen.SystemSetting;
+using System.Windows.Navigation;
+using MISOTEN_APPLICATION.Screen.SignalConnect;
 
 namespace MISOTEN_APPLICATION.Screen.SystemSelect
 {
     /// <summary>
     /// SystemSelect_Window.xaml の相互作用ロジック
     /// </summary>
-    public partial class SystemSelect_Window : Window
+    public partial class SystemSelect_Window : NavigationWindow
     {
-
         public SystemSelect_Window()
         {
             InitializeComponent();
-            //通信接続待機(Signal Connect Standby)ページ表示
-            Uri SystemSelectUri = new Uri("SignalConnectStandby_Page.xaml", UriKind.Relative);
-            SystemSelectFrame.Source = SystemSelectUri;
-        }
-
-        private void DevelopSystemButton_Click(object sender, RoutedEventArgs e)
-        {
-            // 子画面を生成します。
-            DevelopSystem_Window window = new DevelopSystem_Window();
-
-            // 子画面を表示します。
-            window.ShowDialog();
-
-            // 子画面のオーナープロパティにこの画面を設定します。
-            //window.Owner = GetWindow(this);
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            // 子画面を生成します。
-            SystemSetting_Window window = new SystemSetting_Window();
-
-            // 子画面を表示します。
-            window.ShowDialog();
-
-            //var SettingWindow = new SystemSetting_Window(this);
-
-            // return ((bool)SettingWindow.ShowDialog()) ? SettingWindow.Text : str;
+            SignalConnectStandby_Page signalconnect_page = new SignalConnectStandby_Page();
+            Navigate(signalconnect_page);
         }
     }
 }
