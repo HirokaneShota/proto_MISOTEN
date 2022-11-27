@@ -1,4 +1,6 @@
-﻿using MISOTEN_APPLICATION.Screen.SystemSelect;
+﻿using MISOTEN_APPLICATION.Screen.DevelopSystem;
+using MISOTEN_APPLICATION.Screen.SystemSelect;
+using MISOTEN_APPLICATION.Screen.SystemSetting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,10 +23,12 @@ namespace MISOTEN_APPLICATION.Screen.SignalConnect
     /// </summary>
     public partial class SignalReConnect_Page : Page
     {
-        public SignalReConnect_Page()
+        public SignalReConnect_Page(string ex)
         {
             InitializeComponent();
             this.ShowsNavigationUI = false;
+            // エラー文表示
+            ErrorText.Text = ex;
         }
 
         private void ReConnectButton_Click(object sender, RoutedEventArgs e)
@@ -44,6 +48,22 @@ namespace MISOTEN_APPLICATION.Screen.SignalConnect
         private void HelpButton_Click(object sender, RoutedEventArgs e)
         {
             // ヘルプ
+        }
+
+        /* 開発用システム */
+        private void DevelopSystemButton_Click(object sender, RoutedEventArgs e)
+        {
+            // 子画面を生成します。
+            DevelopSystem_Window window = new DevelopSystem_Window();
+            window.ShowDialog();
+        }
+
+        /* Com設定 */
+        private void SettingButton_Click(object sender, RoutedEventArgs e)
+        {
+            // 子画面を生成します。
+            SystemSetting_Window window = new SystemSetting_Window();
+            window.ShowDialog();
         }
     }
 }

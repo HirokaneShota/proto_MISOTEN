@@ -28,6 +28,9 @@ namespace MISOTEN_APPLICATION.Screen.SignalConnect
         SerialPort MasterPort;
         SerialPort ReceiveProt;
 
+        // エラー文
+        string ErrorSentence = "";
+
         public SignalConnect_Page()
         {
             InitializeComponent();
@@ -36,7 +39,7 @@ namespace MISOTEN_APPLICATION.Screen.SignalConnect
         void OnLoad(object sender, RoutedEventArgs e)
         {
             // 接続処理
-            if (ProtConnect() != Retrun.True)
+            if (ProtConnect() == Retrun.True)
             {
                 // 接続完了
                 var SignalConnectComp = new SignalConnectComp_Page();
@@ -45,7 +48,7 @@ namespace MISOTEN_APPLICATION.Screen.SignalConnect
             else
             {
                 // 再接続
-                var SignalReConnect = new SignalReConnect_Page();
+                var SignalReConnect = new SignalReConnect_Page(ErrorSentence);
                 NavigationService.Navigate(SignalReConnect);
             }
         }
@@ -73,7 +76,6 @@ namespace MISOTEN_APPLICATION.Screen.SignalConnect
         /* ポート接続処理 */
         private int ProtConnect()
         {
-
             //　file読み込み
             string ResumeJson = File.ReadAllText("Json\\SerialPort.json");
             // JSONデータからオブジェクトを復元
@@ -95,6 +97,7 @@ namespace MISOTEN_APPLICATION.Screen.SignalConnect
             catch (Exception ex)
             {
                 //MessageBox.Show(ex.Message);
+                ErrorSentence = ex.Message;
                 return Retrun.False;
             }
         }
