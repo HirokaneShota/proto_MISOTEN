@@ -55,6 +55,53 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Screen\Calibration\CalibrationStandby_Page.xaml.cs">
+      <DependentUpon>CalibrationStandby_Page.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Screen\Calibration\MasterCalibration _Page.xaml.cs">
+      <DependentUpon>MasterCalibration _Page.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Screen\Calibration\SlaveCalibration_Page.xaml.cs">
+      <DependentUpon>SlaveCalibration_Page.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Screen\CommonClass\CommonClass.cs" />
+    <Compile Include="Screen\CommonClass\DataClass.cs" />
+    <Compile Include="Screen\DevelopSystem\DevelopConnectSystem_Page.xaml.cs">
+      <DependentUpon>DevelopConnectSystem_Page.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Screen\DevelopSystem\DevelopSystem_Window.xaml.cs">
+      <DependentUpon>DevelopSystem_Window.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Screen\Operation\OperationStandby_Page.xaml.cs">
+      <DependentUpon>OperationStandby_Page.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Screen\Operation\Operation_Page.xaml.cs">
+      <DependentUpon>Operation_Page.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Screen\SignalConnect\SignalConnectComp_Page.xaml.cs">
+      <DependentUpon>SignalConnectComp_Page.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Screen\SignalConnect\SignalConnect_Page.xaml.cs">
+      <DependentUpon>SignalConnect_Page.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Screen\SignalConnect\SignalReConnect_Page.xaml.cs">
+      <DependentUpon>SignalReConnect_Page.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Screen\SystemSelect\SignalConnectStandby_Page.xaml.cs">
+      <DependentUpon>SignalConnectStandby_Page.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Screen\SystemSelect\SystemSelect_Page.xaml.cs">
+      <DependentUpon>SystemSelect_Page.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Screen\SystemSelect\SystemSelect_Window.xaml.cs">
+      <DependentUpon>SystemSelect_Window.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Screen\SystemSetting\ComSetting_Page.xaml.cs">
+      <DependentUpon>ComSetting_Page.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Screen\SystemSetting\SystemSetting_Window.xaml.cs">
+      <DependentUpon>SystemSetting_Window.xaml</DependentUpon>
+    </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -67,6 +114,66 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Screen\Calibration\CalibrationStandby_Page.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screen\Calibration\MasterCalibration _Page.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screen\Calibration\SlaveCalibration_Page.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screen\DevelopSystem\DevelopConnectSystem_Page.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screen\DevelopSystem\DevelopSystem_Window.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screen\Operation\OperationStandby_Page.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screen\Operation\Operation_Page.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screen\SignalConnect\SignalConnectComp_Page.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screen\SignalConnect\SignalConnect_Page.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screen\SignalConnect\SignalReConnect_Page.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screen\SystemSelect\SignalConnectStandby_Page.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screen\SystemSelect\SystemSelect_Page.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screen\SystemSelect\SystemSelect_Window.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screen\SystemSetting\ComSetting_Page.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Screen\SystemSetting\SystemSetting_Window.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -93,6 +200,36 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="image\ROGO.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="image\KAIHATUSHAtouka.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="image\SETTING.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>13.0.2</Version>
+    </PackageReference>
+    <PackageReference Include="System.Text.Encoding">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Text.Json">
+      <Version>7.0.0</Version>
+    </PackageReference>
+    <PackageReference Include="WpfAnimatedGif">
+      <Version>2.0.2</Version>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="image\Loding.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="move\test.mp4" />
+    <Content Include="move\test2.mp4" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

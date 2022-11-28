@@ -5,8 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MISOTEN_APPLICATION"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        
-    </Grid>
+        Title="PROTO" Height="600" Width="530"
+        ResizeMode="NoResize">
+    <Grid/>
 </Window>

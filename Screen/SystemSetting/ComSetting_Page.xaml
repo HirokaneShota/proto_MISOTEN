@@ -1,0 +1,44 @@
+﻿<Page x:Class="MISOTEN_APPLICATION.Screen.SystemSetting.ComSetting_Page"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:MISOTEN_APPLICATION.Screen.SystemSetting"
+      mc:Ignorable="d" 
+      d:DesignHeight="600" d:DesignWidth="530"
+      Title="ComSetting_Page">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Label Grid.Row="0" Grid.Column="1" Content="マスター" Margin="45,65,45,10" FontSize="20" Grid.ColumnSpan="2"/>
+        <Label Grid.Row="0" Grid.Column="3" Content="レシーブ" Margin="45,65,45,10" FontSize="20" Grid.ColumnSpan="2"/>
+
+        <Label Grid.Row="1" Grid.Column="1" Content="Part Name" Margin="35,0,35,75" FontSize="20" Grid.ColumnSpan="2"/>
+        <Label Grid.Row="1" Grid.Column="3" Content="Part Name" Margin="35,0,35,75" FontSize="20" Grid.ColumnSpan="2"/>
+        <ComboBox Name="MasterPartCmb" Grid.Column="1" Grid.ColumnSpan="2" Margin="16,45,16,0" Grid.Row="1" VerticalAlignment="Top" SelectionChanged="MasterPartCmb_SelectionChanged"/>
+        <ComboBox Name="ReceivePartCmb" Grid.Column="3" Grid.ColumnSpan="2" Margin="16,45,16,0" Grid.Row="1" VerticalAlignment="Top" SelectionChanged="ReceivePartCmb_SelectionChanged"/>
+
+        <Label Grid.Row="2" Grid.Column="3" Content="BPS" Margin="35,0,0,75" FontSize="20"/>
+        <Label Grid.Row="2" Grid.Column="1" Content="BPS" Margin="35,0,0,75" FontSize="20"/>
+        <ComboBox Name="MasterBPSCmb" Grid.Column="1" Grid.ColumnSpan="2" Margin="16,45,16,0" Grid.Row="2" VerticalAlignment="Top" Text="115200" SelectionChanged="MasterBPSCmb_SelectionChanged"/>
+        <ComboBox Name="ReceiveBPSCmb" Grid.Column="3" Grid.ColumnSpan="2" Margin="16,45,16,0" Grid.Row="2" VerticalAlignment="Top" SelectionChanged="ReceiveBPSCmb_SelectionChanged"/>
+        <Label Grid.Row="2" Grid.Column="2" Content="標準115200" Margin="0,6,0,75" FontSize="14" AutomationProperties.IsColumnHeader="True" Foreground="#FF6D6D6D"/>
+        <Label Grid.Row="2" Grid.Column="4" Content="標準115200" Margin="0,6,0,75" FontSize="14" AutomationProperties.IsColumnHeader="True" Foreground="#FF6D6D6D"/>
+
+        <Button Name="FinishButton" Content="OK" HorizontalAlignment="Center" Margin="0,0,0,10" Width="70" Grid.Column="5" Grid.Row="4" Height="32" VerticalAlignment="Bottom" Click="FinishButton_Click"/>
+    </Grid>
+</Page>

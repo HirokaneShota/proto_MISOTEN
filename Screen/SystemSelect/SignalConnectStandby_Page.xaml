@@ -1,0 +1,39 @@
+﻿<Page x:Class="MISOTEN_APPLICATION.Screen.SystemSelect.SignalConnectStandby_Page"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:MISOTEN_APPLICATION.Screen.SystemSelect"
+      mc:Ignorable="d" 
+      d:DesignHeight="600" d:DesignWidth="530"
+      Title="SignalConnectStandby_Page"
+      ShowsNavigationUI="False">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="0.5*"/>
+        </Grid.RowDefinitions>
+        <Image x:Name="Rogo"  Source=" ../../image/ROGO.png " Margin="50,50,50,20" Grid.RowSpan="3" Grid.ColumnSpan="3"/>
+        <Button Content="接続開始" Grid.Row="3" Grid.Column="1" Margin="10,25,10,10" FontSize="36" FontWeight="Bold" FontFamily="Arial Black" ToolTip="機器との接続開始" Click="ConnectButton_Click"/>
+        <DockPanel Grid.ColumnSpan="3">
+            <Menu DockPanel.Dock="Top">
+                <MenuItem Header="メニュー" Width="65">
+                    <MenuItem Header="設定" Click="SettingButton_Click"/>
+                    <Separator/>
+                    <MenuItem Header="開発者用" Click="DevelopSystemButton_Click"/>
+                </MenuItem>
+            </Menu>
+            <StackPanel>
+            </StackPanel>
+        </DockPanel>
+    </Grid>
+</Page>
