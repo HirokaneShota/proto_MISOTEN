@@ -4,6 +4,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO.Ports;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,17 +25,15 @@ namespace MISOTEN_APPLICATION.Screen.SignalConnect
     /// </summary>
     public partial class SignalConnectComp_Page : Page
     {
-        public SignalConnectComp_Page()
+        public SignalConnectComp_Page(SerialPort masterport, SerialPort receiveprot)
         {
             InitializeComponent();
-        }
-        void PageLoad(object sender, RoutedEventArgs e)
-        {
             // 時間計測タスク
-            Task MeasurementTask = Task.Run(() => { Measurement(); });
+            Task MeasurementTask = Task.Run(() => { Measurement(masterport, receiveprot); });
         }
 
-        private void Measurement()
+        /* 時間計測タスク */
+        private void Measurement(SerialPort masterport, SerialPort receiveprot)
         {
             var SW = new Stopwatch();
             TimeSpan TS = SW.Elapsed;

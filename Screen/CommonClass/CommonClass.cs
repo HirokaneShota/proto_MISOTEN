@@ -49,6 +49,26 @@ namespace MISOTEN_APPLICATION.Screen.CommonClass
         public const int SECalibration = 10;
         // スレーブキャリブレーション　握る
         public const int SGCalibration = 10;
+    }
 
+    class Flog
+    {
+        // 受信していない
+        public const int RNo = 0;
+        // 信号受信
+        public const int RSignal = 1;
+        // センサー値受信
+        public const int RNum = 2;
+    }
+
+    /* Uri */
+    class URI
+    {
+        // マスター用LogFile
+        public const string MasterLog = "Log\\MasterLog.txt";
+        // マスター用LogFile
+        public const string ReceiveLog = "Log\\ReceiveLog.txt";
+        // ロゴ画像
+        public const string LogoImage = "../../image/ROGO.png";
     }
 }

@@ -1,4 +1,5 @@
-﻿using MISOTEN_APPLICATION.Screen.CommonClass;
+﻿using MISOTEN_APPLICATION.BackProcess;
+using MISOTEN_APPLICATION.Screen.CommonClass;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -24,12 +25,11 @@ namespace MISOTEN_APPLICATION.Screen.SignalConnect
     /// </summary>
     public partial class SignalConnect_Page : Page
     {
-        // シリアルポート
-        SerialPort MasterPort;
-        SerialPort ReceiveProt;
-
         // エラー文
         string ErrorSentence = "";
+        // シリアルポート
+        SerialPort MasterPort = null;
+        SerialPort ReceiveProt = null;
 
         public SignalConnect_Page()
         {
@@ -39,10 +39,12 @@ namespace MISOTEN_APPLICATION.Screen.SignalConnect
         void OnLoad(object sender, RoutedEventArgs e)
         {
             // 接続処理
-            if (ProtConnect() == Retrun.True)
+            if (ProtConnect(MasterPort, ReceiveProt) == Retrun.True)
             {
+                // 送受信(接続要請信号送信,接続確認信号受信)
+                ProtReceve(MasterPort, ReceiveProt);
                 // 接続完了
-                var SignalConnectComp = new SignalConnectComp_Page();
+                var SignalConnectComp = new SignalConnectComp_Page(MasterPort, ReceiveProt);
                 NavigationService.Navigate(SignalConnectComp);
             }
             else
@@ -74,7 +76,7 @@ namespace MISOTEN_APPLICATION.Screen.SignalConnect
         }
 
         /* ポート接続処理 */
-        private int ProtConnect()
+        private int ProtConnect(SerialPort masterport, SerialPort receiveprot)
         {
             //　file読み込み
             string ResumeJson = File.ReadAllText("Json\\SerialPort.json");
@@ -84,22 +86,53 @@ namespace MISOTEN_APPLICATION.Screen.SignalConnect
             try
             {
                 // ポートセット
-                MasterPort = SettingPort(MasterPort, product[DeviceId.MasterId]);
-                ReceiveProt = SettingPort(ReceiveProt, product[DeviceId.ReceiveId]);
+                masterport = SettingPort(masterport, product[DeviceId.MasterId]);
+                //receiveprot = SettingPort(receiveprot, product[DeviceId.ReceiveId]);
                 // ポートオープン
-                MasterPort.Open();
-                File.WriteAllText(@"Log\MasterLog.txt", "マスター接続開始" + Environment.NewLine);
-                ReceiveProt.Open();
-                File.WriteAllText(@"Log\ReceiveLog.txt", "レシーブ接続開始" + Environment.NewLine);
+                masterport.Open();
+                //receiveprot.Open();
+                File.WriteAllText(@URI.MasterLog, "マスター接続開始" + Environment.NewLine);
+                //File.WriteAllText(@URI.ReceiveLog, "レシーブ接続開始" + Environment.NewLine);
+                MasterPort = masterport;
+                ReceiveProt = receiveprot;
 
                 return Retrun.True;
             }
             catch (Exception ex)
             {
-                //MessageBox.Show(ex.Message);
                 ErrorSentence = ex.Message;
                 return Retrun.False;
             }
+        }
+
+        /* ポート受信処理 */
+        private void ProtReceve(SerialPort masterport, SerialPort receiveprot)
+        {
+            // 受信値
+            ReciveData reciveData = new ReciveData();
+
+
+            // マスター受信クラスインスタンス
+            //ReciveClassSignalClass
+            // マスター送信クラスインスタンス
+            //SendClass sendClass = new SendClass(masterport);
+
+            SignalClass signalClass = new SignalClass();
+
+            // マスター受信タスク
+            signalClass.ReceiveHandler(masterport);
+            Task<ReciveData> MRtask = Task.Run(() => { return signalClass.NumReceived(); });
+            // ct01 送信
+            signalClass.SignalSend(masterport, SignalSendData.MConnectRequest);
+            // 受信タスク終了まで待機
+            reciveData = MRtask.Result;
+            File.AppendAllText(@URI.MasterLog, reciveData.RString + Environment.NewLine);
+
+            /*
+            // スレーブ受信
+            signalClass.NumReceived(receiveprot);
+            File.AppendAllText(@URI.ReceiveLog, reciveData.RString + Environment.NewLine);
+            */
         }
     }
 }
