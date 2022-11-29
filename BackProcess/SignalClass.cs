@@ -24,6 +24,8 @@ namespace MISOTEN_APPLICATION.BackProcess
         /* 受信バンドラ関数 */
         public void ReceiveHandler(SerialPort serialport)
         {
+            // 初期化
+            recive.RFlog = Flog.RNo;
             // 受信用ハンドラ
             serialport.DataReceived += new SerialDataReceivedEventHandler(DataNumReceived);
         }
@@ -31,8 +33,6 @@ namespace MISOTEN_APPLICATION.BackProcess
         /* 受信待機 */
         public ReciveData NumReceived()
         {
-            // 初期化
-            recive.RFlog = Flog.RNo;
             // 受信するまで　※送受信時間かかれば処理変更
             for (; recive.RFlog == Flog.RNo;) ;
 
