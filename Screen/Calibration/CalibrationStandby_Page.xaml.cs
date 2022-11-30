@@ -1,5 +1,8 @@
-﻿using System;
+﻿using MISOTEN_APPLICATION.BackProcess;
+using MISOTEN_APPLICATION.Screen.CommonClass;
+using System;
 using System.Collections.Generic;
+using System.IO.Ports;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,9 +23,12 @@ namespace MISOTEN_APPLICATION.Screen.Calibration
     /// </summary>
     public partial class CalibrationStandby_Page : Page
     {
-        public CalibrationStandby_Page()
+        ArgSignal argSignal = new ArgSignal();
+        public CalibrationStandby_Page(ArgSignal argsignal)
         {
             InitializeComponent();
+            argSignal = argsignal;
+
         }
         void PageLoad(object sender, RoutedEventArgs e)
         {
@@ -32,7 +38,7 @@ namespace MISOTEN_APPLICATION.Screen.Calibration
         private void CalibrationStartButton_Click(object sender, RoutedEventArgs e)
         {
             // マスターキャリブレーション画面へ移行
-            var mastercalibration__page = new MasterCalibration__Page();
+            var mastercalibration__page = new MasterCalibration__Page(argSignal);
             NavigationService.Navigate(mastercalibration__page);
         }
     }

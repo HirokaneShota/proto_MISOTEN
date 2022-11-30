@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MISOTEN_APPLICATION.BackProcess;
+using System;
 using System.Collections.Generic;
 using System.IO.Ports;
 using System.Linq;
@@ -21,6 +22,22 @@ namespace MISOTEN_APPLICATION.Screen.CommonClass
         public string encoding { get; set; } = "Encoding.UTF8";
         public int writeTimeout { get; set; } = 100000;
     }
+
+    // 通信用引数
+    public class ArgSignal
+    {
+        // 通信用インスタンスクラス
+        public SignalClass Msignalclass { get; set; }
+
+        public SignalClass Ssignalclass { get; set; }
+
+        // 通信ポート
+        public SerialPort Masterport { get; set; }
+
+        public SerialPort Seceiveprot { get; set; }
+
+    }
+
     class DeviceId
     {
         // マスターID
@@ -59,11 +76,23 @@ namespace MISOTEN_APPLICATION.Screen.CommonClass
         public const int RSignal = 1;
         // センサー値受信
         public const int RNum = 2;
+
+        //センサー値取得許可
+        public const int SON = 1;
+        //センサー値取得不可
+        public const int SOFF = 0;
+
+        // 処理開始
+        public const int Start = 1;
+        // 処理終了
+        public const int End = 2;
     }
 
     /* Uri */
     class URI
     {
+        // COMデータJSON
+        public const string ComJson = "Json\\SerialPort.json";
         // マスター用LogFile
         public const string MasterLog = "Log\\MasterLog.txt";
         // マスター用LogFile

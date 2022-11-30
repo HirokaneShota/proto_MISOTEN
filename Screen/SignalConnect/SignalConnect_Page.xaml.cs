@@ -31,6 +31,15 @@ namespace MISOTEN_APPLICATION.Screen.SignalConnect
         SerialPort MasterPort = null;
         SerialPort ReceiveProt = null;
 
+        // マスター送受信クラス
+        SignalClass MSignalClass = new SignalClass();
+        // スレーブ送受信クラス
+        SignalClass SSignalClass = new SignalClass();
+
+        // 引数
+        ArgSignal argsignal = new ArgSignal();
+
+
         public SignalConnect_Page()
         {
             InitializeComponent();
@@ -38,20 +47,37 @@ namespace MISOTEN_APPLICATION.Screen.SignalConnect
 
         void OnLoad(object sender, RoutedEventArgs e)
         {
+            Task MeasurementTask = Task.Run(() => { Window_Load(); });
+        }
+
+        private void Window_Load()
+        {
             // 接続処理
-            if (ProtConnect(MasterPort, ReceiveProt) == Retrun.True)
-            {
+            if ((ProtConnect(MasterPort, ReceiveProt) == Retrun.True) &&
                 // 送受信(接続要請信号送信,接続確認信号受信)
-                ProtReceve(MasterPort, ReceiveProt);
-                // 接続完了
-                var SignalConnectComp = new SignalConnectComp_Page(MasterPort, ReceiveProt);
-                NavigationService.Navigate(SignalConnectComp);
+                (ProtReceve(MasterPort, ReceiveProt) == Retrun.True))
+            {
+                Dispatcher.Invoke((Action)(() =>
+                {
+                    // 引数用格納
+                    argsignal.Msignalclass = MSignalClass;
+                    argsignal.Ssignalclass = SSignalClass;
+                    argsignal.Masterport = MasterPort;
+                    argsignal.Seceiveprot = ReceiveProt;
+
+                    // 接続完了
+                    var SignalConnectComp = new SignalConnectComp_Page(argsignal);
+                    NavigationService.Navigate(SignalConnectComp);
+                }));
             }
             else
             {
-                // 再接続
-                var SignalReConnect = new SignalReConnect_Page(ErrorSentence);
-                NavigationService.Navigate(SignalReConnect);
+                Dispatcher.Invoke((Action)(() =>
+                {
+                    // 再接続
+                    var SignalReConnect = new SignalReConnect_Page(ErrorSentence);
+                    NavigationService.Navigate(SignalReConnect);
+                }));
             }
         }
 
@@ -106,33 +132,76 @@ namespace MISOTEN_APPLICATION.Screen.SignalConnect
         }
 
         /* ポート受信処理 */
-        private void ProtReceve(SerialPort masterport, SerialPort receiveprot)
+        private int ProtReceve(SerialPort masterport, SerialPort receiveprot)
         {
-            // 受信値
-            ReciveData reciveData = new ReciveData();
+            // マスター受信値
+            ReciveData MReciveData = new ReciveData();
+            // 時間計測
+            Timer time = new Timer();
 
+            // マスター受信Handlerタスク
+            MSignalClass.ReceiveHandler(masterport);
+            // ReceiveHandlerより先に送信しないように
+            Timer.Sleep(7000);
 
-            // マスター受信クラスインスタンス
-            //ReciveClassSignalClass
-            // マスター送信クラスインスタンス
-            //SendClass sendClass = new SendClass(masterport);
-
-            SignalClass signalClass = new SignalClass();
-
-            // マスター受信タスク
-            signalClass.ReceiveHandler(masterport);
-            Task<ReciveData> MRtask = Task.Run(() => { return signalClass.NumReceived(); });
-            // ct01 送信
-            signalClass.SignalSend(masterport, SignalSendData.MConnectRequest);
+            //
+            // 「マスター：接続要請信号」
+            //
+            Task<ReciveData> MRtask = Task.Run(() => { return MSignalClass.NumReceived(); });
+            // "ct01" 送信
+            MSignalClass.SignalSend(masterport, SendSignal.MConnectRequest);
+            // 計測開始("ct01" 送信から"ca10"受信まで)
+            time.Start();
             // 受信タスク終了まで待機
-            reciveData = MRtask.Result;
-            File.AppendAllText(@URI.MasterLog, reciveData.RString + Environment.NewLine);
+            MReciveData = MRtask.Result;
+
+            File.AppendAllText(@URI.MasterLog, time.MiliElapsed()+ "ms :" + MReciveData.RString + Environment.NewLine);
+
+            if (MReciveData.RString != ReceveSignal.MConnectRequest)
+            {
+                ErrorSentence = MReciveData.RString;
+                return Retrun.False;
+            }
+
+            //
+            // 「マスター：接続完了信号」
+            //
+            MSignalClass.InitSignal();
+            MRtask = Task.Run(() => { return MSignalClass.NumReceived(); });
+            // ReceiveHandlerより先に送信しないように
+            // "cc01" 送信
+            MSignalClass.SignalSend(masterport, SendSignal.MConnectComple);
+            // 計測開始("cc01" 送信から"cc10"受信まで)
+            time.ReStart();
+            // 受信タスク終了まで待機
+            MReciveData = MRtask.Result;
+            File.AppendAllText(@URI.MasterLog, time.MiliElapsed() + "ms :" + MReciveData.RString + Environment.NewLine);
+
+            if (MReciveData.RString != ReceveSignal.MConnectComple)
+            {
+                ErrorSentence = MReciveData.RString;
+                return Retrun.False;
+            }
+
+
+
 
             /*
-            // スレーブ受信
-            signalClass.NumReceived(receiveprot);
-            File.AppendAllText(@URI.ReceiveLog, reciveData.RString + Environment.NewLine);
+            // マスター受信値
+            ReciveData MReciveData = new ReciveData();
+            // レシーブ送受信クラス
+            SignalClass RSignalClass = new SignalClass();
+            //  レシーブ受信タスク
+            RSignalClass.ReceiveHandler(receiveprot);
+            Task<ReciveData> RRtask = Task.Run(() => { return RSignalClass.NumReceived(); });
+            // "" 送信
+            RSignalClass.SignalSend(receiveprot, SignalSendData.RConnectRequest);
+            // 受信タスク終了まで待機
+            RReciveData = RRtask.Result;
+            File.AppendAllText(@URI.MasterLog, RReciveData.RString + Environment.NewLine);
+
             */
+            return Retrun.True;
         }
     }
 }

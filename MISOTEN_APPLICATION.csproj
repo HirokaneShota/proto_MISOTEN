@@ -56,6 +56,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="BackProcess\SignalClass.cs" />
+    <Compile Include="BackProcess\Timer.cs" />
     <Compile Include="Screen\Calibration\CalibrationStandby_Page.xaml.cs">
       <DependentUpon>CalibrationStandby_Page.xaml</DependentUpon>
     </Compile>

@@ -8,39 +8,57 @@ namespace MISOTEN_APPLICATION.Screen.CommonClass
 {
 
     /* 送信信号クラスオブジェクト */
-    class SignalSendData
+    class SendSignal
     {
         // 接続要請信号
         public const string MConnectRequest = "ct01";
         // 接続要請信号
         public const string MConnectComple = "cc01";
+        // キャリブレーションスタート信号
+        public const string MCalibrationStart = "cs01";
         // キャリブレーション完了信号
         public const string MCalibrationComple = "ce01";
         // センシング開始信号
-        public const string MSensingStart = "cs01";
+        public const string MSensingStart = "ss01";
         // センシングリセット信号
-        public const string MSensingReset = "cr01";
+        public const string MSensingReset = "sr01";
         // センシング終了信号
-        public const string MSensingEnd = "ce01";
+        public const string MSensingEnd = "se01";
         // センシング停止信号
-        public const string MSensingStop = "ch01";
+        public const string MSensingStop = "sh01";
+    }
+    /* 受信信号クラスオブジェクト */
+    class SendNumSigna
+    {
+        // マスター数値始まり信号
+        public const string MSData = "p";
+        // 数値終わり信号
+        public const string EData = "e";
     }
 
     /* 受信信号クラスオブジェクト */
-    class SignalReceveData
+    class ReceveSignal
     {
-        // 接続確認信号
+        // 接続確認信号時間経過
         public const string MConnectRequest = "ca10";
         // 接続完了信号
         public const string MConnectComple = "cc10";
     }
     /* 受信信号クラスオブジェクト */
-    class SignalNumData
+    class ReceveNumSignal
     {
-        // 数値始め信号
-        public const string SNumData  = "s";
-        // 数値終わり信号
-        public const string ENumData = "e";
+        // マスター数値始まり信号
+        public const string MSData = "m";
+        // スレーブ数値始まり信号
+        public const string SSData = "s";
+        // 数値終わり信号 1
+        public const char EData1 = '1';
+        // 数値終わり信号 2
+        public const char EData2 = '2';
+        // 数値終わり信号 3
+        public const char EData3 = '3';
+        // 数値終わり信号 4
+        public const char EData4 = '4';
     }
 
 }

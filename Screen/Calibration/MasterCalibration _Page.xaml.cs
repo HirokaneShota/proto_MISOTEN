@@ -1,7 +1,9 @@
-﻿using MISOTEN_APPLICATION.Screen.CommonClass;
+﻿using MISOTEN_APPLICATION.BackProcess;
+using MISOTEN_APPLICATION.Screen.CommonClass;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,9 +25,23 @@ namespace MISOTEN_APPLICATION.Screen.Calibration
     /// </summary>
     public partial class MasterCalibration__Page : Page
     {
-        public MasterCalibration__Page()
+        ArgSignal argSignal = new ArgSignal();
+        // 排他制御に使用するオブジェクト
+        private static Object lockObject = new Object();
+
+        // マスター受信値
+        ReciveData_Sensor MSensor = new ReciveData_Sensor();
+        // マスター受信時間(ミリ秒)
+        double MTime = 0;
+        // センサー値取得フラグ
+        int SensFlog = Flog.SON;
+        // 処理終了フラグ
+        int EndFlog = Flog.Start;
+
+        public MasterCalibration__Page(ArgSignal argsignal)
         {
             InitializeComponent();
+            argSignal = argsignal;
             //MasterCalibrationButton.IsEnabled = false;
             // 再計測・レシーブボタン
             SlaveButton.Visibility = Visibility.Hidden;
@@ -35,6 +51,8 @@ namespace MISOTEN_APPLICATION.Screen.Calibration
         {
             // 時間計測タスク
             Task MeasurementTask = Task.Run(() => { Measurement(); });
+            // マスター値受信タスク
+            Task MReceveTask = Task.Run(() => { MReceve(); });
             // キャリブレーション処理タスク
             Task CalibrationTask = Task.Run(() => { Calibration(); });
         }
@@ -113,11 +131,62 @@ namespace MISOTEN_APPLICATION.Screen.Calibration
                 }
             }
         }
+        /* マスター値受信処理 */
+        private void MReceve()
+        {
+            // マスター受信値
+            ReciveData MReciveData = new ReciveData();
+            // 時間計測
+            Timer time = new Timer();
+            // 計測スタート
+            time.Start();
+            //
+            // 「マスター：キャリブレーションスタート信号」
+            //
 
+            // "cs01" 送信 : キャリブレーションスタート
+            argSignal.Msignalclass.SignalSend(argSignal.Masterport, SendSignal.MCalibrationStart);
+            // 処理終了フラグが立つまで
+            while (EndFlog != Flog.End)
+            {
+                // センサー値取得不可
+                if (SensFlog == Flog.SOFF) continue;
+                // 計測再スタート
+                time.ReStart();
+                // マスター値受信
+                Task<ReciveData> MRtask = Task.Run(() => { return argSignal.Msignalclass.NumReceived(); });
+                // 受信タスク終了まで待機
+                MReciveData = MRtask.Result;
+                lock (lockObject)
+                {
+                    MTime = time.MiliElapsed();
+                    //センサー値格納
+                    MSensor = MReciveData.RSensor;
+                }
+            }
+
+            //
+            // 「マスター：キャリブレーション完了信号」
+            //
+
+            // "ce01" 送信 : キャリブレーション終了
+            //argSignal.Msignalclass.SignalSend(argSignal.Masterport, SendSignal.MCalibrationComple);
+        }
 
         /* キャリブレーション処理 */
         private void Calibration() 
         {
+            //
+            // マスター受信値：MSensor 
+            // マスター受信時間：MTime 
+            // 上記の変数へセンサーの値、受信時間()を受信次第格納(上書き)している。
+            // 受信値は、構造体になっている為、Screen\CommonClass\DataClass.cs(ReciveData_Sensor)を参照
+            // 
+            // センサー値の更新を止める際は、センサー値取得フラグ：SensFlog を Flog.SOFF
+            // センサー値を更新する際は、センサー値取得フラグ：SensFlog を Flog.SON　へ設定してください。
+            //
+            // 処理(キャリブレーション)の終了後には、処理終了フラグ：EndFlog を Flog.Endへ設定してください。
+            //
 
         }
 
@@ -125,7 +194,7 @@ namespace MISOTEN_APPLICATION.Screen.Calibration
         private void SlaveButton_Click(object sender, RoutedEventArgs e)
         {
             // スレーブキャリブレーション画面へ移行
-            var slavecalibration_page = new SlaveCalibration_Page();
+            var slavecalibration_page = new SlaveCalibration_Page(argSignal);
             NavigationService.Navigate(slavecalibration_page);
         }
 
@@ -133,7 +202,7 @@ namespace MISOTEN_APPLICATION.Screen.Calibration
         private void ReMeasureButton_Click(object sender, RoutedEventArgs e)
         {
             // キャリブレーション準備画面へ移行
-            var calibrationstandby_page = new CalibrationStandby_Page();
+            var calibrationstandby_page = new CalibrationStandby_Page(argSignal);
             NavigationService.Navigate(calibrationstandby_page);
         }
     }

@@ -1,5 +1,6 @@
 ﻿using MISOTEN_APPLICATION.Screen.Calibration;
 using MISOTEN_APPLICATION.Screen.CommonClass;
+using MISOTEN_APPLICATION.BackProcess;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -25,15 +26,15 @@ namespace MISOTEN_APPLICATION.Screen.SignalConnect
     /// </summary>
     public partial class SignalConnectComp_Page : Page
     {
-        public SignalConnectComp_Page(SerialPort masterport, SerialPort receiveprot)
+        public SignalConnectComp_Page(ArgSignal argsignal)
         {
             InitializeComponent();
             // 時間計測タスク
-            Task MeasurementTask = Task.Run(() => { Measurement(masterport, receiveprot); });
+            Task MeasurementTask = Task.Run(() => { Measurement(argsignal); });
         }
 
         /* 時間計測タスク */
-        private void Measurement(SerialPort masterport, SerialPort receiveprot)
+        private void Measurement(ArgSignal argsignal)
         {
             var SW = new Stopwatch();
             TimeSpan TS = SW.Elapsed;
@@ -54,7 +55,7 @@ namespace MISOTEN_APPLICATION.Screen.SignalConnect
             Dispatcher.Invoke((Action)(() =>
             {
                 // キャリブレーション準備画面へ
-                var calibrationstandby_page = new CalibrationStandby_Page();
+                var calibrationstandby_page = new CalibrationStandby_Page(argsignal);
                 NavigationService.Navigate(calibrationstandby_page);
             }));
         }
