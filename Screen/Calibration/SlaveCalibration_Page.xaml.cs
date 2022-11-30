@@ -148,14 +148,14 @@ namespace MISOTEN_APPLICATION.Screen.Calibration
             // センサー値の更新を止める際は、センサー値取得フラグ：SensFlog を Flog.SOFF
             // センサー値を更新する際は、センサー値取得フラグ：SensFlog を Flog.SON　へ設定してください。
             //
-            // 処理(キャリブレーション)の終了後には、処理終了フラグ：EndFlog を Flog.Endへ設定してください。
-            //
 
         }
 
         // 計測終了
         private void EndButton_Click(object sender, RoutedEventArgs e)
         {
+            // レシーブ受信タスク終了
+            lock (lockObject) EndFlog = Flog.End;
             // 稼働準備画面へ移行
             var operationstandby_page = new OperationStandby_Page(argSignal);
             NavigationService.Navigate(operationstandby_page);
