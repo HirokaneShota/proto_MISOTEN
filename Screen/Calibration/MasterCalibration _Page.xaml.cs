@@ -170,7 +170,7 @@ namespace MISOTEN_APPLICATION.Screen.Calibration
             //
 
             // "ce01" 送信 : キャリブレーション終了
-            //argSignal.Msignalclass.SignalSend(argSignal.Masterport, SendSignal.MCalibrationComple);
+            argSignal.Msignalclass.SignalSend(argSignal.Masterport, SendSignal.MCalibrationComple);
         }
 
         /* キャリブレーション処理 */
