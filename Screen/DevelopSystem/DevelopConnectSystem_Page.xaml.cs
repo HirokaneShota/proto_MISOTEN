@@ -44,7 +44,7 @@ namespace MISOTEN_APPLICATION.Screen.DevelopSystem
         }
 
         
-        //ポートセット
+        /* ポートセット */
         private SerialPort SettingPort(SerialPort serialPort, SerialPortData serialPortData)
         {
             // まだポートに繋がっていない場合
@@ -64,6 +64,7 @@ namespace MISOTEN_APPLICATION.Screen.DevelopSystem
             return serialPort;
         }
 
+        /* LogFileOpen */
         private void OpenLogFolderButton_Click(object sender, RoutedEventArgs e)
         {
             // LogFileOpen
@@ -287,7 +288,7 @@ namespace MISOTEN_APPLICATION.Screen.DevelopSystem
                 }
             }));
         }
-        // 受信情報表示処理
+        /* 受信情報表示処理 */
         public void ReciiveDisplay(string Port, string displayString)
         {
             Dispatcher.Invoke((Action)(() =>
@@ -310,7 +311,7 @@ namespace MISOTEN_APPLICATION.Screen.DevelopSystem
                 }
             }));
         }
-        // 受信情報File書き込み処理
+        /* 受信情報File書き込み処理 */
         public void ReciiveFile(string Port, string displayString)
         {
             Dispatcher.Invoke((Action)(() =>

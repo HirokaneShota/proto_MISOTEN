@@ -55,6 +55,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="BackProcess\SignalClass.cs" />
+    <Compile Include="BackProcess\Timer.cs" />
     <Compile Include="Screen\Calibration\CalibrationStandby_Page.xaml.cs">
       <DependentUpon>CalibrationStandby_Page.xaml</DependentUpon>
     </Compile>
@@ -66,6 +68,7 @@
     </Compile>
     <Compile Include="Screen\CommonClass\CommonClass.cs" />
     <Compile Include="Screen\CommonClass\DataClass.cs" />
+    <Compile Include="Screen\CommonClass\SignalDataClass.cs" />
     <Compile Include="Screen\DevelopSystem\DevelopConnectSystem_Page.xaml.cs">
       <DependentUpon>DevelopConnectSystem_Page.xaml</DependentUpon>
     </Compile>
