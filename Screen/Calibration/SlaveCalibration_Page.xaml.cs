@@ -1,4 +1,5 @@
-﻿using MISOTEN_APPLICATION.Screen.CommonClass;
+﻿using MISOTEN_APPLICATION.BackProcess;
+using MISOTEN_APPLICATION.Screen.CommonClass;
 using MISOTEN_APPLICATION.Screen.Operation;
 using System;
 using System.Collections.Generic;
@@ -23,22 +24,22 @@ namespace MISOTEN_APPLICATION.Screen.Calibration
     /// </summary>
     public partial class SlaveCalibration_Page : Page
     {
-        ArgSignal argSignal = new ArgSignal();
+        SignalClass Signalclass = new SignalClass();
         // 排他制御に使用するオブジェクト
         private static Object lockObject = new Object();
         // スレーブ受信値
         ReciveData_Sensor SSensor = new ReciveData_Sensor();
         //スレーブ受信時間(ミリ秒)
         double STime = 0;
-        // センサー値取得フラグ
-        int SensFlog = Flog.SON;
+        // 処理フラグ
+        int ProcFlog = Flog.CalibNone;
         // 処理終了フラグ
         int EndFlog = Flog.Start;
 
-        public SlaveCalibration_Page(ArgSignal argsignal)
+        public SlaveCalibration_Page(SignalClass signalclass)
         {
             InitializeComponent();
-            argSignal = argsignal;
+            Signalclass = signalclass;
             // 再計測・計測終了ボタン
             EndButton.Visibility = Visibility.Hidden;
             ReMeasureButton.Visibility = Visibility.Hidden;
@@ -50,8 +51,6 @@ namespace MISOTEN_APPLICATION.Screen.Calibration
             Task MeasurementTask = Task.Run(() => { Measurement(); });
             // スレーブ値受信タスク
             Task SReceveTask = Task.Run(() => { SReceve(); });
-            // キャリブレーション処理タスク
-            Task CalibrationTask = Task.Run(() => { Calibration(); });
         }
         /* 時間計測処理 */
         private void Measurement()
@@ -76,10 +75,10 @@ namespace MISOTEN_APPLICATION.Screen.Calibration
             TimeSpan TS = SW.Elapsed;
             TimeSpan BeforeTime = SW.Elapsed;
 
-            //Dispatcher.Invoke((Action)(() =>{  MoveUli = "../ ../move/test.mp4"; }));
+            // キャリブレーション処理タスク
+            Task CalibrationTask = Task.Run(() => { Calibration(Flog.CalibOpen); });
 
             // 手を広げる
-            // 経過時間計測 5秒
             while (TS.Seconds < Time.SECalibration)
             {
                 // 計測開始
@@ -92,8 +91,8 @@ namespace MISOTEN_APPLICATION.Screen.Calibration
                     // 1秒ごとに書き込み処理 
                     Dispatcher.Invoke((Action)(() =>
                     {
-                        CountLabel.Content = " 手を広げたまま、" + (Time.SECalibration) + "秒間放置してください";
-                        SlaveCalibrationButton.Content = (Time.SECalibration - TS.Seconds) + "秒後...";
+                        CountLabel.Content = " 手を広げたまま、" + "放置してください";
+                        SlaveCalibrationButton.Content = TS.Seconds + "秒経過";
                     }));
                     // 前回経過時間合計
                     BeforeTime = TS;
@@ -107,9 +106,11 @@ namespace MISOTEN_APPLICATION.Screen.Calibration
             TimeSpan TS = SW.Elapsed;
             TimeSpan BeforeTime = SW.Elapsed;
 
+            // キャリブレーション処理タスク
+            Task CalibrationTask = Task.Run(() => { Calibration(Flog.CalibClose); });
+
             // 手を握る 
-            // 経過時間計測 5秒
-            while (TS.Seconds < Time.SGCalibration)
+            while (ProcFlog != Flog.CalibClose)
             {
                 // 計測開始
                 SW.Start();
@@ -121,8 +122,8 @@ namespace MISOTEN_APPLICATION.Screen.Calibration
                     // 1秒ごとに書き込み処理 
                     Dispatcher.Invoke((Action)(() =>
                     {
-                        CountLabel.Content = " 　手を握り、" + (Time.SGCalibration) + "秒間放置してください";
-                        SlaveCalibrationButton.Content = (Time.SGCalibration - TS.Seconds) + "秒後...";
+                        CountLabel.Content = " 　手を握り、" + "放置してください";
+                        SlaveCalibrationButton.Content = TS.Seconds + "秒経過";
                     }));
                     // 前回経過時間合計
                     BeforeTime = TS;
@@ -137,7 +138,7 @@ namespace MISOTEN_APPLICATION.Screen.Calibration
         }
 
         /* キャリブレーション処理 */
-        private void Calibration()
+        private void Calibration(int flog)
         {
             //
             // スレーブ受信値：SSensor
@@ -157,7 +158,7 @@ namespace MISOTEN_APPLICATION.Screen.Calibration
             // レシーブ受信タスク終了
             lock (lockObject) EndFlog = Flog.End;
             // 稼働準備画面へ移行
-            var operationstandby_page = new OperationStandby_Page(argSignal);
+            var operationstandby_page = new OperationStandby_Page(Signalclass);
             NavigationService.Navigate(operationstandby_page);
         }
 
@@ -165,7 +166,7 @@ namespace MISOTEN_APPLICATION.Screen.Calibration
         private void ReMeasureButton_Click(object sender, RoutedEventArgs e)
         {
             // スレーブキャリブレーション画面へ移行
-            var slavecalibration_page = new SlaveCalibration_Page(argSignal);
+            var slavecalibration_page = new SlaveCalibration_Page(Signalclass);
             NavigationService.Navigate(slavecalibration_page);
         }
     }
