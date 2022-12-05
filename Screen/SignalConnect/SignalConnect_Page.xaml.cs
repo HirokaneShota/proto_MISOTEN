@@ -132,8 +132,8 @@ namespace MISOTEN_APPLICATION.Screen.SignalConnect
 
             // マスター受信値
             ReciveData MReciveData = new ReciveData();
-            // 時間計測
-            Timer time = new Timer();
+            // マスター受信値
+            ReciveData SReciveData = new ReciveData();
 
             //
             // 「マスター：接続要請信号」
@@ -171,6 +171,42 @@ namespace MISOTEN_APPLICATION.Screen.SignalConnect
                 ErrorSentence = MReciveData.RSignal;
                 return Retrun.False;
             }
+
+            /*
+            //
+            // 「スレーブ：接続要請信号」
+            //
+            Task<ReciveData> SRtask = Task.Run(() => { return SignalClass.GetSReciveData(); });
+            // "ct02" 送信
+            SignalClass.SignalSend(DeviceId.ReceiveId, SendSignal.SConnectRequest);
+            // 計測開始("ct02" 送信から"ca20"受信まで)
+            // 受信タスク終了まで待機
+            SReciveData = SRtask.Result;
+            file.SLog(SReciveData.RSignal);
+            // 受信値チェック
+            if (SReciveData.RSignal != ReceveSignal.SConnectRequest)
+            {
+                ErrorSentence = SReciveData.RSignal;
+                return Retrun.False;
+            }
+
+            //
+            // 「スレーブ：接続完了信号」
+            //
+            SRtask = Task.Run(() => { return SignalClass.GetSReciveData(); });
+            // ReceiveHandlerより先に送信しないように
+            // "cc02" 送信
+            SignalClass.SignalSend(DeviceId.ReceiveId, SendSignal.MConnectComple);
+            // 計測開始("cc02" 送信から"cc20"受信まで)
+            // 受信タスク終了まで待機
+            SReciveData = SRtask.Result;
+            file.SLog(SReciveData.RSignal);
+            // 受信値チェック
+            if (SReciveData.RSignal != ReceveSignal.SConnectComple)
+            {
+                ErrorSentence = SReciveData.RSignal;
+                return Retrun.False;
+            }*/
 
             return Retrun.True;
         }

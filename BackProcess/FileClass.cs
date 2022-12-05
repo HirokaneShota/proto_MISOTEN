@@ -11,7 +11,7 @@ namespace MISOTEN_APPLICATION.BackProcess
     class FileClass
     {
         string muri = URI.MasterLog;
-        string suri = URI.MasterLog;
+        string suri = URI.ReceiveLog;
         Timer mtimer = new Timer();
         Timer stimer = new Timer();
 

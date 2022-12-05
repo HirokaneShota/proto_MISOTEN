@@ -355,7 +355,7 @@ namespace MISOTEN_APPLICATION.BackProcess
 
             }
             // 数値データ信号 
-            outCuf[0] = (byte)SendNumSigna.MSData[0];
+            outCuf[0] = (byte)SendNumSigna.MSData1[0];
             outCuf[sendNum.Length - 1] = (byte)SendNumSigna.EData[0];
 
             // master送信
