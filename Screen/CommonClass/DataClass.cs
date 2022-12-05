@@ -31,7 +31,7 @@ namespace MISOTEN_APPLICATION.Screen.CommonClass
         // センサー値
         public ReciveData_Sensor RSensor { get; set; }
         // 信号
-        public string RString { get; set; }
+        public string RSignal { get; set; }
         // 受信したかどうか 0:NO受信 1:信号 2:センサー値
         public int RFlog { get; set; } = Flog.RNo;
 
@@ -39,35 +39,19 @@ namespace MISOTEN_APPLICATION.Screen.CommonClass
     /* 受信データ 数値 */
     public struct ReciveData_Sensor
     {
-        public PressureSensor FingPress;      // 指先・圧力センサー
-        public PressureSensor PalmPress;      // 付け根・圧力センサー
-        public ResistorSensor FristResis;     // 第一関節・可変抵抗
-        public ResistorSensor SecondResis;    // 第二関節・可変抵抗
-        public BendSensor FingBend;    // 親指・可変抵抗
+        public SENSOR_VALUE Little;  // 小指
+        public SENSOR_VALUE Ring;    // 薬指
+        public SENSOR_VALUE Middle;  // 中指
+        public SENSOR_VALUE Index;   // 人差し指
+        public SENSOR_VALUE Thumb;   // 親指
     }
 
-    // 圧力センサー
-    public struct PressureSensor
+    public struct SENSOR_VALUE
     {
-        public int Little;  // 小指
-        public int Ring;    // 薬指
-        public int Middle;  // 中指
-        public int Index;   // 人差し指
-        public int Thumb;   // 親指
-    }
-    // 可変抵抗
-    public struct ResistorSensor
-    {
-        public int Little;  // 小指
-        public int Ring;    // 薬指
-        public int Middle;  // 中指
-        public int Index;   // 人差し
-        public int Thumb;   // 親指曲げセンサー
-    }
-    // 曲げセンサー
-    public struct BendSensor
-    {
-        public int Thumb;   // 親指曲げセンサー
+        public float second_ioint;    // 第二関節の曲げセンサor可変抵抗
+        public float third_ioint;    // 第三関節の曲げセンサor可変抵抗
+        public int tip_pressure;    // 指先の圧力センサ
+        public int palm_pressure;    // 手のひらの圧力センサ
     }
 
 

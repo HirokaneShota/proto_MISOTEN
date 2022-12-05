@@ -24,7 +24,7 @@ namespace MISOTEN_APPLICATION.Screen.Operation
     /// </summary>
     public partial class Operation_Page : Page
     {
-        ArgSignal argSignal = new ArgSignal();
+        SignalClass Signalclass = new SignalClass();
         // 排他制御に使用するオブジェクト
         private static Object lockObject = new Object();
 
@@ -41,10 +41,10 @@ namespace MISOTEN_APPLICATION.Screen.Operation
         // 処理終了フラグ
         int EndFlog = Flog.Start;
 
-        public Operation_Page(ArgSignal argsignal)
+        public Operation_Page(SignalClass signalclass)
         {
             InitializeComponent();
-            argSignal = argsignal;
+            Signalclass = signalclass;
         }
 
         void PageLoad(object sender, RoutedEventArgs e)
@@ -68,7 +68,7 @@ namespace MISOTEN_APPLICATION.Screen.Operation
             time.Start();
 
             // マスター:"ss01" 送信 : センシング開始信号
-            argSignal.Msignalclass.SignalSend(argSignal.Masterport, SendSignal.MSensingStart);
+            Signalclass.SignalSend(DeviceId.MasterId, SendSignal.MSensingStart);
             // 処理終了フラグが立つまで
             while (EndFlog != Flog.End)
             {
@@ -77,7 +77,7 @@ namespace MISOTEN_APPLICATION.Screen.Operation
                 // 計測再スタート
                 time.ReStart();
                 // マスター値受信
-                Task<ReciveData> MRtask = Task.Run(() => { return argSignal.Msignalclass.NumReceived(); });
+                Task<ReciveData> MRtask = Task.Run(() => { return Signalclass.GetMReciveData(); });
                 // 受信タスク終了まで待機
                 MReciveData = MRtask.Result;
                 lock (lockObject)
@@ -117,10 +117,10 @@ namespace MISOTEN_APPLICATION.Screen.Operation
             // マスター・スレーブ処理タスク終了
             lock (lockObject) EndFlog = Flog.End;
             // マスター:"sh01" 送信 : センシング停止信号
-            argSignal.Msignalclass.SignalSend(argSignal.Masterport, SendSignal.MSensingStop);
+            Signalclass.SignalSend(DeviceId.MasterId, SendSignal.MSensingStop);
 
             // システム選択画面へ移行
-            var systemselect_page = new SystemSelect_Page(argSignal);
+            var systemselect_page = new SystemSelect_Page(Signalclass);
             NavigationService.Navigate(systemselect_page);
         }
         /* キャリブレーションボタン処理 */
@@ -129,12 +129,12 @@ namespace MISOTEN_APPLICATION.Screen.Operation
             // マスター・スレーブ処理タスク終了
             lock (lockObject) EndFlog = Flog.End;
             // マスター:"sh01" 送信 : センシング停止信号
-            argSignal.Msignalclass.SignalSend(argSignal.Masterport, SendSignal.MSensingStop);
+            Signalclass.SignalSend(DeviceId.MasterId, SendSignal.MSensingStop);
             // マスター:"sr01" 送信 : センシングリセット信号
-            argSignal.Msignalclass.SignalSend(argSignal.Masterport, SendSignal.MSensingReset);
+            Signalclass.SignalSend(DeviceId.MasterId, SendSignal.MSensingReset);
 
             // キャリブレーション準備画面へ移行
-            var calibrationstandby_page = new CalibrationStandby_Page(argSignal);
+            var calibrationstandby_page = new CalibrationStandby_Page(Signalclass);
             NavigationService.Navigate(calibrationstandby_page);
         }
     }

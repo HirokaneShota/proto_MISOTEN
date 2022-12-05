@@ -1,4 +1,5 @@
-﻿using MISOTEN_APPLICATION.Screen.Calibration;
+﻿using MISOTEN_APPLICATION.BackProcess;
+using MISOTEN_APPLICATION.Screen.Calibration;
 using MISOTEN_APPLICATION.Screen.CommonClass;
 using MISOTEN_APPLICATION.Screen.DevelopSystem;
 using MISOTEN_APPLICATION.Screen.SignalConnect;
@@ -26,9 +27,10 @@ namespace MISOTEN_APPLICATION.Screen.SystemSelect
     /// </summary>
     public partial class SystemSelect_Page : Page
     {
-        ArgSignal argSignal = new ArgSignal();
-        public SystemSelect_Page(ArgSignal argsignal)
+        SignalClass Signalclass = new SignalClass();
+        public SystemSelect_Page(SignalClass signalclass)
         {
+            Signalclass = signalclass;
             InitializeComponent();
         }
 
@@ -36,8 +38,8 @@ namespace MISOTEN_APPLICATION.Screen.SystemSelect
         private void ConnectButton_Click(object sender, RoutedEventArgs e)
         {
             // マスター:"se01" 送信 : センシング終了信号
-            argSignal.Msignalclass.SignalSend(argSignal.Masterport, SendSignal.MSensingEnd);
-            ProtCut(argSignal.Masterport);
+            Signalclass.SignalSend(DeviceId.MasterId, SendSignal.MSensingEnd);
+            Signalclass.ProtCut(DeviceId.MasterId);
 
             SignalConnect_Page signalconnect_page = new SignalConnect_Page();
             NavigationService.Navigate(signalconnect_page);
@@ -47,10 +49,10 @@ namespace MISOTEN_APPLICATION.Screen.SystemSelect
         private void CalibrationButton_Click(object sender, RoutedEventArgs e)
         {
             // マスター:"sr01" 送信 : センシングリセット信号
-            argSignal.Msignalclass.SignalSend(argSignal.Masterport, SendSignal.MSensingReset);
+            Signalclass.SignalSend(DeviceId.MasterId, SendSignal.MSensingReset);
 
             // キャリブレーション準備画面へ移行
-            var calibrationstandby_page = new CalibrationStandby_Page(argSignal);
+            var calibrationstandby_page = new CalibrationStandby_Page(Signalclass);
             NavigationService.Navigate(calibrationstandby_page);
         }
 
@@ -58,8 +60,8 @@ namespace MISOTEN_APPLICATION.Screen.SystemSelect
         private void EndButton_Click(object sender, RoutedEventArgs e)
         {
             // マスター:"se01" 送信 : センシング終了信号
-            argSignal.Msignalclass.SignalSend(argSignal.Masterport, SendSignal.MSensingEnd);
-            ProtCut(argSignal.Masterport);
+            Signalclass.SignalSend(DeviceId.MasterId, SendSignal.MSensingEnd);
+            Signalclass.ProtCut(DeviceId.MasterId);
 
             Window.GetWindow(this).Close();
         }
@@ -80,14 +82,6 @@ namespace MISOTEN_APPLICATION.Screen.SystemSelect
             // 子画面を生成します。
             SystemSetting_Window window = new SystemSetting_Window();
             window.ShowDialog();
-        }
-
-        /* Port切断処理 */
-        private void ProtCut(SerialPort serialPort)
-        {
-            if (serialPort.IsOpen == false) return;
-            // ポート切断
-            serialPort.Close();
         }
 
     }

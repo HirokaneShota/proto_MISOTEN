@@ -26,15 +26,15 @@ namespace MISOTEN_APPLICATION.Screen.SignalConnect
     /// </summary>
     public partial class SignalConnectComp_Page : Page
     {
-        public SignalConnectComp_Page(ArgSignal argsignal)
+        public SignalConnectComp_Page(SignalClass signalclass)
         {
             InitializeComponent();
             // 時間計測タスク
-            Task MeasurementTask = Task.Run(() => { Measurement(argsignal); });
+            Task MeasurementTask = Task.Run(() => { Measurement(signalclass); });
         }
 
         /* 時間計測タスク */
-        private void Measurement(ArgSignal argsignal)
+        private void Measurement(SignalClass signalclass)
         {
             var SW = new Stopwatch();
             TimeSpan TS = SW.Elapsed;
@@ -55,7 +55,7 @@ namespace MISOTEN_APPLICATION.Screen.SignalConnect
             Dispatcher.Invoke((Action)(() =>
             {
                 // キャリブレーション準備画面へ
-                var calibrationstandby_page = new CalibrationStandby_Page(argsignal);
+                var calibrationstandby_page = new CalibrationStandby_Page(signalclass);
                 NavigationService.Navigate(calibrationstandby_page);
             }));
         }

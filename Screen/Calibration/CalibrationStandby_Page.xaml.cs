@@ -23,11 +23,11 @@ namespace MISOTEN_APPLICATION.Screen.Calibration
     /// </summary>
     public partial class CalibrationStandby_Page : Page
     {
-        ArgSignal argSignal = new ArgSignal();
-        public CalibrationStandby_Page(ArgSignal argsignal)
+        SignalClass Signalclass = new SignalClass();
+        public CalibrationStandby_Page(SignalClass signalclass)
         {
             InitializeComponent();
-            argSignal = argsignal;
+            Signalclass = signalclass;
 
         }
         void PageLoad(object sender, RoutedEventArgs e)
@@ -38,7 +38,7 @@ namespace MISOTEN_APPLICATION.Screen.Calibration
         private void CalibrationStartButton_Click(object sender, RoutedEventArgs e)
         {
             // マスターキャリブレーション画面へ移行
-            var mastercalibration__page = new MasterCalibration__Page(argSignal);
+            var mastercalibration__page = new MasterCalibration__Page(Signalclass);
             NavigationService.Navigate(mastercalibration__page);
         }
     }

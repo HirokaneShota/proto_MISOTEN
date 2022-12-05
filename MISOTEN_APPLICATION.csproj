@@ -55,6 +55,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="BackProcess\FileClass.cs" />
     <Compile Include="BackProcess\SignalClass.cs" />
     <Compile Include="BackProcess\Timer.cs" />
     <Compile Include="Screen\Calibration\CalibrationStandby_Page.xaml.cs">
