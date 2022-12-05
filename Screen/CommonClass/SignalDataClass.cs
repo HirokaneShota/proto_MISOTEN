@@ -59,6 +59,8 @@ namespace MISOTEN_APPLICATION.Screen.CommonClass
         public const char EData3 = '3';
         // 数値終わり信号 4
         public const char EData4 = '4';
+        // 受信値最終信号
+        public const string End = "z";
     }
 
 }

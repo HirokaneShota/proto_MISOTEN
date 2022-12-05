@@ -24,6 +24,7 @@ namespace MISOTEN_APPLICATION.Screen.CommonClass
     }
 
     // 通信用引数
+    /*
     public class ArgSignal
     {
         // 通信用インスタンスクラス
@@ -31,12 +32,7 @@ namespace MISOTEN_APPLICATION.Screen.CommonClass
 
         public SignalClass Ssignalclass { get; set; }
 
-        // 通信ポート
-        public SerialPort Masterport { get; set; }
-
-        public SerialPort Seceiveprot { get; set; }
-
-    }
+    }*/
 
     class DeviceId
     {
@@ -44,6 +40,11 @@ namespace MISOTEN_APPLICATION.Screen.CommonClass
         public const int MasterId = 0;
         // レシーブID
         public const int ReceiveId = 1;
+    }
+    class ReceiveNum
+    {
+        // 受信最大数 :14byte
+        public const int MaxNum = 14;
     }
 
     class Retrun
@@ -86,6 +87,15 @@ namespace MISOTEN_APPLICATION.Screen.CommonClass
         public const int Start = 1;
         // 処理終了
         public const int End = 2;
+
+        // キャリブレーション : 処理中
+        public const int CalibNone = 99;
+
+        // キャリブレーション : 手を開く
+        public const int CalibOpen = 0;
+
+        // キャリブレーション : 手を閉じる
+        public const int CalibClose = 1;
     }
 
     /* Uri */

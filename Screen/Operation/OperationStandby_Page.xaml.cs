@@ -1,4 +1,5 @@
-﻿using MISOTEN_APPLICATION.Screen.Calibration;
+﻿using MISOTEN_APPLICATION.BackProcess;
+using MISOTEN_APPLICATION.Screen.Calibration;
 using MISOTEN_APPLICATION.Screen.CommonClass;
 using System;
 using System.Collections.Generic;
@@ -22,21 +23,21 @@ namespace MISOTEN_APPLICATION.Screen.Operation
     /// </summary>
     public partial class OperationStandby_Page : Page
     {
-        ArgSignal argSignal = new ArgSignal();
-        public OperationStandby_Page(ArgSignal argsignal)
+        SignalClass Signalclass = new SignalClass();
+        public OperationStandby_Page(SignalClass signalclass)
         {
             InitializeComponent();
-            argSignal = argsignal;
+            Signalclass = signalclass;
         }
-
         void PageLoad(object sender, RoutedEventArgs e)
         {
+
         }
 
         private void StartButton_Click(object sender, RoutedEventArgs e)
         {
             // 稼働ページへ移行
-            var operation_page = new Operation_Page(argSignal);
+            var operation_page = new Operation_Page(Signalclass);
             NavigationService.Navigate(operation_page);
         }
     }
