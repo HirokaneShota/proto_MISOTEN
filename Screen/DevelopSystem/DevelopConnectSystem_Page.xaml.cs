@@ -90,7 +90,6 @@ namespace MISOTEN_APPLICATION.Screen.DevelopSystem
                     // ポートオープン
                     MasterPort.Open();
                     ReceiveText.AppendText("マスター接続開始\n");
-                    File.WriteAllText(@"Log\DevelopMasterLog.txt", "マスター接続開始" + Environment.NewLine);
 
                     // 受信処理
                     MasterPort.DataReceived += new SerialDataReceivedEventHandler(SerialPort_DataReceived);

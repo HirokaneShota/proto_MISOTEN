@@ -17,16 +17,20 @@ namespace MISOTEN_APPLICATION.BackProcess
         private static Object lockObject = new Object();
 
         // マスター受信値
-        static ReciveData MRecive = new ReciveData();
+        static ReciveData MRecive;
+        // センサー受信Flog
+        static Boolean[] MRSFlog = new Boolean[4] { false,false,false,false };
         // スレーブ受信値
-        static ReciveData SRecive = new ReciveData();
-
+        static ReciveData SRecive;
+        // センサー受信Flog
+        static Boolean[] SRSFlog = new Boolean[2] { false, false };
 
         // マスターシリアルポート
         static SerialPort MSerialport;
         // スレーブシリアルポート
         static SerialPort SSerialport;
 
+        static FileClass file = new FileClass();
         /* シリアルポートセッター */
         public void SetSerialport(SerialPort serialport, int id)
         {
@@ -42,6 +46,32 @@ namespace MISOTEN_APPLICATION.BackProcess
                 ReceiveHandler(serialport);
                 SSerialport = serialport;
             }
+        }
+
+        /* 送信データセッター */
+        public void SetSendData(GODS_SENTENCE sendData)
+        {
+            // 一度に送信するデータ
+            int[] SendNum = new int[6];
+            // 送信用データ格納
+            SendNum[0] = sendData.frist_godsentence.tip_pwm;
+            SendNum[1] = sendData.second_godsentence.tip_pwm;
+            SendNum[2] = sendData.third_godsentence.tip_pwm;
+            SendNum[3] = sendData.fourth_godsentence.tip_pwm;
+            SendNum[4] = sendData.fifth_godsentence.tip_pwm;
+            SendNum[5] = 0;
+            // 送信
+            NumSend(DeviceId.ReceiveId, SendNum, SendNumSigna.MSData1[0]);
+            // 送信用データ格納
+            SendNum[0] = sendData.frist_godsentence.palm_pwm;
+            SendNum[1] = sendData.second_godsentence.palm_pwm;
+            SendNum[2] = sendData.third_godsentence.palm_pwm;
+            SendNum[3] = sendData.fourth_godsentence.palm_pwm;
+            SendNum[4] = sendData.fifth_godsentence.palm_pwm;
+            SendNum[5] = 0;
+            // 送信
+            NumSend(DeviceId.ReceiveId, SendNum, SendNumSigna.MSData2[0]);
+
         }
 
         /* Flog初期化 */
@@ -70,7 +100,6 @@ namespace MISOTEN_APPLICATION.BackProcess
             // 受信用ハンドラ
             serialport.DataReceived += new SerialDataReceivedEventHandler(DataNumReceived);
         }
-
         /* ReceivedEventHandler */
         public static void DataNumReceived(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
         {
@@ -94,18 +123,18 @@ namespace MISOTEN_APPLICATION.BackProcess
                     if ((inCuf[0] == ReceveNumSignal.MSData[0]) || (inCuf[0] == ReceveNumSignal.SSData[0]))
                     {
                         // マスター用変数へ格納
-                        if (serialPort.PortName == MSerialport.PortName)
+                        if ((MSerialport != null) && (serialPort.PortName == MSerialport.PortName))
                         {
                             // 取得用変数へ格納
-                            MRecive.RSensor = Storage(invale, data);
+                            Storage(invale, data);
                             // 受信Flog
                             MRecive.RFlog = Flog.RNum;
                         }
                         // スレーブ用変数へ格納
-                        else if (serialPort.PortName == SSerialport.PortName)
+                        else if ((SSerialport != null) && (serialPort.PortName == SSerialport.PortName))
                         {
                             // 取得用変数へ格納
-                            SRecive.RSensor = Storage(invale, data);
+                            Storage(invale, data);
                             // 受信Flog
                             SRecive.RFlog = Flog.RNum;
                         }
@@ -115,7 +144,7 @@ namespace MISOTEN_APPLICATION.BackProcess
                     // 信号
                     {
                         // マスター用変数へ格納
-                        if (serialPort.PortName == MSerialport.PortName)
+                        if ((MSerialport != null) && (serialPort.PortName == MSerialport.PortName))
                         {
                             // 取得用変数へ格納
                             MRecive.RSignal = inCuf;
@@ -123,7 +152,7 @@ namespace MISOTEN_APPLICATION.BackProcess
                             MRecive.RFlog = Flog.RSignal;
                         }
                         // スレーブ用変数へ格納
-                        else if (serialPort.PortName == SSerialport.PortName)
+                        else if ((SSerialport != null) && (serialPort.PortName == SSerialport.PortName))
                         {
                             // 取得用変数へ格納
                             SRecive.RSignal = inCuf;
@@ -139,47 +168,86 @@ namespace MISOTEN_APPLICATION.BackProcess
             }
         }
 
+        /* 受信バッファー削除 */
+        public void ReceiveClearBuffer(int id)
+        {
+            // master削除
+            if (id == DeviceId.MasterId)
+            {
+                // 繋がっているかどうか判断
+                if (MSerialport == null) return;
+                if (MSerialport.IsOpen == false) return;
+                // バッファークリア
+                MSerialport.DiscardInBuffer();
+            }
+            // slave削除
+            else if (id == DeviceId.ReceiveId)
+            {
+                // 繋がっているかどうか判断
+                if (SSerialport == null) return;
+                if (SSerialport.IsOpen == false) return;
+                // バッファークリア
+                SSerialport.DiscardInBuffer();
+
+            }
+        }
+
         /* レシーブ用受信値ゲッター */
         public ReciveData GetSReciveData()
         {
-            // 初期化
-            InitSignal(DeviceId.ReceiveId);
             // 受信するまで　※送受信時間かかれば処理変更
             for (; SRecive.RFlog == Flog.RNo;) ;
-
+            // 初期化
+            InitSignal(DeviceId.ReceiveId);
             return SRecive;
         }
 
         /* マスター用受信値ゲッター */
         public ReciveData GetMReciveData()
         {
-            // 初期化
-            InitSignal(DeviceId.MasterId);
             // 受信するまで　※送受信時間かかれば処理変更
             for (; MRecive.RFlog == Flog.RNo;) ;
-
+            // 初期化
+            InitSignal(DeviceId.MasterId);
             return MRecive;
         }
 
-        /* レシーブ用センサー値ゲッター */
+        /* スレーブ用センサー値ゲッター */
         public ReciveData_Sensor GetSSensor()
         {
+            Timer time = new Timer();
+            double j = 0;
+            time.Start();
+            FileClass file = new FileClass();
+            file.SLog("受信待機");
+            // 受信するまで　※送受信時間かかれば処理変更
+            while (!SRSFlog.All(i => i == true)) ;
+            j = time.MiliElapsed();
+            file.SLog(j.ToString());
+            file.SLog(MRecive.RSensor.Thumb.third_joint.ToString());
             // 初期化
             InitSignal(DeviceId.ReceiveId);
-            // 受信するまで　※送受信時間かかれば処理変更
-            for (; SRecive.RFlog == Flog.RNo;) ;
-
+            Array.Clear(SRSFlog, 0, 2);
             return SRecive.RSensor;
         }
 
         /* マスター用センサー値ゲッター */
         public ReciveData_Sensor GetMSensor()
         {
+            Timer time = new Timer();
+            double j = 0;
+            time.Start();
+            FileClass file = new FileClass();
+            file.MLog("受信待機");
+            // 受信するまで　※送受信時間かかれば処理変更
+            while (!MRSFlog.All(i => i == true)) ;
+            j = time.MiliElapsed();
+            file.MLog(j.ToString());
+            file.MLog(MRecive.RSensor.Thumb.third_joint.ToString());
+
             // 初期化
             InitSignal(DeviceId.MasterId);
-            // 受信するまで　※送受信時間かかれば処理変更
-            for (; MRecive.RFlog == Flog.RNo;) ;
-
+            Array.Clear(MRSFlog, 0, 4);
             return MRecive.RSensor;
         }
 
@@ -193,7 +261,7 @@ namespace MISOTEN_APPLICATION.BackProcess
             // 受信byte数
             int num = 0;
 
-            for (num = 0; ; num++)
+            for (num = 0; serialPort.BytesToRead != 0; num++)
             {
                 // 1byteずつ格納
                 // end文字なら抜ける
@@ -233,9 +301,8 @@ namespace MISOTEN_APPLICATION.BackProcess
             }
         }
         /* 受信値変数格納 */
-        private static ReciveData_Sensor Storage(Int32 invale, byte[] data)
+        private static void Storage(Int32 invale, byte[] data)
         {
-
             // 数値格納変数
             ushort[] shortData = ByteNum(invale, data);
 
@@ -245,68 +312,117 @@ namespace MISOTEN_APPLICATION.BackProcess
             startData[0] = data[0];
             endData[0] = data[invale - 1];
 
-            // 数値格納変数
-            ReciveData_Sensor sensorVale = new ReciveData_Sensor();
-
-
-            switch (Encoding.ASCII.GetString(endData)[0])
+            // マスター値処理
+            if (Encoding.ASCII.GetString(startData)[0] == ReceveNumSignal.MSData[0])
             {
-                // 圧力センサー*6(指先(小指+薬指+中指+人差し指+親指)+付け根(小指))
-                case ReceveNumSignal.EData1:
-                    // 小指・指先
-                    sensorVale.Little.tip_pressure = (int)shortData[0];
-                    // 薬指・指先
-                    sensorVale.Ring.tip_pressure = (int)shortData[1];
-                    // 中指・指先
-                    sensorVale.Middle.tip_pressure = (int)shortData[2];
-                    // 人差し指・指先
-                    sensorVale.Index.tip_pressure = (int)shortData[3];
-                    // 親指・指先
-                    sensorVale.Thumb.tip_pressure = (int)shortData[4];
-                    // 小指・付け根
-                    sensorVale.Little.palm_pressure = (int)shortData[5];
-                    break;
-                // 圧力センサー*4(付け根(薬指+中指+人差し指+親指))+可変抵抗*2(第一関節(小指+薬指))
-                case ReceveNumSignal.EData2:
-                    // 薬指・付け根
-                    sensorVale.Ring.palm_pressure = (int)shortData[0];
-                    // 中指・付け根
-                    sensorVale.Middle.palm_pressure = (int)shortData[1];
-                    // 人差し指・付け根
-                    sensorVale.Index.palm_pressure = (int)shortData[2];
-                    // 親指・付け根
-                    sensorVale.Thumb.palm_pressure = (int)shortData[3];
-                    // 小指・第二関節
-                    sensorVale.Little.second_ioint = (int)shortData[4];
-                    // 薬指・第二関節
-                    sensorVale.Ring.second_ioint = (int)shortData[5];
+                switch (Encoding.ASCII.GetString(endData)[0])
+                {
+                    // 圧力センサー*6(指先(小指+薬指+中指+人差し指+親指)+付け根(小指))
+                    case ReceveNumSignal.EData1:
+                        // 小指・指先
+                        MRecive.RSensor.Little.tip_pressure = (int)shortData[0];
+                        // 薬指・指先
+                        MRecive.RSensor.Ring.tip_pressure = (int)shortData[1];
+                        // 中指・指先
+                        MRecive.RSensor.Middle.tip_pressure = (int)shortData[2];
+                        // 人差し指・指先
+                        MRecive.RSensor.Index.tip_pressure = (int)shortData[3];
+                        // 親指・指先
+                        MRecive.RSensor.Thumb.tip_pressure = (int)shortData[4];
+                        // 小指・付け根
+                        MRecive.RSensor.Little.palm_pressure = (int)shortData[5];
 
-                    break;
-                // 可変抵抗*6(第一関節(中指+人差し指+親指)+第二関節(小指+薬指+中指))
-                case ReceveNumSignal.EData3:
-                    // 中指・第二関節
-                    sensorVale.Middle.second_ioint = (int)shortData[0];
-                    // 人差し指・第二関節
-                    sensorVale.Index.second_ioint = (int)shortData[1];
-                    // 親指・第二関節
-                    sensorVale.Thumb.third_ioint = (int)shortData[2];
-                    // 小指・第三関節
-                    sensorVale.Little.third_ioint = (int)shortData[3];
-                    // 薬指・第三関節
-                    sensorVale.Ring.third_ioint = (int)shortData[4];
-                    // 中指・第三関節
-                    sensorVale.Middle.third_ioint = (int)shortData[5];
-                    break;
-                // 可変抵抗*1(人差し指)+エンプティ*1(親指関節)+曲げセンサー*4
-                case ReceveNumSignal.EData4:
-                    //人差し指・第三関節
-                    sensorVale.Index.third_ioint = (int)shortData[0];
-                    // 親指・曲げセンサー
-                    sensorVale.Thumb.third_ioint = (int)shortData[1];
-                    break;
+                        MRSFlog[0] = true;
+
+                        break;
+                    // 圧力センサー*4(付け根(薬指+中指+人差し指+親指))+可変抵抗*2(第一関節(小指+薬指))
+                    case ReceveNumSignal.EData2:
+                        // 薬指・付け根
+                        MRecive.RSensor.Ring.palm_pressure = (int)shortData[0];
+                        // 中指・付け根
+                        MRecive.RSensor.Middle.palm_pressure = (int)shortData[1];
+                        // 人差し指・付け根
+                        MRecive.RSensor.Index.palm_pressure = (int)shortData[2];
+                        // 親指・付け根
+                        MRecive.RSensor.Thumb.palm_pressure = (int)shortData[3];
+                        // 小指・第二関節
+                        MRecive.RSensor.Little.second_joint = (int)shortData[4];
+                        // 薬指・第二関節
+                        MRecive.RSensor.Ring.second_joint = (int)shortData[5];
+
+                        MRSFlog[1] = true;
+                        break;
+                    // 可変抵抗*6(第一関節(中指+人差し指+親指)+第二関節(小指+薬指+中指))
+                    case ReceveNumSignal.EData3:
+                        // 中指・第二関節
+                        MRecive.RSensor.Middle.second_joint = (int)shortData[0];
+                        // 人差し指・第二関節
+                        MRecive.RSensor.Index.second_joint = (int)shortData[1];
+                        // 親指・第二関節
+                        MRecive.RSensor.Thumb.second_joint = (int)shortData[2];
+                        // 小指・第三関節
+                        MRecive.RSensor.Little.third_joint = (int)shortData[3];
+                        // 薬指・第三関節
+                        MRecive.RSensor.Ring.third_joint = (int)shortData[4];
+                        // 中指・第三関節
+                        MRecive.RSensor.Middle.third_joint = (int)shortData[5];
+
+                        MRSFlog[2] = true;
+                        break;
+                    // 可変抵抗*1(人差し指)+エンプティ*1(親指関節)+曲げセンサー*4
+                    case ReceveNumSignal.EData4:
+                        //人差し指・第三関節
+                        MRecive.RSensor.Index.third_joint = (int)shortData[0];
+                        // 親指・曲げセンサー
+                        MRecive.RSensor.Thumb.third_joint = (int)shortData[1];
+
+                        MRSFlog[3] = true;
+                        break;
+                }
+                // file書き込み
+                //file.MLog(Array.ConvertAll(shortData, x => x.ToString()));
+            }
+            // スレーブ値処理
+            else if (Encoding.ASCII.GetString(startData)[0] == ReceveNumSignal.SSData[0])
+            {
+                //スレーブのセンサー値格納処理
+                switch (Encoding.ASCII.GetString(endData)[0])
+                {
+                    // 可変抵抗*6(第一関節(小指+薬指+中指+人差し指+親指))+第二関節(小指))
+
+                    case ReceveNumSignal.EData1:
+                        // 小指・第二関節
+                        SRecive.RSensor.Little.second_joint = (int)shortData[0];
+                        // 薬指・第二関節
+                        SRecive.RSensor.Ring.second_joint = (int)shortData[1];
+                        // 中指・第二関節
+                        SRecive.RSensor.Middle.second_joint = (int)shortData[2];
+                        // 人差し指・第二関節
+                        SRecive.RSensor.Index.second_joint = (int)shortData[3];
+                        // 親指・第二関節
+                        SRecive.RSensor.Thumb.third_joint = (int)shortData[4];
+                        // 小指・第三関節
+                        SRecive.RSensor.Little.third_joint = (int)shortData[5];
+                        SRSFlog[0] = true;
+                        break;
+                    // 可変抵抗*3(第二関節(薬指+中指+人差し指))+曲げセンサー*1(親指関節)+エンプティ*2
+                    case ReceveNumSignal.EData2:
+
+                        // 薬指・第三関節
+                        SRecive.RSensor.Ring.third_joint = (int)shortData[0];
+                        // 中指・第三関節
+                        SRecive.RSensor.Middle.third_joint = (int)shortData[1];
+                        //人差し指・第三関節
+                        SRecive.RSensor.Index.third_joint = (int)shortData[2];
+                        // 親指・曲げセンサー
+                        SRecive.RSensor.Thumb.third_joint = (int)shortData[3];
+                        SRSFlog[1] = true;
+                        break;
+                }
+                // file書き込み
+                //file.SLog(Array.ConvertAll(shortData, x => x.ToString()));
             }
 
-            return sensorVale;
         }
 
         /* 信号送信用関数 */
@@ -341,37 +457,35 @@ namespace MISOTEN_APPLICATION.BackProcess
         }
 
         /* 数値送信用関数 */
-        public void NumSend(int id, int[] sendNum)
+        public void NumSend(int id, int[] sendNum, char frist_data)
         {
-            // byte型送信用変数宣言 :+ 2='s'&'e'
-            byte[] outCuf = new byte[sendNum.Length + 2];
+            // byte型送信用変数宣言     送信数字数 *　1数字を2byte
+            byte[] outCuf = new byte[(sendNum.Length * 2) + 2];
 
             // 送信データ"1byte"ずつ格納
-            for (int sendcount = 1; sendcount < sendNum.Length - 2; sendcount = +2)
+            for (int sendcount = 0, num = 1; sendcount < sendNum.Length; sendcount += 1, num += 2)
             {
                 // 数値格納
-                outCuf[sendcount] = (byte)(sendNum[sendcount] >> 8);
-                outCuf[sendcount + 1] = (byte)(sendNum[sendcount] & 0xFF);
-
+                outCuf[num] = (byte)(sendNum[sendcount] >> 8);
+                outCuf[num + 1] = (byte)(sendNum[sendcount] & 0xFF);
             }
-            // 数値データ信号 
-            outCuf[0] = (byte)SendNumSigna.MSData1[0];
-            outCuf[sendNum.Length - 1] = (byte)SendNumSigna.EData[0];
+            // 数値データ信号 SendNumSigna.MSData1[0]
+            outCuf[0] = (byte)frist_data;
+            outCuf[outCuf.Length - 1] = (byte)SendNumSigna.EData[0];
 
             // master送信
             if (id == DeviceId.MasterId)
             {
                 // 送信
-                MSerialport.Write(outCuf, 0, sendNum.Length + 2);
+                MSerialport.Write(outCuf, 0, outCuf.Length);
             }
             // slave送信
             else if (id == DeviceId.ReceiveId)
             {
                 // 送信
-                SSerialport.Write(outCuf, 0, sendNum.Length + 2);
+                SSerialport.Write(outCuf, 0, outCuf.Length);
             }
         }
-
 
         /* Port切断処理 */
         public void ProtCut(int id)

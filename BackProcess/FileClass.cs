@@ -14,6 +14,14 @@ namespace MISOTEN_APPLICATION.BackProcess
         string suri = URI.ReceiveLog;
         Timer mtimer = new Timer();
         Timer stimer = new Timer();
+        /* コンストラクタ */
+        public FileClass()
+        {
+            if (!Directory.Exists(URI.LogFolder))
+            {
+                Directory.CreateDirectory(URI.LogFolder);
+            }
+        }
 
         /* ファイル生成＆開始文字(master) */
         public void MFirst()
@@ -33,24 +41,31 @@ namespace MISOTEN_APPLICATION.BackProcess
         {
             // 現在時刻を取得
             DateTime time = DateTime.Now;
-            File.AppendAllText(@muri, time.ToString("tthh:mm:ss:fff") + " : ");
+            string Letter = "";
             for (int i = 0; i< letter.Length; i++)
             {
-                File.AppendAllText(@muri, letter[i] );
+                Letter = Letter + letter[i];
+                if (i != letter.Length - 1)
+                {
+                    Letter = Letter + ",";
+                }
             }
-            File.AppendAllText(@muri, Environment.NewLine);
+            File.AppendAllText(@muri, time.ToString("hh:mm:ss:fff") + " : " + Letter +  Environment.NewLine);
         }
         /* 年月日曜日時分秒ミリ秒+出力値 表示(slave) */
         public void SLog(params string[] letter)
         {
             // 現在時刻を取得
             DateTime time = DateTime.Now;
-            File.AppendAllText(@suri, time.ToString("tthh:mm:ss:fff") + " : ");
+            string Letter = "";
             for (int i = 0; i < letter.Length; i++)
             {
-                File.AppendAllText(@suri, letter[i] );
+                Letter = Letter + letter[i];
+                if (i != letter.Length - 1) {
+                    Letter = Letter + ",";
+                }
             }
-            File.AppendAllText(@suri, Environment.NewLine);
+            File.AppendAllText(@suri, time.ToString("hh:mm:ss:fff") + " : " + Letter + Environment.NewLine);
         }
 
         //
@@ -72,7 +87,7 @@ namespace MISOTEN_APPLICATION.BackProcess
         public void MTimeWrite_ms(string letter)
         {
             // master
-            File.AppendAllText(@muri, mtimer.MiliElapsed() + "ms :" + letter + Environment.NewLine);
+            File.AppendAllText(@muri, mtimer.MiliElapsed() + "" + letter + Environment.NewLine);//ms :
         }
         /* 計測時間＆文字書き込み(us)(master) */
         public void MTimeWrite_us(string letter)
@@ -97,7 +112,7 @@ namespace MISOTEN_APPLICATION.BackProcess
         public void STimeWrite_ms(string letter)
         {
             // master
-            File.AppendAllText(@suri, stimer.MiliElapsed() + "ms :" + letter + Environment.NewLine);
+            File.AppendAllText(@suri, stimer.MiliElapsed() + "" + letter + Environment.NewLine);//ms :
         }
         /* 計測時間＆文字書き込み(us)(slave) */
         public void STimeWrite_us(string letter)

@@ -133,7 +133,11 @@ namespace MISOTEN_APPLICATION.Screen.SystemSetting
             string jsonStr = JsonSerializer.Serialize(JsonList);
             //string jsonStr = JsonConvert.SerializeObject(JsonList, Formatting.Indented);
 
-            File.WriteAllText(@"Json\SerialPort.json", jsonStr);
+            if (!Directory.Exists(URI.Json))
+            {
+                Directory.CreateDirectory(URI.Json);
+            }
+            File.WriteAllText(@URI.ComJson, jsonStr);
             Owner.Close();
         }
     }

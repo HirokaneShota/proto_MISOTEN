@@ -37,9 +37,9 @@ namespace MISOTEN_APPLICATION.Screen.Calibration
 
         private void CalibrationStartButton_Click(object sender, RoutedEventArgs e)
         {
-            // マスターキャリブレーション画面へ移行
-            var mastercalibration__page = new MasterCalibration__Page(Signalclass);
-            NavigationService.Navigate(mastercalibration__page);
+            // キャリブレーション画面へ移行
+            var calibration_page = new Calibration_Page(Signalclass);
+            NavigationService.Navigate(calibration_page);
         }
     }
 }

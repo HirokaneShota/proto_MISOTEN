@@ -23,17 +23,6 @@ namespace MISOTEN_APPLICATION.Screen.CommonClass
         public int writeTimeout { get; set; } = 100000;
     }
 
-    // 通信用引数
-    /*
-    public class ArgSignal
-    {
-        // 通信用インスタンスクラス
-        public SignalClass Msignalclass { get; set; }
-
-        public SignalClass Ssignalclass { get; set; }
-
-    }*/
-
     class DeviceId
     {
         // マスターID
@@ -91,6 +80,9 @@ namespace MISOTEN_APPLICATION.Screen.CommonClass
         // キャリブレーション : 処理中
         public const int CalibNone = 99;
 
+        // キャリブレーション : 処理中
+        public const int CalibPush = 2;
+
         // キャリブレーション : 手を開く
         public const int CalibOpen = 0;
 
@@ -103,10 +95,15 @@ namespace MISOTEN_APPLICATION.Screen.CommonClass
     {
         // COMデータJSON
         public const string ComJson = "Json\\SerialPort.json";
+        // JSONフォルダ
+        public const string Json = "Json\\";
         // マスター用LogFile
         public const string MasterLog = "Log\\MasterLog.txt";
         // マスター用LogFile
         public const string ReceiveLog = "Log\\ReceiveLog.txt";
+        // LogFolder
+        public const string LogFolder = "Log\\";
+
         // ロゴ画像
         public const string LogoImage = "../../image/ROGO.png";
     }

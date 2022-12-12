@@ -24,6 +24,7 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Label Grid.Column="1" Content="接続中..." HorizontalAlignment="Center" Grid.Row="3" VerticalAlignment="Top" FontSize="48" Margin="0,25,0,0" FontWeight="Bold"/>
+        <Label Grid.Column="1" Content="" HorizontalAlignment="Center" Grid.Row="3" VerticalAlignment="Top" FontSize="48" Margin="0,25,0,0" FontWeight="Bold"/>
+        <Label Name="Execution" Content="" Grid.Row="3" HorizontalContentAlignment="Center" FontSize="19" Margin="0,25,0,20" FontWeight="Bold" Grid.ColumnSpan="3"/>
     </Grid>
 </Page>
