@@ -39,11 +39,9 @@ namespace MISOTEN_APPLICATION.Screen.Operation
 
         void PageLoad(object sender, RoutedEventArgs e)
         {
-            // マスター値受信タスク
+            // 送信タスク
             Task ReceveTask = Task.Run(() => { Receve(); });
 
-            // 稼働処理タスク
-            Task PlayingTask = Task.Run(() => { Playing(); });
         }
 
         /* マスター値受信処理 */
@@ -53,6 +51,12 @@ namespace MISOTEN_APPLICATION.Screen.Operation
             Signalclass.SignalSend(DeviceId.MasterId, SendSignal.MSensingStart);
             // スレーブ:"ss02" 送信 : センシング開始信号
             Signalclass.SignalSend(DeviceId.ReceiveId, SendSignal.SSensingStart);
+
+            // 稼働処理タスク
+            Task<int> PlayingTask = Task.Run(() => { return Playing(Signalclass); });
+            int i = 0;
+            i = PlayingTask.Result;
+
             // 処理終了フラグが立つまで
             while (EndFlog != Flog.End);
 
@@ -64,9 +68,18 @@ namespace MISOTEN_APPLICATION.Screen.Operation
         }
 
         /* 稼働時処理 */
-        private void Playing()
+        private int Playing(SignalClass signalclass)
         {
+            GodHand godhand = new GodHand();
 
+            var reslt = godhand.Threshold_monitoring(signalclass);
+
+            while (EndFlog != Flog.End)
+            {
+                var Reslt = godhand.run(signalclass);
+            };
+
+            return 0;
         }
 
         /* 終了ボタン処理 */

@@ -139,5 +139,13 @@ namespace MISOTEN_APPLICATION.BackProcess
             return god_sentence;
         }
 
+        public GOD_SENTENCE human_converter(SENSOR_VALUE finger)
+        {
+            GOD_SENTENCE god_sentence = new GOD_SENTENCE();
+            god_sentence.tip_pwm = (int)Math.Round(((double)finger.tip_pressure/1024.0f)*255.0);
+            god_sentence.palm_pwm = 500 + (int)Math.Round((((double)finger.palm_pressure)/1024.0f)*2000.0);
+            return god_sentence;
+        }
+
     }
 }

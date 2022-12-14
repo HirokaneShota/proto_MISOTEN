@@ -12,6 +12,13 @@ namespace MISOTEN_APPLICATION.BackProcess
     {
         string muri = URI.MasterLog;
         string suri = URI.ReceiveLog;
+
+        string dmuri = URI.DMasterLog;
+        string dsuri = URI.DReceiveLog;
+
+        string dmuri_csv = URI.DMasterLog_csv;
+        string dsuri_csv = URI.DReceiveLog_csv;
+
         Timer mtimer = new Timer();
         Timer stimer = new Timer();
         /* コンストラクタ */
@@ -24,15 +31,32 @@ namespace MISOTEN_APPLICATION.BackProcess
         }
 
         /* ファイル生成＆開始文字(master) */
-        public void MFirst()
-        {
-            File.WriteAllText(@muri, "マスター接続開始" + Environment.NewLine);
-        }
+        public void MFirst() => File.WriteAllText(@muri, "マスター接続開始" + Environment.NewLine);
         /* ファイル生成＆開始文字(slave) */
-        public void SFirst()
+        public void SFirst() => File.WriteAllText(@suri, "スレーブ接続開始" + Environment.NewLine);
+        /* ファイル生成＆開始文字(master)(開発者用) */
+        public void DMFirst() => File.WriteAllText(@dmuri, "マスター接続開始" + Environment.NewLine);
+        /* ファイル生成＆開始文字(slave)(開発者用) */
+        public void DSFirst() => File.WriteAllText(@dsuri, "スレーブ接続開始" + Environment.NewLine);
+
+        /* CSVファイル */
+        /* ファイル生成＆開始文字(master)(開発者用) */
+        public void DMFirst_csv()
         {
-            File.WriteAllText(@suri, "スレーブ接続開始" + Environment.NewLine);
+            // 現在時刻を取得
+            //DateTime time = DateTime.Now;
+            //dmuri_csv = URI.DMasterLog_csv + "_" + time.ToString("MM:dd:hh:mm");
+            File.Create(dmuri_csv);
         }
+        /* ファイル生成＆開始文字(slave)(開発者用) */
+        public void DSFirst_csv()
+        {
+            // 現在時刻を取得
+            //DateTime time = DateTime.Now;
+            //dsuri_csv = URI.DReceiveLog_csv + "_" + time.ToString("MM:dd:hh:mm");
+            File.Create(dsuri_csv);
+        }
+
         //
         // 現在時間表示
         //
@@ -41,15 +65,7 @@ namespace MISOTEN_APPLICATION.BackProcess
         {
             // 現在時刻を取得
             DateTime time = DateTime.Now;
-            string Letter = "";
-            for (int i = 0; i< letter.Length; i++)
-            {
-                Letter = Letter + letter[i];
-                if (i != letter.Length - 1)
-                {
-                    Letter = Letter + ",";
-                }
-            }
+            string Letter = Aggregation_string(letter);
             File.AppendAllText(@muri, time.ToString("hh:mm:ss:fff") + " : " + Letter +  Environment.NewLine);
         }
         /* 年月日曜日時分秒ミリ秒+出力値 表示(slave) */
@@ -57,16 +73,126 @@ namespace MISOTEN_APPLICATION.BackProcess
         {
             // 現在時刻を取得
             DateTime time = DateTime.Now;
+            string Letter = Aggregation_string(letter);
+            File.AppendAllText(@suri, time.ToString("hh:mm:ss:fff") + " : " + Letter + Environment.NewLine);
+        }
+
+        //
+        // 現在時間表示 (開発者用)
+        //
+        /* 年月日曜日時分秒ミリ秒+出力値 表示(master) */
+        public void MDLog(params string[] letter)
+        {
+            // 現在時刻を取得
+            DateTime time = DateTime.Now;
+            string Letter = Aggregation_string(letter);
+            File.AppendAllText(@dmuri, time.ToString("hh:mm:ss:fff") + " : " + Letter + Environment.NewLine);
+        }
+        /* 年月日曜日時分秒ミリ秒+出力値 表示(slave) */
+        public void SDLog(params string[] letter)
+        {
+            // 現在時刻を取得
+            DateTime time = DateTime.Now;
+            string Letter = Aggregation_string(letter);
+            File.AppendAllText(@dsuri, time.ToString("hh:mm:ss:fff") + " : " + Letter + Environment.NewLine);
+        }
+
+        /* 複数のstringを一つのstringへ */
+        private string Aggregation_string(params string[] letter)
+        {
             string Letter = "";
             for (int i = 0; i < letter.Length; i++)
             {
                 Letter = Letter + letter[i];
-                if (i != letter.Length - 1) {
+                if (i != letter.Length - 1)
+                {
                     Letter = Letter + ",";
                 }
             }
-            File.AppendAllText(@suri, time.ToString("hh:mm:ss:fff") + " : " + Letter + Environment.NewLine);
+            return Letter;
         }
+
+        //
+        // 現在時間表示 (開発者用　数値のみ　csvファイル)
+        //
+        /* 年月日曜日時分秒ミリ秒+出力値 表示(master) */
+        public void MDLog_csv(ReciveData_Sensor sensor)
+        {
+            // 現在時刻を取得
+            DateTime time = DateTime.Now;
+            string Letter = Aggregation_num(sensor);
+            File.AppendAllText(@dmuri_csv, time.ToString("hh:mm:ss:fff") + "," + Letter + Environment.NewLine);
+        }
+        /* 年月日曜日時分秒ミリ秒+出力値 表示(slave) */
+        public void SDLog_csv(ReciveData_Sensor sensor)
+        {
+            // 現在時刻を取得
+            DateTime time = DateTime.Now;
+            string Letter = Aggregation_num(sensor);
+            File.AppendAllText(@dsuri_csv, time.ToString("hh:mm:ss:fff") + "," + Letter + Environment.NewLine);
+        }
+
+        private string Aggregation_num(ReciveData_Sensor sensor)
+        {
+            string Letter = "";
+
+            // **** 小指 *****
+            //指先 圧力
+            Letter +=  sensor.Little.tip_pressure.ToString() + ",";
+            //　第二関節　抵抗
+            Letter += sensor.Little.second_joint.ToString() + ",";
+            //　第三関節 抵抗
+            Letter += sensor.Little.third_joint.ToString() + "," + null + " ,";
+
+            // **** 薬指 *****
+            //　指先 圧力
+            Letter += sensor.Ring.tip_pressure.ToString() + ",";
+            //　第二関節　抵抗
+            Letter += sensor.Ring.second_joint.ToString() + ",";
+            //　第三関節 抵抗
+            Letter += sensor.Ring.third_joint.ToString() + "," + null + " ,";
+
+            // **** 中指 *****
+            //　指先 圧力
+            Letter += sensor.Middle.tip_pressure.ToString() + ",";
+            //　第二関節　抵抗
+            Letter += sensor.Middle.second_joint.ToString() + ",";
+            //　第三関節 抵抗
+            Letter += sensor.Middle.third_joint.ToString() + "," + null + " ,";
+            
+            // **** 人差し指 *****
+            //　指先 圧力
+            Letter += sensor.Index.tip_pressure.ToString() + ",";
+            //　第二関節　抵抗
+            Letter += sensor.Index.second_joint.ToString() + ",";
+            //　第三関節 抵抗
+            Letter += sensor.Index.third_joint.ToString() + "," + null +" ,";
+
+            // **** 親指 *****
+            //　指先 圧力
+            Letter += sensor.Thumb.tip_pressure.ToString() + ",";
+            //　第二関節　抵抗
+            Letter += sensor.Thumb.second_joint.ToString() + ",";
+            //　第三関節 抵抗
+            Letter += sensor.Thumb.third_joint.ToString() + "," + null+",";
+
+            // **** 手のひら　圧力 *****
+            //　小指
+            Letter += sensor.Little.palm_pressure.ToString() + ",";
+            //　薬指
+            Letter += sensor.Ring.palm_pressure.ToString() + ",";
+            //　中指
+            Letter += sensor.Middle.palm_pressure.ToString() + ",";
+            //　人差し指
+            Letter += sensor.Index.palm_pressure.ToString() + ",";
+            //　親指
+            Letter += sensor.Thumb.palm_pressure.ToString();
+
+            return Letter;
+        }
+
+
+
 
         //
         // 計測時間のみ表示

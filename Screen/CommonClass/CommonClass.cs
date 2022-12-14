@@ -99,10 +99,19 @@ namespace MISOTEN_APPLICATION.Screen.CommonClass
         public const string Json = "Json\\";
         // マスター用LogFile
         public const string MasterLog = "Log\\MasterLog.txt";
-        // マスター用LogFile
+        // スレーブ用LogFile
         public const string ReceiveLog = "Log\\ReceiveLog.txt";
         // LogFolder
         public const string LogFolder = "Log\\";
+        // マスター用LogFile(開発者用)
+        public const string DMasterLog = "Log\\DevelopMasterLog.txt";
+        // スレーブ用LogFile(開発者用)
+        public const string DReceiveLog = "Log\\DevelopReceiveLog.txt";
+        // マスター用LogFile.csv(開発者用)
+        public const string DMasterLog_csv = "Log\\DevelopMasterLog.csv";
+        // スレーブ用LogFile.csv(開発者用)
+        public const string DReceiveLog_csv = "Log\\DevelopReceiveLog.csv";
+
 
         // ロゴ画像
         public const string LogoImage = "../../image/ROGO.png";

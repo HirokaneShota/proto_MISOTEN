@@ -73,6 +73,21 @@ namespace MISOTEN_APPLICATION.BackProcess
             NumSend(DeviceId.ReceiveId, SendNum, SendNumSigna.MSData2[0]);
 
         }
+        /* 送信データ(モーター値)セッター */
+        public void SetSendMotor(GODS_SENTENCE sendData)
+        {
+            // 一度に送信するデータ
+            int[] SendNum = new int[6];
+            // 送信用データ格納
+            SendNum[0] = sendData.frist_godsentence.palm_pwm;
+            SendNum[1] = sendData.second_godsentence.palm_pwm;
+            SendNum[2] = sendData.third_godsentence.palm_pwm;
+            SendNum[3] = sendData.fourth_godsentence.palm_pwm;
+            SendNum[4] = sendData.fifth_godsentence.palm_pwm;
+            SendNum[5] = 0;
+            // 送信
+            NumSend(DeviceId.ReceiveId, SendNum, SendNumSigna.MSData2[0]);
+        }
 
         /* Flog初期化 */
         public void InitSignal(int id)
@@ -119,6 +134,11 @@ namespace MISOTEN_APPLICATION.BackProcess
                     string inCuf = Encoding.ASCII.GetString(data);
                     // 読み込んだデータ数(byte)
                     Int32 invale = inCuf.Length;
+
+                    //FileClass file = new FileClass();
+                    //string start = Encoding.ASCII.GetString(data)[0] + "," +Encoding.ASCII.GetString(data)[invale - 1];
+                    //file.SLog(start);
+
                     // センサー値
                     if ((inCuf[0] == ReceveNumSignal.MSData[0]) || (inCuf[0] == ReceveNumSignal.SSData[0]))
                     {
@@ -165,6 +185,7 @@ namespace MISOTEN_APPLICATION.BackProcess
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.StackTrace);
             }
         }
 
@@ -196,20 +217,20 @@ namespace MISOTEN_APPLICATION.BackProcess
         public ReciveData GetSReciveData()
         {
             // 受信するまで　※送受信時間かかれば処理変更
-            for (; SRecive.RFlog == Flog.RNo;) ;
-            // 初期化
+            while ((!SRSFlog.All(i => i == true))&&(SRecive.RFlog != Flog.RSignal)&& (MSerialport.IsOpen == true)) ;
+            ReciveData SendData = SRecive;
             InitSignal(DeviceId.ReceiveId);
-            return SRecive;
+            return SendData;
         }
 
         /* マスター用受信値ゲッター */
         public ReciveData GetMReciveData()
         {
             // 受信するまで　※送受信時間かかれば処理変更
-            for (; MRecive.RFlog == Flog.RNo;) ;
-            // 初期化
+            while ((!MRSFlog.All(i => i == true)) && (MRecive.RFlog != Flog.RSignal)) ;
+            ReciveData SendData = MRecive;
             InitSignal(DeviceId.MasterId);
-            return MRecive;
+            return SendData;
         }
 
         /* スレーブ用センサー値ゲッター */
@@ -243,12 +264,15 @@ namespace MISOTEN_APPLICATION.BackProcess
             while (!MRSFlog.All(i => i == true)) ;
             j = time.MiliElapsed();
             file.MLog(j.ToString());
-            file.MLog(MRecive.RSensor.Thumb.third_joint.ToString());
+            lock (lockObject)
+            {
+                file.MLog(MRecive.RSensor.Little.tip_pressure.ToString(), MRecive.RSensor.Ring.tip_pressure.ToString(), MRecive.RSensor.Middle.tip_pressure.ToString(), MRecive.RSensor.Index.tip_pressure.ToString());
 
-            // 初期化
-            InitSignal(DeviceId.MasterId);
-            Array.Clear(MRSFlog, 0, 4);
-            return MRecive.RSensor;
+                // 初期化
+                InitSignal(DeviceId.MasterId);
+                Array.Clear(MRSFlog, 0, 4);
+                return MRecive.RSensor;
+            }
         }
 
          /* 受信用関数 */
@@ -261,7 +285,7 @@ namespace MISOTEN_APPLICATION.BackProcess
             // 受信byte数
             int num = 0;
 
-            for (num = 0; serialPort.BytesToRead != 0; num++)
+            for (num = 0; ; num++) // serialPort.BytesToRead != 0
             {
                 // 1byteずつ格納
                 // end文字なら抜ける
@@ -279,6 +303,12 @@ namespace MISOTEN_APPLICATION.BackProcess
         {
             lock (lockObject)
             {
+                // 数値格納変数
+                ushort[] vale111 = new ushort[(14 / 2) - 1];
+
+                // ***********応急処置*******************************************
+                if (invale != 14) return vale111;
+
                 // 数値格納変数
                 ushort[] vale = new ushort[(invale / 2) - 1];
 
@@ -312,117 +342,119 @@ namespace MISOTEN_APPLICATION.BackProcess
             startData[0] = data[0];
             endData[0] = data[invale - 1];
 
-            // マスター値処理
-            if (Encoding.ASCII.GetString(startData)[0] == ReceveNumSignal.MSData[0])
+            lock (lockObject)
             {
-                switch (Encoding.ASCII.GetString(endData)[0])
+                // マスター値処理
+                if (Encoding.ASCII.GetString(startData)[0] == ReceveNumSignal.MSData[0])
                 {
-                    // 圧力センサー*6(指先(小指+薬指+中指+人差し指+親指)+付け根(小指))
-                    case ReceveNumSignal.EData1:
-                        // 小指・指先
-                        MRecive.RSensor.Little.tip_pressure = (int)shortData[0];
-                        // 薬指・指先
-                        MRecive.RSensor.Ring.tip_pressure = (int)shortData[1];
-                        // 中指・指先
-                        MRecive.RSensor.Middle.tip_pressure = (int)shortData[2];
-                        // 人差し指・指先
-                        MRecive.RSensor.Index.tip_pressure = (int)shortData[3];
-                        // 親指・指先
-                        MRecive.RSensor.Thumb.tip_pressure = (int)shortData[4];
-                        // 小指・付け根
-                        MRecive.RSensor.Little.palm_pressure = (int)shortData[5];
+                    switch (Encoding.ASCII.GetString(endData)[0])
+                    {
+                        // 圧力センサー*6(指先(小指+薬指+中指+人差し指+親指)+付け根(小指))
+                        case ReceveNumSignal.EData1:
+                            // 小指・指先
+                            MRecive.RSensor.Little.tip_pressure = (int)shortData[0];
+                            // 薬指・指先
+                            MRecive.RSensor.Ring.tip_pressure = (int)shortData[1];
+                            // 中指・指先
+                            MRecive.RSensor.Middle.tip_pressure = (int)shortData[2];
+                            // 人差し指・指先
+                            MRecive.RSensor.Index.tip_pressure = (int)shortData[3];
+                            // 親指・指先
+                            MRecive.RSensor.Thumb.tip_pressure = (int)shortData[4];
+                            // 小指・付け根
+                            MRecive.RSensor.Little.palm_pressure = (int)shortData[5];
 
-                        MRSFlog[0] = true;
+                            MRSFlog[0] = true;
 
-                        break;
-                    // 圧力センサー*4(付け根(薬指+中指+人差し指+親指))+可変抵抗*2(第一関節(小指+薬指))
-                    case ReceveNumSignal.EData2:
-                        // 薬指・付け根
-                        MRecive.RSensor.Ring.palm_pressure = (int)shortData[0];
-                        // 中指・付け根
-                        MRecive.RSensor.Middle.palm_pressure = (int)shortData[1];
-                        // 人差し指・付け根
-                        MRecive.RSensor.Index.palm_pressure = (int)shortData[2];
-                        // 親指・付け根
-                        MRecive.RSensor.Thumb.palm_pressure = (int)shortData[3];
-                        // 小指・第二関節
-                        MRecive.RSensor.Little.second_joint = (int)shortData[4];
-                        // 薬指・第二関節
-                        MRecive.RSensor.Ring.second_joint = (int)shortData[5];
+                            break;
+                        // 圧力センサー*4(付け根(薬指+中指+人差し指+親指))+可変抵抗*2(第一関節(小指+薬指))
+                        case ReceveNumSignal.EData2:
+                            // 薬指・付け根
+                            MRecive.RSensor.Ring.palm_pressure = (int)shortData[0];
+                            // 中指・付け根
+                            MRecive.RSensor.Middle.palm_pressure = (int)shortData[1];
+                            // 人差し指・付け根
+                            MRecive.RSensor.Index.palm_pressure = (int)shortData[2];
+                            // 親指・付け根
+                            MRecive.RSensor.Thumb.palm_pressure = (int)shortData[3];
+                            // 小指・第二関節
+                            MRecive.RSensor.Little.second_joint = (int)shortData[4];
+                            // 薬指・第二関節
+                            MRecive.RSensor.Ring.second_joint = (int)shortData[5];
 
-                        MRSFlog[1] = true;
-                        break;
-                    // 可変抵抗*6(第一関節(中指+人差し指+親指)+第二関節(小指+薬指+中指))
-                    case ReceveNumSignal.EData3:
-                        // 中指・第二関節
-                        MRecive.RSensor.Middle.second_joint = (int)shortData[0];
-                        // 人差し指・第二関節
-                        MRecive.RSensor.Index.second_joint = (int)shortData[1];
-                        // 親指・第二関節
-                        MRecive.RSensor.Thumb.second_joint = (int)shortData[2];
-                        // 小指・第三関節
-                        MRecive.RSensor.Little.third_joint = (int)shortData[3];
-                        // 薬指・第三関節
-                        MRecive.RSensor.Ring.third_joint = (int)shortData[4];
-                        // 中指・第三関節
-                        MRecive.RSensor.Middle.third_joint = (int)shortData[5];
+                            MRSFlog[1] = true;
+                            break;
+                        // 可変抵抗*6(第一関節(中指+人差し指+親指)+第二関節(小指+薬指+中指))
+                        case ReceveNumSignal.EData3:
+                            // 中指・第二関節
+                            MRecive.RSensor.Middle.second_joint = (int)shortData[0];
+                            // 人差し指・第二関節
+                            MRecive.RSensor.Index.second_joint = (int)shortData[1];
+                            // 親指・第二関節
+                            MRecive.RSensor.Thumb.second_joint = (int)shortData[2];
+                            // 小指・第三関節
+                            MRecive.RSensor.Little.third_joint = (int)shortData[3];
+                            // 薬指・第三関節
+                            MRecive.RSensor.Ring.third_joint = (int)shortData[4];
+                            // 中指・第三関節
+                            MRecive.RSensor.Middle.third_joint = (int)shortData[5];
 
-                        MRSFlog[2] = true;
-                        break;
-                    // 可変抵抗*1(人差し指)+エンプティ*1(親指関節)+曲げセンサー*4
-                    case ReceveNumSignal.EData4:
-                        //人差し指・第三関節
-                        MRecive.RSensor.Index.third_joint = (int)shortData[0];
-                        // 親指・曲げセンサー
-                        MRecive.RSensor.Thumb.third_joint = (int)shortData[1];
+                            MRSFlog[2] = true;
+                            break;
+                        // 可変抵抗*1(人差し指)+エンプティ*1(親指関節)+曲げセンサー*4
+                        case ReceveNumSignal.EData4:
+                            //人差し指・第三関節
+                            MRecive.RSensor.Index.third_joint = (int)shortData[0];
+                            // 親指・曲げセンサー
+                            MRecive.RSensor.Thumb.third_joint = (int)shortData[1];
 
-                        MRSFlog[3] = true;
-                        break;
+                            MRSFlog[3] = true;
+                            break;
+                    }
+                    // file書き込み
+                    //file.MLog(Array.ConvertAll(shortData, x => x.ToString()));
                 }
-                // file書き込み
-                //file.MLog(Array.ConvertAll(shortData, x => x.ToString()));
-            }
-            // スレーブ値処理
-            else if (Encoding.ASCII.GetString(startData)[0] == ReceveNumSignal.SSData[0])
-            {
-                //スレーブのセンサー値格納処理
-                switch (Encoding.ASCII.GetString(endData)[0])
+                // スレーブ値処理
+                else if (Encoding.ASCII.GetString(startData)[0] == ReceveNumSignal.SSData[0])
                 {
-                    // 可変抵抗*6(第一関節(小指+薬指+中指+人差し指+親指))+第二関節(小指))
+                    //スレーブのセンサー値格納処理
+                    switch (Encoding.ASCII.GetString(endData)[0])
+                    {
+                        // 可変抵抗*6(第一関節(小指+薬指+中指+人差し指+親指))+第二関節(小指))
 
-                    case ReceveNumSignal.EData1:
-                        // 小指・第二関節
-                        SRecive.RSensor.Little.second_joint = (int)shortData[0];
-                        // 薬指・第二関節
-                        SRecive.RSensor.Ring.second_joint = (int)shortData[1];
-                        // 中指・第二関節
-                        SRecive.RSensor.Middle.second_joint = (int)shortData[2];
-                        // 人差し指・第二関節
-                        SRecive.RSensor.Index.second_joint = (int)shortData[3];
-                        // 親指・第二関節
-                        SRecive.RSensor.Thumb.third_joint = (int)shortData[4];
-                        // 小指・第三関節
-                        SRecive.RSensor.Little.third_joint = (int)shortData[5];
-                        SRSFlog[0] = true;
-                        break;
-                    // 可変抵抗*3(第二関節(薬指+中指+人差し指))+曲げセンサー*1(親指関節)+エンプティ*2
-                    case ReceveNumSignal.EData2:
+                        case ReceveNumSignal.EData1:
+                            // 小指・第二関節
+                            SRecive.RSensor.Little.second_joint = (int)shortData[0];
+                            // 薬指・第二関節
+                            SRecive.RSensor.Ring.second_joint = (int)shortData[1];
+                            // 中指・第二関節
+                            SRecive.RSensor.Middle.second_joint = (int)shortData[2];
+                            // 人差し指・第二関節
+                            SRecive.RSensor.Index.second_joint = (int)shortData[3];
+                            // 親指・第二関節
+                            SRecive.RSensor.Thumb.third_joint = (int)shortData[4];
+                            // 小指・第三関節
+                            SRecive.RSensor.Little.third_joint = (int)shortData[5];
+                            SRSFlog[0] = true;
+                            break;
+                        // 可変抵抗*3(第二関節(薬指+中指+人差し指))+曲げセンサー*1(親指関節)+エンプティ*2
+                        case ReceveNumSignal.EData2:
 
-                        // 薬指・第三関節
-                        SRecive.RSensor.Ring.third_joint = (int)shortData[0];
-                        // 中指・第三関節
-                        SRecive.RSensor.Middle.third_joint = (int)shortData[1];
-                        //人差し指・第三関節
-                        SRecive.RSensor.Index.third_joint = (int)shortData[2];
-                        // 親指・曲げセンサー
-                        SRecive.RSensor.Thumb.third_joint = (int)shortData[3];
-                        SRSFlog[1] = true;
-                        break;
+                            // 薬指・第三関節
+                            SRecive.RSensor.Ring.third_joint = (int)shortData[0];
+                            // 中指・第三関節
+                            SRecive.RSensor.Middle.third_joint = (int)shortData[1];
+                            //人差し指・第三関節
+                            SRecive.RSensor.Index.third_joint = (int)shortData[2];
+                            // 親指・曲げセンサー
+                            SRecive.RSensor.Thumb.third_joint = (int)shortData[3];
+                            SRSFlog[1] = true;
+                            break;
+                    }
+                    // file書き込み
+                    //file.SLog(Array.ConvertAll(shortData, x => x.ToString()));
                 }
-                // file書き込み
-                //file.SLog(Array.ConvertAll(shortData, x => x.ToString()));
             }
-
         }
 
         /* 信号送信用関数 */

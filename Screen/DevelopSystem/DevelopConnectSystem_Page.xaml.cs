@@ -6,6 +6,7 @@ using System.IO.Ports;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -18,6 +19,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using MISOTEN_APPLICATION.BackProcess;
 using MISOTEN_APPLICATION.Screen.CommonClass;
 using Newtonsoft.Json;
 using static System.Net.Mime.MediaTypeNames;
@@ -32,10 +34,12 @@ namespace MISOTEN_APPLICATION.Screen.DevelopSystem
     public partial class DevelopConnectSystem_Page : Page
     {
         SerialPort MasterPort;
-        SerialPort ReceiveProt;
+        SerialPort SlaveProt;
         List<SerialPortData> product;
-        // 受信データバインディング用class
-        ReciveData_String RString = new ReciveData_String();
+        SignalClass signalclass = new SignalClass();
+        FileClass file = new FileClass();
+        // 排他制御に使用するオブジェクト
+        private static Object lockObject = new Object();
 
         public DevelopConnectSystem_Page()
         {
@@ -43,14 +47,14 @@ namespace MISOTEN_APPLICATION.Screen.DevelopSystem
             ReceiveText.IsReadOnly = true;
         }
 
-        
+
         /* ポートセット */
         private SerialPort SettingPort(SerialPort serialPort, SerialPortData serialPortData)
         {
             // まだポートに繋がっていない場合
             if (serialPort == null)
             {
-                
+
                 // serialPortの設定
                 serialPort = new SerialPort();
                 serialPort.PortName = serialPortData.comName;
@@ -90,15 +94,17 @@ namespace MISOTEN_APPLICATION.Screen.DevelopSystem
                     // ポートオープン
                     MasterPort.Open();
                     ReceiveText.AppendText("マスター接続開始\n");
-
-                    // 受信処理
-                    MasterPort.DataReceived += new SerialDataReceivedEventHandler(SerialPort_DataReceived);
-
-
+                    file.DMFirst();
+                    file.DMFirst_csv();
+                    // signalクラスでポートセット＆ハンドラ接続
+                    signalclass.SetSerialport(MasterPort, DeviceId.MasterId);
+                    // 受信待機＆表示・書き込み
+                    Task ReceveTask = Task.Run(() => { MReceived(); });
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message);
+                    MessageBox.Show(ex.StackTrace);
                 }
             }
             if ((bool)ReceiveConnectCheck.IsChecked == true)
@@ -107,16 +113,21 @@ namespace MISOTEN_APPLICATION.Screen.DevelopSystem
                 try
                 {
                     // ポートセット
-                    ReceiveProt = SettingPort(ReceiveProt, product[DeviceId.ReceiveId]);
+                    SlaveProt = SettingPort(SlaveProt, product[DeviceId.ReceiveId]);
                     // ポートオープン
-                    ReceiveProt.Open();
+                    SlaveProt.Open();
                     ReceiveText.AppendText("スレーブ接続開始\n");
-                    // 受信処理
-                    ReceiveProt.DataReceived += new SerialDataReceivedEventHandler(SerialPort_DataReceived);
+                    file.DSFirst();
+                    file.DSFirst_csv();
+                    // signalクラスでポートセット＆ハンドラ接続
+                    signalclass.SetSerialport(SlaveProt, DeviceId.ReceiveId);
+                    // 受信待機＆表示・書き込み
+                    Task ReceveTask = Task.Run(() => { SReceived(); });
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message);
+                    MessageBox.Show(ex.StackTrace);
                 }
             }
         }
@@ -130,13 +141,16 @@ namespace MISOTEN_APPLICATION.Screen.DevelopSystem
                 {
                     if (MasterPort.IsOpen == false) return;
                     // ポート切断
+                    signalclass.ReceiveClearBuffer(DeviceId.MasterId);
                     MasterPort.Close();
-                    ReceiveText.AppendText("マスター切断\n");
                     MasterPort = null;
+                    ReceiveText.AppendText("マスター切断\n");
+                    file.MDLog("マスター切断");
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message);
+                    MessageBox.Show(ex.StackTrace);
                 }
             }
             if ((bool)ReceiveConnectCheck.IsChecked == true)
@@ -144,15 +158,17 @@ namespace MISOTEN_APPLICATION.Screen.DevelopSystem
                 // receveシリアルポート切断
                 try
                 {
-                    if (ReceiveProt.IsOpen == false) return;
+                    if (SlaveProt.IsOpen == false) return;
                     // ポート切断
-                    ReceiveProt.Close();
+                    signalclass.ReceiveClearBuffer(DeviceId.ReceiveId);
+                    SlaveProt.Close();
                     ReceiveText.AppendText("スレーブ切断\n");
-                    ReceiveProt = null;
+                    file.MDLog("スレーブ切断");
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message);
+                    MessageBox.Show(ex.StackTrace);
                 }
             }
         }
@@ -172,135 +188,145 @@ namespace MISOTEN_APPLICATION.Screen.DevelopSystem
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message);
+                    MessageBox.Show(ex.StackTrace);
                 }
             }
             if ((bool)ReceiveSendCheck.IsChecked == true)
             {
                 try
                 {
-                    if (ReceiveProt == null) return;
-                    if (ReceiveProt.IsOpen == false) return;
+                    if (SlaveProt == null) return;
+                    if (SlaveProt.IsOpen == false) return;
                     // 送信処理
-                    Send(ReceiveProt, SendText.Text);
+                    Send(SlaveProt, SendText.Text);
                     ReceiveText.AppendText("レシーブへ送信\n");
 
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message);
+                    MessageBox.Show(ex.StackTrace);
                 }
             }
         }
 
-        /* 受信用関数 */
-        private void SerialPort_DataReceived(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
+        /* Master受信処理 */
+        public void MReceived()
         {
-            SerialPort serialPort = (SerialPort)sender;
-            // 繋がっているかどうか判断
-            if (serialPort == null) return;
-            if (serialPort.IsOpen == false) return;
-
-            // 受信情報処理
-            try
+            while ((MasterPort != null) && (MasterPort.IsOpen == true))
             {
-                // 受信バッファ内のByte数
-                Int32 datanum = serialPort.BytesToRead;
-                // byte型受信用変数宣言
-                byte[] data = new byte[datanum];
-                // dataへdatanum数分格納
-                Int32 invale = serialPort.Read(data, 0, datanum);
-                string inCuf = "";
-                // 数値格納変数
-                ushort[] vale = new ushort[datanum];
-
+                ReciveData rdata = signalclass.GetMReciveData();
                 Dispatcher.Invoke((Action)(() =>
                 {
-                    // 送信データ"1byte"ずつ格納
-                    for (int i = 0, j = 0; i < invale; i++, j++)
+                    lock (lockObject)
                     {
-                        // 1byte格納
-                        byte[] testbyte = new byte[1];
-                        testbyte[0] = data[i];
-
-                        // Check有＆数値の場合
-                        if ((Receive_BinaryConvertCheck.IsChecked == true) && (Encoding.ASCII.GetString(testbyte) != "s" && Encoding.ASCII.GetString(testbyte) != "e"))
+                        if ((((bool)Master_TextCheck.IsChecked == true)))
                         {
-                            // 数値変換
-
-                            // ※2byte続きで数値が入っている場合のみ
-                            vale[j] = (ushort)((data[i] << 8) + (data[i++] & 0xff));
-                            inCuf = inCuf + Convert.ToString(vale[j]);
-                            i += 1;
-
+                            try
+                            {
+                                if (rdata.RFlog == Flog.RSignal)
+                                {
+                                    // ディスプレイ表示
+                                    ReciiveDisplay(DeviceId.MasterId, rdata);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show(ex.Message);
+                                MessageBox.Show(ex.StackTrace);
+                            }
                         }
-                        else
-                        // Check無の場合、英数字　Stringへ変換
+                        if (((bool)Master_FileCheck.IsChecked == true))
                         {
-                            // String型へ格納
-                            inCuf = inCuf + System.Text.Encoding.ASCII.GetString(testbyte);
+                            try
+                            {
+                                // File書き込み
+                                ReciiveFile(DeviceId.MasterId, rdata);
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show(ex.Message);
+                                MessageBox.Show(ex.StackTrace);
+                            }
                         }
-
+                        if (((bool)Master_CSVFileCheck.IsChecked == true) && (rdata.RFlog == Flog.RNum))
+                        {
+                            file.MDLog_csv(rdata.RSensor);
+                        }
                     }
                 }));
-
-                //　受信データ格納
-                RString.Port = serialPort.PortName;
-                RString.ReciveData = inCuf;
-                Received();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
             }
         }
-
-        /* 受信処理 */
-        public void Received()
+        /* Slave受信処理 */
+        public void SReceived()
         {
-
-            Dispatcher.Invoke((Action)(() =>
+            while (SlaveProt.IsOpen == true)
             {
-
-                if ((((bool)Master_TextCheck.IsChecked == true) || ((bool)Receive_TextCheck.IsChecked == true)))
+                // 受信待機
+                ReciveData rdata = signalclass.GetSReciveData();
+                Dispatcher.Invoke((Action)(() =>
                 {
-                    try
+                    lock (lockObject)
                     {
-                        // ディスプレイ表示
-                        ReciiveDisplay(RString.Port, RString.ReciveData);
+                        if (((bool)Receive_TextCheck.IsChecked == true))
+                        {
+                            try
+                            {
+                            // ディスプレイ表示
+                            ReciiveDisplay(DeviceId.ReceiveId, rdata);
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show(ex.Message);
+                                MessageBox.Show(ex.StackTrace);
+                            }
+                        }
+                        if (((bool)Receive_FileCheck.IsChecked == true))
+                        {
+                            try
+                            {
+                            // File書き込み
+                            ReciiveFile(DeviceId.ReceiveId, rdata);
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show(ex.Message);
+                                MessageBox.Show(ex.StackTrace);
+                            }
+                        }
+                        if (((bool)Slave_CSVFileCheck.IsChecked == true) && (rdata.RFlog == Flog.RNum))
+                        {
+                            file.SDLog_csv(rdata.RSensor);
+                        }
                     }
-                    catch (Exception Ex)
-                    {
-                        MessageBox.Show(Ex.Message);
-                    }
-                }
-                if (((bool)Master_FileCheck.IsChecked == true) || ((bool)Receive_FileCheck.IsChecked == true))
-                {
-                    try
-                    {
-                        // File書き込み
-                        ReciiveFile(RString.Port, RString.ReciveData);
-                    }
-                    catch (Exception Ex)
-                    {
-                        MessageBox.Show(Ex.Message);
-                    }
-                }
-            }));
+                }));
+            }
         }
+
         /* 受信情報表示処理 */
-        public void ReciiveDisplay(string Port, string displayString)
+        public void ReciiveDisplay(int id, ReciveData data)
         {
             Dispatcher.Invoke((Action)(() =>
             {
-                if (Port == product[DeviceId.MasterId].comName)
+                if (id == DeviceId.MasterId)
                 {
                     ReceiveText.AppendText("マスター : ");
                 }
-                else if (Port == product[DeviceId.ReceiveId].comName)
+                else if (id == DeviceId.ReceiveId)
                 {
                     ReceiveText.AppendText("レシーブ : ");
                 }
-                ReceiveText.AppendText(displayString + "\n");
+
+                // 入力内容 信号
+                if (data.RFlog == Flog.RSignal)
+                {
+                    ReceiveText.AppendText(data.RSignal + "\n");
+                }
+                // 入力内容 数値
+                else if (data.RFlog == Flog.RNum)
+                {
+                    ReceiveText.AppendText("数値" + "\n");
+                }
 
                 //表示制限
 
@@ -311,21 +337,36 @@ namespace MISOTEN_APPLICATION.Screen.DevelopSystem
             }));
         }
         /* 受信情報File書き込み処理 */
-        public void ReciiveFile(string Port, string displayString)
+        public void ReciiveFile(int id, ReciveData data)
         {
-            Dispatcher.Invoke((Action)(() =>
+            if (id == DeviceId.MasterId)
             {
-                if (Port == product[DeviceId.MasterId].comName)
+                // 入力内容 信号
+                if (data.RFlog == Flog.RSignal)
                 {
-                    File.AppendAllText(@"Log\DevelopMasterLog.txt", "マスター : " + displayString + Environment.NewLine);
+                    file.MDLog(data.RSignal);
                 }
-                else if (Port == product[DeviceId.ReceiveId].comName)
+                // 入力内容 数値
+                else if (data.RFlog == Flog.RNum)
                 {
+                    file.MDLog("数値");
                 }
-            }));
+            }
+            else if (id == DeviceId.ReceiveId)
+            {
+                // 入力内容 信号
+                if (data.RFlog == Flog.RSignal)
+                {
+                    file.SDLog(data.RSignal);
+                }
+                // 入力内容 数値
+                else if (data.RFlog == Flog.RNum)
+                {
+                    file.SDLog("数値");
+                }
 
+            }
         }
-
         /* 送信用関数 */
         public void Send(SerialPort serialPort, string sendString)
         {
@@ -365,5 +406,28 @@ namespace MISOTEN_APPLICATION.Screen.DevelopSystem
             serialPort.Write(outCuf, 0, sendcount);
         }
 
+        //
+        // モータタブ
+        //
+
+        /* 入力値制限 */
+        private void mottor1_PreviewTextInput(object sender, TextCompositionEventArgs e) => e.Handled = !new Regex("[0-9]").IsMatch(e.Text);
+        private void mottor2_PreviewTextInput(object sender, TextCompositionEventArgs e) => e.Handled = !new Regex("[0-9]").IsMatch(e.Text);
+        private void mottor3_PreviewTextInput(object sender, TextCompositionEventArgs e) => e.Handled = !new Regex("[0-9]").IsMatch(e.Text);
+        private void mottor4_PreviewTextInput(object sender, TextCompositionEventArgs e) => e.Handled = !new Regex("[0-9]").IsMatch(e.Text);
+        private void mottor5_PreviewTextInput(object sender, TextCompositionEventArgs e) => e.Handled = !new Regex("[0-9]").IsMatch(e.Text);
+
+        /* pwm値送信 */
+        private void PWMSendButton_Click(object sender, RoutedEventArgs e)
+        {
+            GODS_SENTENCE sendData = new GODS_SENTENCE();
+            sendData.frist_godsentence.palm_pwm = int.Parse(mottor1.Text);
+            sendData.second_godsentence.palm_pwm = int.Parse(mottor2.Text);
+            sendData.third_godsentence.palm_pwm = int.Parse(mottor3.Text);
+            sendData.fourth_godsentence.palm_pwm = int.Parse(mottor4.Text);
+            sendData.fifth_godsentence.palm_pwm = int.Parse(mottor5.Text);
+
+            signalclass.SetSendMotor(sendData);
+        }
     }
 }

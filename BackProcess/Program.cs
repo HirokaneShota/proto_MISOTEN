@@ -17,11 +17,11 @@ namespace MISOTEN_APPLICATION.BackProcess
         public const int palm_pressure_allowerror = 5000;
         
         //スレーブ始動閾値
-        public const float first_threshold_pressure=0.0f;
-        public const float second_threshold_pressure=0.0f;
-        public const float third_threshold_pressure=0.0f;
-        public const float fourth_threshold_pressure=0.0f;
-        public const float fifth_threshold_pressure=0.0f;
+        public const float first_threshold_pressure=2000.0f;
+        public const float second_threshold_pressure=2000.0f;
+        public const float third_threshold_pressure=2000.0f;
+        public const float fourth_threshold_pressure=2000.0f;
+        public const float fifth_threshold_pressure=2000.0f;
         //センサの最大値
         public const int sensor_max=1024;
         public const double prop=1.2;//比例定数
@@ -39,7 +39,6 @@ namespace MISOTEN_APPLICATION.BackProcess
         static async Task Main(string[] args){
             {
                 GodHand godhand=new GodHand();
-                await godhand.run();
             }
         }
         public LENGTH[] Length={
@@ -199,13 +198,17 @@ namespace MISOTEN_APPLICATION.BackProcess
         }
         
         //圧力センサ始動監視
-        public async Task<int> Threshold_monitoring(){
+        public async Task<int> Threshold_monitoring(SignalClass signalclass)
+        {
             SENSOR_VALUE[] Temporary_masterdate=new SENSOR_VALUE[5];
             SENSOR_VALUE[] Temporary_slavedate=new SENSOR_VALUE[5];
-            SignalClass signalClass=new SignalClass();
+            SignalClass signalClass = signalclass;
             ReciveData_Sensor recivedata_sensor =new ReciveData_Sensor();
-            while(true){
-                recivedata_sensor=signalClass.GetMSensor();
+            FileClass file = new FileClass();
+            file.MFirst();
+            while (true){
+                file.MLog("bbb");
+                recivedata_sensor =signalClass.GetMSensor();
                 Temporary_masterdate[0]=recivedata_sensor.Little;
                 Temporary_masterdate[1]=recivedata_sensor.Ring;
                 Temporary_masterdate[2]=recivedata_sensor.Middle;
@@ -226,12 +229,12 @@ namespace MISOTEN_APPLICATION.BackProcess
                         Task finger = Task.Run(() => {
                             if(Temporary_masterdate[finger_count].second_joint==startingpoint[finger_count]){
                                 if(finger_count!=4){
-                                    movement_finger[finger_count]=finger_starting(Temporary_slavedate[finger_count],Temporary_slavedate[finger_count+1],finger_count);
+                                    movement_finger[finger_count] = true;//finger_starting(Temporary_slavedate[finger_count],Temporary_slavedate[finger_count+1],finger_count);
                                 }else{
-                                    movement_finger[finger_count]=finger_starting(Temporary_slavedate[finger_count],Temporary_slavedate[finger_count-1],finger_count);
+                                    movement_finger[finger_count] = true;//finger_starting(Temporary_slavedate[finger_count],Temporary_slavedate[finger_count-1],finger_count);
                                 }
                             }
-                            return;
+                            //return;
                         });
                         arrayTask.Add(finger);
                     }
@@ -243,6 +246,7 @@ namespace MISOTEN_APPLICATION.BackProcess
                     Console.WriteLine("fingerall");
                      return 0;
                 }
+                file.MLog("aaa");
             }
         }
         public Boolean finger_starting(SENSOR_VALUE _sensordate,SENSOR_VALUE _nextsensordate ,int _finger_count){
@@ -282,14 +286,18 @@ namespace MISOTEN_APPLICATION.BackProcess
             return true;
         }
 
-        public async Task<int> run(){
+        public async Task<int> run(SignalClass signalclass)
+        {
             SENSOR_VALUE[] Temporary_masterdate=new SENSOR_VALUE[5];
             SENSOR_VALUE[] Temporary_slavedate=new SENSOR_VALUE[5];
-            SignalClass signalClass=new SignalClass();
+            SignalClass signalClass= signalclass;
             GodConverter godconverter=new GodConverter();
             ReciveData_Sensor recivedata_sensor =new ReciveData_Sensor();
             recivedata_sensor=signalClass.GetMSensor();
-            recivedata_sensor=signalClass.GetSSensor();
+            //recivedata_sensor=signalClass.GetSSensor();
+            FileClass file = new FileClass();
+            file.SLog(recivedata_sensor.Little.tip_pressure.ToString(), recivedata_sensor.Ring.tip_pressure.ToString(), recivedata_sensor.Middle.tip_pressure.ToString(), recivedata_sensor.Index.tip_pressure.ToString());
+
             Temporary_masterdate[0]=recivedata_sensor.Little;
             Temporary_masterdate[1]=recivedata_sensor.Ring;
             Temporary_masterdate[2]=recivedata_sensor.Middle;
@@ -305,7 +313,12 @@ namespace MISOTEN_APPLICATION.BackProcess
             GODS_SENTENCE gods_senten=new GODS_SENTENCE();
             List<Task> arrayTask = new List<Task>();
             for(int count=0;count<5;count++){
-                int finger_count =count;
+                int finger_count = count;
+                Task finger = Task.Run(() =>
+                {
+                    finger_power[finger_count] = godconverter.human_converter(Temporary_masterdate[finger_count]);
+                });
+                /*
                 if(movement_finger[finger_count]==true){
                     Console.WriteLine(finger_count);
                     Task finger = Task.Run(() => {
@@ -322,8 +335,11 @@ namespace MISOTEN_APPLICATION.BackProcess
                         }
                         return;
                     });
-                    arrayTask.Add(finger);
+
+
                 }
+                */
+                arrayTask.Add(finger);
             }
             await Task.WhenAll(arrayTask);
             arrayTask.Clear();
@@ -334,8 +350,9 @@ namespace MISOTEN_APPLICATION.BackProcess
             gods_senten.fifth_godsentence=finger_power[4];
 
             //スレーブに出力値を送信
-          //  SetSendData(gods_senten);
-            return 0;
+
+            signalClass.SetSendData(gods_senten);
+           return 0;
         }
     }
 }
