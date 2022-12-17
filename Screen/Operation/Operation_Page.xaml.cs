@@ -4,6 +4,7 @@ using MISOTEN_APPLICATION.Screen.CommonClass;
 using MISOTEN_APPLICATION.Screen.SystemSelect;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -39,26 +40,22 @@ namespace MISOTEN_APPLICATION.Screen.Operation
 
         void PageLoad(object sender, RoutedEventArgs e)
         {
-            // 送信タスク
-            Task ReceveTask = Task.Run(() => { Receve(); });
-
+            // センシング用タスク
+            Task ReceveTask = Task.Run(() => { ReceveAsync(); });
         }
 
-        /* マスター値受信処理 */
-        private void Receve()
+        /* センシング処理 */
+        private async Task ReceveAsync()
         {
             // マスター:"ss01" 送信 : センシング開始信号
             Signalclass.SignalSend(DeviceId.MasterId, SendSignal.MSensingStart);
             // スレーブ:"ss02" 送信 : センシング開始信号
             Signalclass.SignalSend(DeviceId.ReceiveId, SendSignal.SSensingStart);
 
-            // 稼働処理タスク
-            Task<int> PlayingTask = Task.Run(() => { return Playing(Signalclass); });
-            int i = 0;
-            i = PlayingTask.Result;
-
-            // 処理終了フラグが立つまで
-            while (EndFlog != Flog.End);
+            // 稼働処理
+            //int ret = Playing(Signalclass);
+            //var task = Task.Run(async () => { await Playing(Signalclass); });
+            int result = await Playing(Signalclass);
 
             // マスター:"sh01" 送信 : センシング停止信号
             Signalclass.SignalSend(DeviceId.MasterId, SendSignal.MSensingStop);
@@ -68,15 +65,27 @@ namespace MISOTEN_APPLICATION.Screen.Operation
         }
 
         /* 稼働時処理 */
-        private int Playing(SignalClass signalclass)
+        private async Task<int> Playing(SignalClass signalclass)
         {
             GodHand godhand = new GodHand();
 
-            var reslt = godhand.Threshold_monitoring(signalclass);
+            Debug.Print("Threshold_monitoring start");
+            //var reslt = await godhand.Threshold_monitoring(signalclass);
+            Debug.Print("Threshold_monitoring end");
+            /*
+            GODS_SENTENCE gods_senten = new GODS_SENTENCE();
+            gods_senten.frist_godsentence.palm_pwm = 2500;
+            gods_senten.second_godsentence.palm_pwm = 2500;
+            gods_senten.third_godsentence.palm_pwm = 2500;
+            gods_senten.fourth_godsentence.palm_pwm = 2500;
+            gods_senten.fifth_godsentence.palm_pwm = 2500;
+            signalclass.SetSendMotor(gods_senten);
 
-            while (EndFlog != Flog.End)
+            TimerClass.Sleep(1000);
+            */
+            while (true)//EndFlog != Flog.End)
             {
-                var Reslt = godhand.run(signalclass);
+                var Reslt = await godhand.run(signalclass);
             };
 
             return 0;

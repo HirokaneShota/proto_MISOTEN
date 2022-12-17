@@ -56,6 +56,8 @@ namespace MISOTEN_APPLICATION.Screen.CommonClass
         public const int SECalibration = 10;
         // スレーブキャリブレーション　握る
         public const int SGCalibration = 10;
+        // 稼働状態 スリープ 100ms
+        public const double OperatSTime = 50.0f;
     }
 
     class Flog
@@ -108,9 +110,11 @@ namespace MISOTEN_APPLICATION.Screen.CommonClass
         // スレーブ用LogFile(開発者用)
         public const string DReceiveLog = "Log\\DevelopReceiveLog.txt";
         // マスター用LogFile.csv(開発者用)
-        public const string DMasterLog_csv = "Log\\DevelopMasterLog.csv";
+        public const string DMasterLog_csv = "DevelopMasterLog.csv";
         // スレーブ用LogFile.csv(開発者用)
-        public const string DReceiveLog_csv = "Log\\DevelopReceiveLog.csv";
+        public const string DReceiveLog_csv = "DevelopReceiveLog.csv";
+        // LogFile.csv
+        public const string Log_csv = "Log.csv";
 
 
         // ロゴ画像

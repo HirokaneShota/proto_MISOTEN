@@ -66,7 +66,7 @@ namespace MISOTEN_APPLICATION.Screen.SignalConnect
                 Dispatcher.Invoke((Action)(() =>
                 {
                     // 再接続
-                    var SignalReConnect = new SignalReConnect_Page(ErrorSentence);
+                    var SignalReConnect = new SignalReConnect_Page(SignalClass, ErrorSentence);
                     NavigationService.Navigate(SignalReConnect);
                 }));
             }
@@ -116,7 +116,7 @@ namespace MISOTEN_APPLICATION.Screen.SignalConnect
                 SignalClass.SetSerialport(masterport, DeviceId.MasterId);
                 SignalClass.SetSerialport(slaveprot, DeviceId.ReceiveId);
                 Dispatcher.Invoke((Action)(() => { Execution.Content = "受信バンドラ立ち上げ中..."+" ( 5秒 )"; }));
-                Timer.Sleep(5000);
+                TimerClass.Sleep(5000);
                 MasterPort = masterport;
                 SlaveProt = slaveprot;
 
@@ -132,7 +132,6 @@ namespace MISOTEN_APPLICATION.Screen.SignalConnect
         /* ポート受信処理 */
         private int ProtReceve(SerialPort masterport, SerialPort slaveprot)
         {
-
             // マスター受信値
             ReciveData MReciveData = new ReciveData();
             // マスター受信値
@@ -187,7 +186,7 @@ namespace MISOTEN_APPLICATION.Screen.SignalConnect
             // 計測開始("ct02" 送信から"ca20"受信まで)
             // 受信タスク終了まで待機
             SReciveData = SRtask.Result;
-            file.SLog(SReciveData.RSignal);
+            //file.SLog(SReciveData.RSignal);
             // 受信値チェック
             if (SReciveData.RSignal != ReceveSignal.SConnectRequest)
             {
@@ -206,7 +205,7 @@ namespace MISOTEN_APPLICATION.Screen.SignalConnect
             // 計測開始("cc02" 送信から"cc20"受信まで)
             // 受信タスク終了まで待機
             SReciveData = SRtask.Result;
-            file.SLog(SReciveData.RSignal);
+            //file.SLog(SReciveData.RSignal);
             // 受信値チェック
             if (SReciveData.RSignal != ReceveSignal.SConnectComple)
             {

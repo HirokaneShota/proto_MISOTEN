@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -260,7 +261,7 @@ namespace MISOTEN_APPLICATION.Screen.DevelopSystem
         /* Slave受信処理 */
         public void SReceived()
         {
-            while (SlaveProt.IsOpen == true)
+            while ((SlaveProt.IsOpen == true) && (SlaveProt != null))
             {
                 // 受信待機
                 ReciveData rdata = signalclass.GetSReciveData();
@@ -272,8 +273,8 @@ namespace MISOTEN_APPLICATION.Screen.DevelopSystem
                         {
                             try
                             {
-                            // ディスプレイ表示
-                            ReciiveDisplay(DeviceId.ReceiveId, rdata);
+                                // ディスプレイ表示
+                                //ReciiveDisplay(DeviceId.ReceiveId, rdata);
                             }
                             catch (Exception ex)
                             {
@@ -285,8 +286,8 @@ namespace MISOTEN_APPLICATION.Screen.DevelopSystem
                         {
                             try
                             {
-                            // File書き込み
-                            ReciiveFile(DeviceId.ReceiveId, rdata);
+                                // File書き込み
+                                ReciiveFile(DeviceId.ReceiveId, rdata);
                             }
                             catch (Exception ex)
                             {

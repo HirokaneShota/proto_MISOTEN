@@ -76,13 +76,14 @@ namespace MISOTEN_APPLICATION.Screen.Calibration
         /* 時間計測処理 */
         private void Measurement()
         {
+            /*
             // 手を広げる処理
             Expand();
             // 手を握る処理
-            Grasp();
+            Grasp();*/
             // 手のひら最大数設定処理
             Pushing();
-
+            
             Dispatcher.Invoke((Action)(() =>
             {
                 CountLabel.Content = "再計測or計測終了を選択してください";

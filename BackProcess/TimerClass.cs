@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MISOTEN_APPLICATION.BackProcess
 {
-    class Timer
+    class TimerClass
     {
         Stopwatch SWatch = new Stopwatch();
         TimeSpan TSpan = new TimeSpan();

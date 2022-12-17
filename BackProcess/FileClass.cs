@@ -1,10 +1,12 @@
 ﻿using MISOTEN_APPLICATION.Screen.CommonClass;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace MISOTEN_APPLICATION.BackProcess
 {
@@ -19,8 +21,10 @@ namespace MISOTEN_APPLICATION.BackProcess
         string dmuri_csv = URI.DMasterLog_csv;
         string dsuri_csv = URI.DReceiveLog_csv;
 
-        Timer mtimer = new Timer();
-        Timer stimer = new Timer();
+        string csv = "";
+
+        TimerClass mtimer = new TimerClass();
+        TimerClass stimer = new TimerClass();
         /* コンストラクタ */
         public FileClass()
         {
@@ -40,22 +44,56 @@ namespace MISOTEN_APPLICATION.BackProcess
         public void DSFirst() => File.WriteAllText(@dsuri, "スレーブ接続開始" + Environment.NewLine);
 
         /* CSVファイル */
-        /* ファイル生成＆開始文字(master)(開発者用) */
+        /* ファイル生成(master)(開発者用) */
         public void DMFirst_csv()
         {
-            // 現在時刻を取得
-            //DateTime time = DateTime.Now;
-            //dmuri_csv = URI.DMasterLog_csv + "_" + time.ToString("MM:dd:hh:mm");
-            File.Create(dmuri_csv);
+            try
+            {
+                // 現在時刻を取得
+                DateTime time = DateTime.Now;
+                dmuri_csv = URI.LogFolder + time.ToString("MMddhhmmss") + "_" + dmuri_csv;
+                File.Create(dmuri_csv);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.StackTrace);
+            }
         }
-        /* ファイル生成＆開始文字(slave)(開発者用) */
+        /* ファイル生成(slave)(開発者用) */
         public void DSFirst_csv()
         {
-            // 現在時刻を取得
-            //DateTime time = DateTime.Now;
-            //dsuri_csv = URI.DReceiveLog_csv + "_" + time.ToString("MM:dd:hh:mm");
-            File.Create(dsuri_csv);
+            try
+            {
+                // 現在時刻を取得
+                DateTime time = DateTime.Now;
+                dsuri_csv = URI.LogFolder + time.ToString("MMddhhmmss") + "_" + dsuri_csv;
+                File.Create(dsuri_csv);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.StackTrace);
+            }
         }
+   
+        /* ファイル生成(開発者用) */
+        public void First_csv(string name)
+        {
+            try
+            { 
+            // 現在時刻を取得
+            DateTime time = DateTime.Now;
+            csv = URI.LogFolder + time.ToString("MMddhhmmss") + "_" + name +".csv";
+            File.Create(csv);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.StackTrace);
+            }
+}
+
 
         //
         // 現在時間表示
@@ -97,13 +135,24 @@ namespace MISOTEN_APPLICATION.BackProcess
             File.AppendAllText(@dsuri, time.ToString("hh:mm:ss:fff") + " : " + Letter + Environment.NewLine);
         }
 
-        /* 複数のstringを一つのstringへ */
+        /* 年月日曜日時分秒ミリ秒+出力値 表示 (csvFile)*/
+        public void Log_csv(params string[] letter)
+        {
+            // 現在時刻を取得
+            DateTime time = DateTime.Now;
+            string Letter = Aggregation_string(letter);
+            File.AppendAllText(@csv, time.ToString("hhmmssfff") + "," + Letter);
+        }
+
+        /* 複数のstringを一つのstringへ "追記:12/15\n(改行)処理追加"*/
         private string Aggregation_string(params string[] letter)
         {
             string Letter = "";
             for (int i = 0; i < letter.Length; i++)
             {
-                Letter = Letter + letter[i];
+                // "\n"あれば改行(csvでのみ使用)
+                if(letter[i] == "\n") Letter = Letter + Environment.NewLine;
+                else Letter = Letter + letter[i];
                 if (i != letter.Length - 1)
                 {
                     Letter = Letter + ",";
@@ -122,6 +171,7 @@ namespace MISOTEN_APPLICATION.BackProcess
             DateTime time = DateTime.Now;
             string Letter = Aggregation_num(sensor);
             File.AppendAllText(@dmuri_csv, time.ToString("hh:mm:ss:fff") + "," + Letter + Environment.NewLine);
+            //Debug.Print(Letter);
         }
         /* 年月日曜日時分秒ミリ秒+出力値 表示(slave) */
         public void SDLog_csv(ReciveData_Sensor sensor)
@@ -131,7 +181,7 @@ namespace MISOTEN_APPLICATION.BackProcess
             string Letter = Aggregation_num(sensor);
             File.AppendAllText(@dsuri_csv, time.ToString("hh:mm:ss:fff") + "," + Letter + Environment.NewLine);
         }
-
+        /* ReciveData_Sensor→一文(string型)変換 */
         private string Aggregation_num(ReciveData_Sensor sensor)
         {
             string Letter = "";
@@ -191,9 +241,6 @@ namespace MISOTEN_APPLICATION.BackProcess
             return Letter;
         }
 
-
-
-
         //
         // 計測時間のみ表示
         //
@@ -238,7 +285,7 @@ namespace MISOTEN_APPLICATION.BackProcess
         public void STimeWrite_ms(string letter)
         {
             // master
-            File.AppendAllText(@suri, stimer.MiliElapsed() + "" + letter + Environment.NewLine);//ms :
+            File.AppendAllText(@suri, stimer.MiliElapsed() + "ms :" + letter + Environment.NewLine);//ms :
         }
         /* 計測時間＆文字書き込み(us)(slave) */
         public void STimeWrite_us(string letter)
