@@ -445,28 +445,28 @@ namespace MISOTEN_APPLICATION.BackProcess
                         // 可変抵抗*6(第一関節(小指+薬指+中指+人差し指+親指))+第二関節(小指))
 
                         case ReceveNumSignal.EData1:
-                            // 小指・第二関節
+                            // 小指・第一関節
                             SRecive.RSensor.Little.second_joint = (int)shortData[0];
-                            // 薬指・第二関節
+                            // 薬指・第一関節
                             SRecive.RSensor.Ring.second_joint = (int)shortData[1];
-                            // 中指・第二関節
+                            // 中指・第一関節
                             SRecive.RSensor.Middle.second_joint = (int)shortData[2];
-                            // 人差し指・第二関節
+                            // 人差し指・第一関節
                             SRecive.RSensor.Index.second_joint = (int)shortData[3];
-                            // 親指・第二関節
+                            // 親指・第一関節
                             SRecive.RSensor.Thumb.third_joint = (int)shortData[4];
-                            // 小指・第三関節
+                            // 小指・第二関節
                             SRecive.RSensor.Little.third_joint = (int)shortData[5];
                             SRSFlog[0] = true;
                             break;
                         // 可変抵抗*3(第二関節(薬指+中指+人差し指))+曲げセンサー*1(親指関節)+エンプティ*2
                         case ReceveNumSignal.EData2:
 
-                            // 薬指・第三関節
+                            // 薬指・第二関節
                             SRecive.RSensor.Ring.third_joint = (int)shortData[0];
-                            // 中指・第三関節
+                            // 中指・第二関節
                             SRecive.RSensor.Middle.third_joint = (int)shortData[1];
-                            //人差し指・第三関節
+                            //人差し指・第二関節
                             SRecive.RSensor.Index.third_joint = (int)shortData[2];
                             // 親指・曲げセンサー
                             SRecive.RSensor.Thumb.third_joint = (int)shortData[3];
