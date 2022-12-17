@@ -1,4 +1,6 @@
-﻿using MISOTEN_APPLICATION.Screen.DevelopSystem;
+﻿using MISOTEN_APPLICATION.BackProcess;
+using MISOTEN_APPLICATION.Screen.CommonClass;
+using MISOTEN_APPLICATION.Screen.DevelopSystem;
 using MISOTEN_APPLICATION.Screen.SystemSelect;
 using MISOTEN_APPLICATION.Screen.SystemSetting;
 using System;
@@ -23,8 +25,15 @@ namespace MISOTEN_APPLICATION.Screen.SignalConnect
     /// </summary>
     public partial class SignalReConnect_Page : Page
     {
-        public SignalReConnect_Page(string ex)
+        public SignalReConnect_Page(SignalClass signalclass,string ex)
         {
+            // バッファ削除
+            signalclass.ReceiveClearBuffer(DeviceId.MasterId);
+            signalclass.ReceiveClearBuffer(DeviceId.ReceiveId);
+            signalclass.ProtCut(DeviceId.MasterId);
+            signalclass.ProtCut(DeviceId.ReceiveId);
+            signalclass = null;
+
             InitializeComponent();
             this.ShowsNavigationUI = false;
             // エラー文表示

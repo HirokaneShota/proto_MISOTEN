@@ -23,17 +23,6 @@ namespace MISOTEN_APPLICATION.Screen.CommonClass
         public int writeTimeout { get; set; } = 100000;
     }
 
-    // 通信用引数
-    /*
-    public class ArgSignal
-    {
-        // 通信用インスタンスクラス
-        public SignalClass Msignalclass { get; set; }
-
-        public SignalClass Ssignalclass { get; set; }
-
-    }*/
-
     class DeviceId
     {
         // マスターID
@@ -67,6 +56,8 @@ namespace MISOTEN_APPLICATION.Screen.CommonClass
         public const int SECalibration = 10;
         // スレーブキャリブレーション　握る
         public const int SGCalibration = 10;
+        // 稼働状態 スリープ 100ms
+        public const double OperatSTime = 50.0f;
     }
 
     class Flog
@@ -91,6 +82,9 @@ namespace MISOTEN_APPLICATION.Screen.CommonClass
         // キャリブレーション : 処理中
         public const int CalibNone = 99;
 
+        // キャリブレーション : 処理中
+        public const int CalibPush = 2;
+
         // キャリブレーション : 手を開く
         public const int CalibOpen = 0;
 
@@ -103,10 +97,26 @@ namespace MISOTEN_APPLICATION.Screen.CommonClass
     {
         // COMデータJSON
         public const string ComJson = "Json\\SerialPort.json";
+        // JSONフォルダ
+        public const string Json = "Json\\";
         // マスター用LogFile
         public const string MasterLog = "Log\\MasterLog.txt";
-        // マスター用LogFile
+        // スレーブ用LogFile
         public const string ReceiveLog = "Log\\ReceiveLog.txt";
+        // LogFolder
+        public const string LogFolder = "Log\\";
+        // マスター用LogFile(開発者用)
+        public const string DMasterLog = "Log\\DevelopMasterLog.txt";
+        // スレーブ用LogFile(開発者用)
+        public const string DReceiveLog = "Log\\DevelopReceiveLog.txt";
+        // マスター用LogFile.csv(開発者用)
+        public const string DMasterLog_csv = "DevelopMasterLog.csv";
+        // スレーブ用LogFile.csv(開発者用)
+        public const string DReceiveLog_csv = "DevelopReceiveLog.csv";
+        // LogFile.csv
+        public const string Log_csv = "Log.csv";
+
+
         // ロゴ画像
         public const string LogoImage = "../../image/ROGO.png";
     }

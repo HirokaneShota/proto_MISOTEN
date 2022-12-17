@@ -43,6 +43,7 @@ namespace MISOTEN_APPLICATION.Screen.SignalConnect
 
         void OnLoad(object sender, RoutedEventArgs e)
         {
+
             Task MeasurementTask = Task.Run(() => { Window_Load(); });
         }
 
@@ -65,7 +66,7 @@ namespace MISOTEN_APPLICATION.Screen.SignalConnect
                 Dispatcher.Invoke((Action)(() =>
                 {
                     // 再接続
-                    var SignalReConnect = new SignalReConnect_Page(ErrorSentence);
+                    var SignalReConnect = new SignalReConnect_Page(SignalClass, ErrorSentence);
                     NavigationService.Navigate(SignalReConnect);
                 }));
             }
@@ -94,6 +95,7 @@ namespace MISOTEN_APPLICATION.Screen.SignalConnect
         /* ポート接続処理 */
         private int ProtConnect(SerialPort masterport, SerialPort slaveprot)
         {
+            Dispatcher.Invoke((Action)(() => { Execution.Content = "JSONファイル読み込み中..."; }));
             //　file読み込み
             string ResumeJson = File.ReadAllText("Json\\SerialPort.json");
             // JSONデータからオブジェクトを復元
@@ -103,17 +105,18 @@ namespace MISOTEN_APPLICATION.Screen.SignalConnect
             {
                 // ポートセット
                 masterport = SettingPort(masterport, product[DeviceId.MasterId]);
-                //receiveprot = SettingPort(receiveprot, product[DeviceId.ReceiveId]);
+                slaveprot = SettingPort(slaveprot, product[DeviceId.ReceiveId]);
                 // ポートオープン
                 masterport.Open();
-                //receiveprot.Open();
+                slaveprot.Open();
                 // ファイル書き込み
                 file.MFirst();
                 file.SFirst();
                 // シリアルポートセット
                 SignalClass.SetSerialport(masterport, DeviceId.MasterId);
                 SignalClass.SetSerialport(slaveprot, DeviceId.ReceiveId);
-                Timer.Sleep(5000);
+                Dispatcher.Invoke((Action)(() => { Execution.Content = "受信バンドラ立ち上げ中..."+" ( 5秒 )"; }));
+                TimerClass.Sleep(5000);
                 MasterPort = masterport;
                 SlaveProt = slaveprot;
 
@@ -129,20 +132,19 @@ namespace MISOTEN_APPLICATION.Screen.SignalConnect
         /* ポート受信処理 */
         private int ProtReceve(SerialPort masterport, SerialPort slaveprot)
         {
-
             // マスター受信値
             ReciveData MReciveData = new ReciveData();
-            // 時間計測
-            Timer time = new Timer();
-
+            // マスター受信値
+            ReciveData SReciveData = new ReciveData();
+            
             //
             // 「マスター：接続要請信号」
             //
             Task<ReciveData> MRtask = Task.Run(() => { return SignalClass.GetMReciveData(); });
+            Dispatcher.Invoke((Action)(() => { Execution.Content = "マスターから 接続確認信号(ca10) 受信待機中"; }));
             // "ct01" 送信
             SignalClass.SignalSend(DeviceId.MasterId, SendSignal.MConnectRequest);
             // 計測開始("ct01" 送信から"ca10"受信まで)
-            //time.Start();
             // 受信タスク終了まで待機
             MReciveData = MRtask.Result;
             file.MLog(MReciveData.RSignal);
@@ -157,11 +159,10 @@ namespace MISOTEN_APPLICATION.Screen.SignalConnect
             // 「マスター：接続完了信号」
             //
             MRtask = Task.Run(() => { return SignalClass.GetMReciveData(); });
-            // ReceiveHandlerより先に送信しないように
+            Dispatcher.Invoke((Action)(() => { Execution.Content = "マスターから 接続完了信号(cc10) 受信待機中"; }));
             // "cc01" 送信
             SignalClass.SignalSend(DeviceId.MasterId, SendSignal.MConnectComple);
             // 計測開始("cc01" 送信から"cc10"受信まで)
-            //time.ReStart();
             // 受信タスク終了まで待機
             MReciveData = MRtask.Result;
             file.MLog(MReciveData.RSignal);
@@ -172,6 +173,45 @@ namespace MISOTEN_APPLICATION.Screen.SignalConnect
                 return Retrun.False;
             }
 
+            //
+            // 「スレーブ：接続要請信号」
+            //
+
+            // バッファ内削除
+            SignalClass.ReceiveClearBuffer(DeviceId.ReceiveId);
+            Task<ReciveData> SRtask = Task.Run(() => { return SignalClass.GetSReciveData(); });
+            Dispatcher.Invoke((Action)(() => { Execution.Content = "スレーブから 接続確認信号(ct20) 受信待機中"; }));
+            // "ct02" 送信
+            SignalClass.SignalSend(DeviceId.ReceiveId, SendSignal.SConnectRequest);
+            // 計測開始("ct02" 送信から"ca20"受信まで)
+            // 受信タスク終了まで待機
+            SReciveData = SRtask.Result;
+            //file.SLog(SReciveData.RSignal);
+            // 受信値チェック
+            if (SReciveData.RSignal != ReceveSignal.SConnectRequest)
+            {
+                ErrorSentence = SReciveData.RSignal;
+                return Retrun.False;
+            }
+
+            //
+            // 「スレーブ：接続完了信号」
+            //
+
+            SRtask = Task.Run(() => { return SignalClass.GetSReciveData(); });
+            Dispatcher.Invoke((Action)(() => { Execution.Content = "スレーブから 接続完了信号(cc20) 受信待機中"; }));
+            // "cc02" 送信
+            SignalClass.SignalSend(DeviceId.ReceiveId, SendSignal.SConnectComple);
+            // 計測開始("cc02" 送信から"cc20"受信まで)
+            // 受信タスク終了まで待機
+            SReciveData = SRtask.Result;
+            //file.SLog(SReciveData.RSignal);
+            // 受信値チェック
+            if (SReciveData.RSignal != ReceveSignal.SConnectComple)
+            {
+                ErrorSentence = SReciveData.RSignal;
+                return Retrun.False;
+            }
             return Retrun.True;
         }
     }

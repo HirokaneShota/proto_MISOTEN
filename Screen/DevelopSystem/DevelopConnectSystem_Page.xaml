@@ -9,58 +9,96 @@
       Title="DevelopConnectSystem_Page"
       ShowsNavigationUI="False">
 
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="0.1*"/>
-            <RowDefinition Height="0.8*"/>
-            <RowDefinition Height="0.6*"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="0.8*"/>
-            <RowDefinition Height="0.6*"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="0.2*"/>
-        </Grid.RowDefinitions>
-        <Label Content="接続" Grid.Column="1" Margin="34,0,25,0" FontSize="36" FontWeight="Bold" FontFamily="Arial Black" Grid.Row="1"/>
-        <Label Content="接続 ON/OFF" Grid.Column="1" Margin="9,5,0,0" FontSize="18" FontWeight="Bold" FontFamily="Arial Black" Grid.Row="2"/>
-        <CheckBox Name="MasterConnectCheck" IsChecked="False" Content="マスター" Grid.Column="1" Margin="40,10,40,34" Grid.Row="3" FontSize="14"/>
-        <CheckBox Name="ReceiveConnectCheck" IsChecked="False" Content="スレーブ" Grid.Column="1" Margin="40,42,40,9" Grid.Row="3" FontSize="14"/>
+    <TabControl>
+        <TabItem Header="信号" Height="22" VerticalAlignment="Top">
 
-        <Button Content="接続" Margin="65,10,91,10" Grid.Row="4" Grid.ColumnSpan="2" FontSize="24" FontWeight="Bold" Click="ConnectButton_Click"/>
-        <Button Content="切断" Margin="91,10,65,10" Grid.Row="4" Grid.ColumnSpan="2" FontSize="24" FontWeight="Bold" Grid.Column="1" Click="CutButton_Click"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="0.1*"/>
+                    <RowDefinition Height="0.7*"/>
+                    <RowDefinition Height="0.6*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="0.8*"/>
+                    <RowDefinition Height="0.6*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="0.2*"/>
+                </Grid.RowDefinitions>
 
-        <Label Content="送信" Grid.Column="1" Margin="34,8,25,0" FontSize="36" FontWeight="Bold" FontFamily="Arial Black" Grid.Row="5"/>
-        <Label Content="送信 ON/OFF" Grid.Column="1" Margin="10,5,0,0" FontSize="18" FontWeight="Bold" FontFamily="Arial Black" Grid.Row="6"/>
-        <TextBox Name="SendText" Grid.ColumnSpan="3" Margin="80,20,80,24" Grid.Row="8" TextWrapping="Wrap" Text="" FontSize="18"/>
-        <CheckBox Name="MasterSendCheck" Content="マスター" Grid.Column="1" Margin="40,10,40,34" Grid.Row="7" FontSize="14"/>
-        <CheckBox Name="ReceiveSendCheck" Content="スレーブ" Grid.Column="1" Margin="40,42,40,9" Grid.Row="7" FontSize="14"/>
-        <Button Content="送信" Margin="10,10,10,10" Grid.Row="9" FontSize="24" FontWeight="Bold" Grid.Column="1" Click="SendButton_Click" />
-        <CheckBox x:Name="Send_BinaryConvertCheck" Content="Binary変換(数値のみ)" Margin="80,0,40,40" Grid.Row="8" FontSize="14" Grid.ColumnSpan="2"/>
+                <Label Content="接続" Grid.Column="1" Margin="34,0,25,0" FontSize="36" FontWeight="Bold" FontFamily="Arial Black" Grid.Row="1"/>
+                <Label Content="接続 ON/OFF" Grid.Column="1" Margin="9,5,0,0" FontSize="18" FontWeight="Bold" FontFamily="Arial Black" Grid.Row="2"/>
+                <CheckBox Name="MasterConnectCheck" IsChecked="False" Content="マスター" Grid.Column="1" Margin="40,10,40,34" Grid.Row="3" FontSize="14"/>
+                <CheckBox Name="ReceiveConnectCheck" IsChecked="False" Content="スレーブ" Grid.Column="1" Margin="40,42,40,9" Grid.Row="3" FontSize="14"/>
 
+                <Button Content="接続" Margin="65,10,91,10" Grid.Row="4" Grid.ColumnSpan="2" FontSize="24" FontWeight="Bold" Click="ConnectButton_Click"/>
+                <Button Content="切断" Margin="91,10,65,10" Grid.Row="4" Grid.ColumnSpan="2" FontSize="24" FontWeight="Bold" Grid.Column="1" Click="CutButton_Click"/>
 
-        <Label Content="受信" Grid.Column="4" Margin="24,0,35,0" FontSize="36" FontWeight="Bold" FontFamily="Arial Black" Grid.Row="1"/>
-        <Label Content="TEXT表示 ON/OFF" Grid.Column="3" Margin="10,5,100,0" FontSize="18" FontWeight="Bold" FontFamily="Arial Black" Grid.Row="2" Grid.ColumnSpan="2"/>
-        <CheckBox Name="Master_TextCheck" Content="マスター" Grid.Column="3" Margin="60,10,20,34" Grid.Row="3" FontSize="14"/>
-        <CheckBox Name="Receive_TextCheck" Content="スレーブ" Grid.Column="3" Margin="60,42,20,9" Grid.Row="3" FontSize="14"/>
-
-        <Label Content="FILE書き込み ON/OFF" Grid.Column="4" Margin="75,5,10,0" FontSize="18" FontWeight="Bold" FontFamily="Arial Black" Grid.Row="2" Grid.ColumnSpan="2"/>
-        <CheckBox Name="Master_FileCheck" Content="マスター" Grid.Column="4" Margin="130,10,90,34" Grid.Row="3" FontSize="14" Grid.ColumnSpan="2"/>
-        <CheckBox Name="Receive_FileCheck" Content="スレーブ" Grid.Column="4" Margin="130,42,90,9" Grid.Row="3" FontSize="14" Grid.ColumnSpan="2"/>
-        <Button Content="Open Log Folder" Grid.Column="5" Margin="10,10,35,39" Grid.Row="4" FontWeight="Bold" Click="OpenLogFolderButton_Click"/>
-        <TextBox Name="ReceiveText" Grid.ColumnSpan="3" Grid.Column="3" Margin="30,40,35,27" Grid.Row="4" Grid.RowSpan="6" TextWrapping="Wrap" Text="" FontSize="10"/>
-        <Button Content="非表示" Margin="10,10,10,10" Grid.Row="10" FontSize="24" FontWeight="Bold" Grid.Column="4"/>
-        <CheckBox Name="Receive_BinaryConvertCheck" Content="Binary変換(コマンド値以外)" Margin="30,10,57,30" Grid.Row="4" FontSize="14" Grid.ColumnSpan="2" Grid.Column="3" RenderTransformOrigin="0.425,-3.422"/>
+                <Label Content="送信" Grid.Column="1" Margin="34,8,25,0" FontSize="36" FontWeight="Bold" FontFamily="Arial Black" Grid.Row="5"/>
+                <Label Content="送信 ON/OFF" Grid.Column="1" Margin="10,5,0,0" FontSize="18" FontWeight="Bold" FontFamily="Arial Black" Grid.Row="6"/>
+                <TextBox Name="SendText" Grid.ColumnSpan="3" Margin="80,20" Grid.Row="8" TextWrapping="Wrap" Text="" FontSize="18"/>
+                <CheckBox Name="MasterSendCheck" Content="マスター" Grid.Column="1" Margin="40,10,40,34" Grid.Row="7" FontSize="14"/>
+                <CheckBox Name="ReceiveSendCheck" Content="スレーブ" Grid.Column="1" Margin="40,42,40,9" Grid.Row="7" FontSize="14"/>
+                <Button Content="送信" Margin="10,10,10,10" Grid.Row="9" FontSize="24" FontWeight="Bold" Grid.Column="1" Click="SendButton_Click" />
+                <CheckBox x:Name="Send_BinaryConvertCheck" Content="Binary変換(数値のみ)" Margin="80,0,40,40" Grid.Row="8" FontSize="14" Grid.ColumnSpan="2"/>
 
 
-    </Grid>
+                <Label Content="受信" Grid.Column="4" Margin="24,0,35,0" FontSize="36" FontWeight="Bold" FontFamily="Arial Black" Grid.Row="1"/>
+                <Label Content="TEXT表示 ON/OFF" Grid.Column="3" Margin="10,5,100,0" FontSize="18" FontWeight="Bold" FontFamily="Arial Black" Grid.Row="2" Grid.ColumnSpan="2"/>
+                <CheckBox Name="Master_TextCheck" Content="マスター" Grid.Column="3" Margin="60,10,20,34" Grid.Row="3" FontSize="14"/>
+                <CheckBox Name="Receive_TextCheck" Content="スレーブ" Grid.Column="3" Margin="60,42,20,9" Grid.Row="3" FontSize="14"/>
+
+                <Label Content="FILE書き込み ON/OFF" Grid.Column="4" Margin="75,5,10,0" FontSize="18" FontWeight="Bold" FontFamily="Arial Black" Grid.Row="2" Grid.ColumnSpan="2"/>
+                <CheckBox Name="Master_FileCheck" Content="マスター" Grid.Column="4" Margin="63,10,10,34" Grid.Row="3" FontSize="14"/>
+                <CheckBox Name="Receive_FileCheck" Content="スレーブ" Grid.Column="4" Margin="63,42,10,9" Grid.Row="3" FontSize="14"/>
+                <Button Content="Open Log Folder" Grid.Column="5" Margin="10,10,35,39" Grid.Row="4" FontWeight="Bold" Click="OpenLogFolderButton_Click"/>
+                <TextBox Name="ReceiveText" Grid.ColumnSpan="3" Grid.Column="3" Margin="30,40,35,27" Grid.Row="4" Grid.RowSpan="6" TextWrapping="Wrap" Text="" FontSize="10"/>
+                <Button Content="非表示" Margin="10,10,10,10" Grid.Row="10" FontSize="24" FontWeight="Bold" Grid.Column="4"/>
+                <CheckBox Name="Receive_BinaryConvertCheck" Content="Binary変換(コマンド値以外)" Margin="30,10,57,30" Grid.Row="4" FontSize="14" Grid.ColumnSpan="2" Grid.Column="3" RenderTransformOrigin="0.425,-3.422"/>
+                <CheckBox x:Name="Master_CSVFileCheck" Content="マスター(数値のみ)" Grid.Column="5" Margin="10,10,10,34" Grid.Row="3" FontSize="14"/>
+                <CheckBox x:Name="Slave_CSVFileCheck" Content="スレーブ(数値のみ)" Grid.Column="5" Margin="10,42,10,2" Grid.Row="3" FontSize="14"/>
+            </Grid>
+        </TabItem>
+        <TabItem Header="モータ">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0.5*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="0.5*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="0.5*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="0.5*"/>
+                </Grid.RowDefinitions>
+                <Label Content="スレーブへモータ出力" Grid.Column="2" Margin="50,40,50,10" FontSize="40" FontWeight="Bold" FontFamily="Arial Black" Grid.ColumnSpan="3"/>
+                <Label Content="モータ1" Grid.Column="1" Margin="30,0,20,10" FontSize="30" FontWeight="Bold" FontFamily="Yu Gothic UI Semibold" Grid.Row="1"/>
+                <TextBox Name="mottor1" Grid.Column="1" Margin="17,10,10,85" Grid.Row="2" TextWrapping="Wrap" Text="" FontSize="24" InputMethod.IsInputMethodEnabled="False" PreviewTextInput="mottor1_PreviewTextInput"/>
+                <Label Content="モータ2" Grid.Column="2" Margin="30,0,20,10" FontSize="30" FontWeight="Bold" FontFamily="Yu Gothic UI Semibold" Grid.Row="1"/>
+                <TextBox Name="mottor2" Grid.Column="2" Margin="17,10,10,85" Grid.Row="2" TextWrapping="Wrap" Text="" FontSize="24" InputMethod.IsInputMethodEnabled="False" PreviewTextInput="mottor2_PreviewTextInput"/>
+                <Label Content="モータ3" Grid.Column="3" Margin="30,0,20,10" FontSize="30" FontWeight="Bold" FontFamily="Yu Gothic UI Semibold" Grid.Row="1"/>
+                <TextBox Name="mottor3" Grid.Column="3" Margin="17,10,10,85" Grid.Row="2" TextWrapping="Wrap" Text="" FontSize="24" InputMethod.IsInputMethodEnabled="False" PreviewTextInput="mottor3_PreviewTextInput"/>
+                <Label Content="モータ4" Grid.Column="4" Margin="30,0,20,10" FontSize="30" FontWeight="Bold" FontFamily="Yu Gothic UI Semibold" Grid.Row="1"/>
+                <TextBox Name="mottor4" Grid.Column="4" Margin="17,10,10,85" Grid.Row="2" TextWrapping="Wrap" Text="" FontSize="24" InputMethod.IsInputMethodEnabled="False" PreviewTextInput="mottor4_PreviewTextInput"/>
+                <Label Content="モータ5" Grid.Column="5" Margin="30,0,20,10" FontSize="30" FontWeight="Bold" FontFamily="Yu Gothic UI Semibold" Grid.Row="1"/>
+                <TextBox Name="mottor5" Grid.Column="5" Margin="17,10,10,85" Grid.Row="2" TextWrapping="Wrap" Text="" FontSize="24" InputMethod.IsInputMethodEnabled="False" PreviewTextInput="mottor5_PreviewTextInput"/>
+                <Button Content="送信" Grid.Column="3" HorizontalAlignment="Left" Margin="18,92,0,0" Grid.Row="2" VerticalAlignment="Top" Width="109" Height="41" FontSize="24" Click="PWMSendButton_Click"/>
+            </Grid>
+        </TabItem>
+    </TabControl>
 </Page>

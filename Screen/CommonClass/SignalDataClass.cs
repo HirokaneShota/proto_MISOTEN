@@ -10,6 +10,10 @@ namespace MISOTEN_APPLICATION.Screen.CommonClass
     /* 送信信号クラスオブジェクト */
     class SendSignal
     {
+        //
+        // マスター信号
+        //
+
         // 接続要請信号
         public const string MConnectRequest = "ct01";
         // 接続要請信号
@@ -26,23 +30,59 @@ namespace MISOTEN_APPLICATION.Screen.CommonClass
         public const string MSensingEnd = "se01";
         // センシング停止信号
         public const string MSensingStop = "sh01";
+
+        //
+        // スレーブ信号
+        //
+
+        // 接続要請信号
+        public const string SConnectRequest = "ct02";
+        // 接続要請信号
+        public const string SConnectComple = "cc02";
+        // キャリブレーションスタート信号
+        public const string SCalibrationStart = "cs02";
+        // キャリブレーション完了信号
+        public const string SCalibrationComple = "ce02";
+        // センシング開始信号
+        public const string SSensingStart = "ss02";
+        // センシングリセット信号
+        public const string SSensingReset = "sr02";
+        // センシング終了信号
+        public const string SSensingEnd = "se02";
+        // センシング停止信号
+        public const string SSensingStop = "sh02";
     }
     /* 受信信号クラスオブジェクト */
     class SendNumSigna
     {
-        // マスター数値始まり信号
-        public const string MSData = "p";
+        // 始まり信号 1
+        public const string MSData1 = "a";
+        // 始まり信号 2
+        public const string MSData2 = "b";
         // 数値終わり信号
-        public const string EData = "e";
+        public const string EData = "1";
     }
 
     /* 受信信号クラスオブジェクト */
     class ReceveSignal
     {
+        //
+        // マスター信号
+        //
+
         // 接続確認信号時間経過
         public const string MConnectRequest = "ca10";
         // 接続完了信号
         public const string MConnectComple = "cc10";
+
+        //
+        // スレーブ信号
+        //
+
+        // 接続確認信号時間経過
+        public const string SConnectRequest = "ca20";
+        // 接続完了信号
+        public const string SConnectComple = "cc20";
     }
     /* 受信信号クラスオブジェクト */
     class ReceveNumSignal

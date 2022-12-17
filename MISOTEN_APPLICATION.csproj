@@ -56,16 +56,16 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="BackProcess\FileClass.cs" />
+    <Compile Include="BackProcess\GodConverter.cs" />
+    <Compile Include="BackProcess\GodFinger.cs" />
+    <Compile Include="BackProcess\Program.cs" />
     <Compile Include="BackProcess\SignalClass.cs" />
-    <Compile Include="BackProcess\Timer.cs" />
+    <Compile Include="BackProcess\TimerClass.cs" />
     <Compile Include="Screen\Calibration\CalibrationStandby_Page.xaml.cs">
       <DependentUpon>CalibrationStandby_Page.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Screen\Calibration\MasterCalibration _Page.xaml.cs">
-      <DependentUpon>MasterCalibration _Page.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Screen\Calibration\SlaveCalibration_Page.xaml.cs">
-      <DependentUpon>SlaveCalibration_Page.xaml</DependentUpon>
+    <Compile Include="Screen\Calibration\Calibration_Page.xaml.cs">
+      <DependentUpon>Calibration_Page.xaml</DependentUpon>
     </Compile>
     <Compile Include="Screen\CommonClass\CommonClass.cs" />
     <Compile Include="Screen\CommonClass\DataClass.cs" />
@@ -122,13 +122,9 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Screen\Calibration\MasterCalibration _Page.xaml">
-      <SubType>Designer</SubType>
+    <Page Include="Screen\Calibration\Calibration_Page.xaml">
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Screen\Calibration\SlaveCalibration_Page.xaml">
       <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Screen\DevelopSystem\DevelopConnectSystem_Page.xaml">
       <SubType>Designer</SubType>
