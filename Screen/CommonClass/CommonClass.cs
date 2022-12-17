@@ -56,7 +56,7 @@ namespace MISOTEN_APPLICATION.Screen.CommonClass
         public const int SECalibration = 10;
         // スレーブキャリブレーション　握る
         public const int SGCalibration = 10;
-        // 稼働状態 スリープ 100ms
+        // 稼働状態 スリープ 50ms
         public const double OperatSTime = 50.0f;
     }
 

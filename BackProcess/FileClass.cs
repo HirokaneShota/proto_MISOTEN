@@ -141,7 +141,7 @@ namespace MISOTEN_APPLICATION.BackProcess
             // 現在時刻を取得
             DateTime time = DateTime.Now;
             string Letter = Aggregation_string(letter);
-            File.AppendAllText(@csv, time.ToString("hhmmssfff") + "," + Letter);
+            File.AppendAllText(@csv, time.ToString("hh:mm:ss:fff") + "," + Letter);
         }
 
         /* 複数のstringを一つのstringへ "追記:12/15\n(改行)処理追加"*/

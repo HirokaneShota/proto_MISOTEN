@@ -242,11 +242,8 @@ namespace MISOTEN_APPLICATION.BackProcess
             SENSOR_VALUE[] Temporary_slavedate = new SENSOR_VALUE[5];
             SignalClass signalClass = signalclass;
             ReciveData_Sensor recivedata_sensor = new ReciveData_Sensor();
-            FileClass file = new FileClass();
-            file.MFirst();
             while (true)
             {
-                //file.MLog("bbb");
                 recivedata_sensor = signalClass.GetMSensor();
                 Temporary_masterdate[0] = recivedata_sensor.Little;
                 Temporary_masterdate[1] = recivedata_sensor.Ring;
@@ -294,7 +291,6 @@ namespace MISOTEN_APPLICATION.BackProcess
                     Console.WriteLine("fingerall");
                     return 0;
                 }
-                file.MLog("aaa");
             }
         }
         public Boolean finger_starting(SENSOR_VALUE _sensordate, SENSOR_VALUE _nextsensordate, int _finger_count)
@@ -350,8 +346,6 @@ namespace MISOTEN_APPLICATION.BackProcess
 
                 recivedata_sensor = signalClass.GetMSensor();
                 //recivedata_sensor=signalClass.GetSSensor();
-                //FileClass file = new FileClass();
-                //file.SLog(recivedata_sensor.Little.tip_pressure.ToString(), recivedata_sensor.Ring.tip_pressure.ToString(), recivedata_sensor.Middle.tip_pressure.ToString(), recivedata_sensor.Index.tip_pressure.ToString());
 
                 // センサー値書き込み(csvfile)
                 file_t.MDLog_csv(recivedata_sensor);
@@ -409,20 +403,12 @@ namespace MISOTEN_APPLICATION.BackProcess
                 gods_senten.fourth_godsentence = finger_power[3];
                 gods_senten.fifth_godsentence = finger_power[4];
 
-                /*
-                gods_senten.frist_godsentence.palm_pwm = 2500;
-                gods_senten.second_godsentence.palm_pwm = 500;
-                gods_senten.third_godsentence.palm_pwm = 500;
-                gods_senten.fourth_godsentence.palm_pwm = 500;
-                gods_senten.fifth_godsentence.palm_pwm = 500;
-                */
-                // 100msスリープ  //await Task.Delay(100);
+                // 50msスリープ  //await Task.Delay(100);
                 TimerClass.Sleep(Time.OperatSTime);
                 //スレーブに出力値を送信
                 signalClass.SetSendMotor(gods_senten);
                 // 出力値書き込み(csvfile)
-                file_t.Log_csv(gods_senten.frist_godsentence.palm_pwm.ToString(), gods_senten.second_godsentence.palm_pwm.ToString(), gods_senten.third_godsentence.palm_pwm.ToString(), gods_senten.fifth_godsentence.palm_pwm.ToString(), gods_senten.fifth_godsentence.palm_pwm.ToString(), "\n");
-                Debug.Print(gods_senten.frist_godsentence.palm_pwm.ToString() + "," + gods_senten.second_godsentence.palm_pwm.ToString() + "," + gods_senten.third_godsentence.palm_pwm.ToString() + "," + gods_senten.fifth_godsentence.palm_pwm.ToString() + "," + gods_senten.fifth_godsentence.palm_pwm.ToString());
+                file_t.Log_csv(gods_senten.frist_godsentence.tip_pwm.ToString(), gods_senten.second_godsentence.tip_pwm.ToString(), gods_senten.third_godsentence.tip_pwm.ToString(), gods_senten.fifth_godsentence.tip_pwm.ToString(), gods_senten.fifth_godsentence.tip_pwm.ToString(),null,gods_senten.frist_godsentence.palm_pwm.ToString(), gods_senten.second_godsentence.palm_pwm.ToString(), gods_senten.third_godsentence.palm_pwm.ToString(), gods_senten.fifth_godsentence.palm_pwm.ToString(), gods_senten.fifth_godsentence.palm_pwm.ToString(), "\n");
             }
             catch (Exception ex)
             {
