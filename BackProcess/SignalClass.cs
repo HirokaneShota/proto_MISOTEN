@@ -410,33 +410,33 @@ namespace MISOTEN_APPLICATION.BackProcess
                             MRecive.RSensor.Index.palm_pressure = (int)shortData[2];
                             // 親指・付け根
                             MRecive.RSensor.Thumb.palm_pressure = (int)shortData[3];
-                            // 小指・第二関節
+                            // 小指・第一関節
                             MRecive.RSensor.Little.second_joint = (int)shortData[4];
-                            // 薬指・第二関節
+                            // 薬指・第一関節
                             MRecive.RSensor.Ring.second_joint = (int)shortData[5];
 
                             MRSFlog[1] = true;
                             break;
                         // 可変抵抗*6(第一関節(中指+人差し指+親指)+第二関節(小指+薬指+中指))
                         case ReceveNumSignal.EData3:
-                            // 中指・第二関節
+                            // 中指・第一関節
                             MRecive.RSensor.Middle.second_joint = (int)shortData[0];
-                            // 人差し指・第二関節
+                            // 人差し指・第一関節
                             MRecive.RSensor.Index.second_joint = (int)shortData[1];
-                            // 親指・第二関節
+                            // 親指・第一関節
                             MRecive.RSensor.Thumb.second_joint = (int)shortData[2];
-                            // 小指・第三関節
+                            // 小指・第二関節
                             MRecive.RSensor.Little.third_joint = (int)shortData[3];
-                            // 薬指・第三関節
+                            // 薬指・第二関節
                             MRecive.RSensor.Ring.third_joint = (int)shortData[4];
-                            // 中指・第三関節
+                            // 中指・第二関節
                             MRecive.RSensor.Middle.third_joint = (int)shortData[5];
 
                             MRSFlog[2] = true;
                             break;
                         // 可変抵抗*1(人差し指)+エンプティ*1(親指関節)+曲げセンサー*4
                         case ReceveNumSignal.EData4:
-                            //人差し指・第三関節
+                            //人差し指・第二関節
                             MRecive.RSensor.Index.third_joint = (int)shortData[0];
                             // 親指・曲げセンサー
                             MRecive.RSensor.Thumb.third_joint = (int)shortData[1];
