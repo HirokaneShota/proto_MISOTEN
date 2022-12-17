@@ -32,12 +32,6 @@ namespace MISOTEN_APPLICATION.BackProcess
 
         static FileClass file = new FileClass();
 
-        // 仮コンストラクタ
-        public SignalClass() {
-            //file.First_csv("kumicho");
-        }
-
-
         /* シリアルポートセッター */
         public void SetSerialport(SerialPort serialport, int id)
         {
@@ -173,10 +167,6 @@ namespace MISOTEN_APPLICATION.BackProcess
                 // 読み込んだデータ数(byte)
                 Int32 invale = inCuf.Length;
 
-                //FileClass file = new FileClass();
-                //string start = Encoding.ASCII.GetString(data)[0] + "," +Encoding.ASCII.GetString(data)[invale - 1];
-                //file.SLog(start);
-
                 // センサー値
                 if ((inCuf[0] == ReceveNumSignal.MSData[0]) || (inCuf[0] == ReceveNumSignal.SSData[0]))
                 {
@@ -216,8 +206,7 @@ namespace MISOTEN_APPLICATION.BackProcess
                         SRecive.RSignal = inCuf;
                         // 受信Flog
                         SRecive.RFlog = Flog.RSignal;
-                        if (inCuf == "er02") MessageBox.Show("スレーブマイコンオーバーフロー");
-                        //file.Log_csv(inCuf, "\n");
+                        // if (inCuf == "er02") MessageBox.Show("スレーブマイコンオーバーフロー");
                     }
                 }
             }
@@ -284,7 +273,7 @@ namespace MISOTEN_APPLICATION.BackProcess
         public ReciveData GetMReciveData()
         {
             // 受信するまで　※送受信時間かかれば処理変更
-            while ((!MRSFlog.All(i => i == true)) && (MRecive.RFlog != Flog.RSignal)) ;
+            while ((!MRSFlog.All(i => i == true)) && (MRecive.RFlog != Flog.RSignal) && (MSerialport.IsOpen == true)) ;
             ReciveData SendData = MRecive;
             InitSignal(DeviceId.MasterId);
             return SendData;
@@ -316,16 +305,16 @@ namespace MISOTEN_APPLICATION.BackProcess
         {
             TimerClass time = new TimerClass();
             time.Start();
-            file.MLog("受信待機");
+            //file.MLog("受信待機");
             // 受信するまで　※送受信時間かかれば処理変更
             while (!MRSFlog.All(i => i == true)) ;
             //while (!(MRecive.RFlog == Flog.RNum)) ;
             double j = time.MiliElapsed();
-            file.MLog(j.ToString());
+            //file.MLog(j.ToString());
             lock (lockObject)
             {
                 // 初期化
-                MRecive.RFlog = Flog.RNo;
+                //MRecive.RFlog = Flog.RNo;
                 InitSignal(DeviceId.MasterId);
                 Array.Clear(MRSFlog, 0, 4);
                 return MRecive.RSensor;
@@ -484,8 +473,6 @@ namespace MISOTEN_APPLICATION.BackProcess
                             SRSFlog[1] = true;
                             break;
                     }
-                    // file書き込み
-                    //file.SLog(Array.ConvertAll(shortData, x => x.ToString()));
                 }
             }
         }
