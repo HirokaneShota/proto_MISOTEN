@@ -242,11 +242,8 @@ namespace MISOTEN_APPLICATION.BackProcess
             SENSOR_VALUE[] Temporary_slavedate = new SENSOR_VALUE[5];
             SignalClass signalClass = signalclass;
             ReciveData_Sensor recivedata_sensor = new ReciveData_Sensor();
-            FileClass file = new FileClass();
-            file.MFirst();
             while (true)
             {
-                //file.MLog("bbb");
                 recivedata_sensor = signalClass.GetMSensor();
                 Temporary_masterdate[0] = recivedata_sensor.Little;
                 Temporary_masterdate[1] = recivedata_sensor.Ring;
@@ -294,7 +291,6 @@ namespace MISOTEN_APPLICATION.BackProcess
                     Console.WriteLine("fingerall");
                     return 0;
                 }
-                file.MLog("aaa");
             }
         }
         public Boolean finger_starting(SENSOR_VALUE _sensordate, SENSOR_VALUE _nextsensordate, int _finger_count)
@@ -407,7 +403,7 @@ namespace MISOTEN_APPLICATION.BackProcess
                 gods_senten.fourth_godsentence = finger_power[3];
                 gods_senten.fifth_godsentence = finger_power[4];
 
-                // 100msスリープ  //await Task.Delay(100);
+                // 50msスリープ  //await Task.Delay(100);
                 TimerClass.Sleep(Time.OperatSTime);
                 //スレーブに出力値を送信
                 signalClass.SetSendMotor(gods_senten);
