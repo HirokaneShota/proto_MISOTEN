@@ -105,20 +105,20 @@ namespace MISOTEN_APPLICATION.Screen.SignalConnect
             {
                 // ポートセット
                 masterport = SettingPort(masterport, product[DeviceId.MasterId]);
-                //slaveprot = SettingPort(slaveprot, product[DeviceId.ReceiveId]);
+                slaveprot = SettingPort(slaveprot, product[DeviceId.ReceiveId]);
                 // ポートオープン
                 masterport.Open();
-                //slaveprot.Open();
+                slaveprot.Open();
                 // ファイル書き込み
                 file.MFirst();
                 file.SFirst();
                 // シリアルポートセット
                 SignalClass.SetSerialport(masterport, DeviceId.MasterId);
-                //SignalClass.SetSerialport(slaveprot, DeviceId.ReceiveId);
-                Dispatcher.Invoke((Action)(() => { Execution.Content = "受信バンドラ立ち上げ中..."+" ( 5秒 )"; }));
+                SignalClass.SetSerialport(slaveprot, DeviceId.ReceiveId);
+                Dispatcher.Invoke((Action)(() => { Execution.Content = "受信バンドラ立ち上げ中..."+" ( 1秒 )"; }));
                 TimerClass.Sleep(1000);
                 MasterPort = masterport;
-                //SlaveProt = slaveprot;
+                SlaveProt = slaveprot;
 
                 return Retrun.True;
             }
@@ -185,7 +185,7 @@ namespace MISOTEN_APPLICATION.Screen.SignalConnect
             //
             // 「スレーブ：接続要請信号」
             //
-            /*
+            
             // バッファ内削除
             SignalClass.ReceiveClearBuffer(DeviceId.ReceiveId);
             Task<ReciveData> SRtask = Task.Run(() => { return SignalClass.GetSReciveData(); });
@@ -220,7 +220,7 @@ namespace MISOTEN_APPLICATION.Screen.SignalConnect
             {
                 ErrorSentence = SReciveData.RSignal;
                 return Retrun.False;
-            }*/
+            }
             return Retrun.True;
         }
     }

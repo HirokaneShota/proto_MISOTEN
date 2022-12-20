@@ -78,9 +78,9 @@ namespace MISOTEN_APPLICATION.Screen.Calibration
         {
             
             // 手を広げる処理
-            //Expand();
+            Expand();
             // 手を握る処理
-            //Grasp();
+            Grasp();
             // 手のひら最大数設定処理
             // Pushing();
             
@@ -205,9 +205,9 @@ namespace MISOTEN_APPLICATION.Screen.Calibration
             // "cs01" 送信 : キャリブレーションスタート
             Signalclass.SignalSend(DeviceId.MasterId, SendSignal.MCalibrationStart);
             // "cs02" 送信 : キャリブレーションスタート
-            //Signalclass.SignalSend(DeviceId.ReceiveId, SendSignal.SCalibrationStart);
+            Signalclass.SignalSend(DeviceId.ReceiveId, SendSignal.SCalibrationStart);
 
-            //while (EndFlog != Flog.End) ;
+            while (EndFlog != Flog.End) ;
 
             //
             // 「キャリブレーション完了信号」
@@ -216,7 +216,7 @@ namespace MISOTEN_APPLICATION.Screen.Calibration
             // "ce01" 送信 : キャリブレーション終了
             Signalclass.SignalSend(DeviceId.MasterId, SendSignal.MCalibrationComple);
             // "ce02" 送信 : キャリブレーション終了
-            //Signalclass.SignalSend(DeviceId.ReceiveId, SendSignal.SCalibrationComple);
+            Signalclass.SignalSend(DeviceId.ReceiveId, SendSignal.SCalibrationComple);
             return;
         }
 

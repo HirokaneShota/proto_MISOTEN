@@ -62,7 +62,7 @@ namespace MISOTEN_APPLICATION.Screen.Operation
             // マスター:"ss01" 送信 : センシング開始信号
             Signalclass.SignalSend(DeviceId.MasterId, SendSignal.MSensingStart);
             // スレーブ:"ss02" 送信 : センシング開始信号
-            //Signalclass.SignalSend(DeviceId.ReceiveId, SendSignal.SSensingStart);
+            Signalclass.SignalSend(DeviceId.ReceiveId, SendSignal.SSensingStart);
 
             // 稼働処理
             //int ret = Playing(Signalclass);
@@ -72,7 +72,7 @@ namespace MISOTEN_APPLICATION.Screen.Operation
             // マスター:"sh01" 送信 : センシング停止信号
             Signalclass.SignalSend(DeviceId.MasterId, SendSignal.MSensingStop);
             // スレーブ:"sh02" 送信 : センシング停止信号
-            //Signalclass.SignalSend(DeviceId.ReceiveId, SendSignal.SSensingStop);
+            Signalclass.SignalSend(DeviceId.ReceiveId, SendSignal.SSensingStop);
 
         }
 
@@ -112,7 +112,7 @@ namespace MISOTEN_APPLICATION.Screen.Operation
             Signalclass.SignalSend(DeviceId.MasterId, SendSignal.MSensingReset);
 
             // スレーブ:"sr02" 送信 : センシングリセット信号
-            //Signalclass.SignalSend(DeviceId.ReceiveId, SendSignal.SSensingReset);
+            Signalclass.SignalSend(DeviceId.ReceiveId, SendSignal.SSensingReset);
 
             // キャリブレーション準備画面へ移行
             var calibrationstandby_page = new CalibrationStandby_Page(Signalclass);
