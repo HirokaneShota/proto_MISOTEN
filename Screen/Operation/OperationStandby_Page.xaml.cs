@@ -34,10 +34,17 @@ namespace MISOTEN_APPLICATION.Screen.Operation
 
         }
 
-        private void StartButton_Click(object sender, RoutedEventArgs e)
+        private void LogStartButton_Click(object sender, RoutedEventArgs e)
         {
             // 稼働ページへ移行
-            var operation_page = new Operation_Page(Signalclass);
+            var operation_page = new Operation_Page(Signalclass , Flog.LogON);
+            NavigationService.Navigate(operation_page);
+        }
+
+        private void RealTimeStartButton_Click(object sender, RoutedEventArgs e)
+        {
+            // 稼働ページへ移行
+            var operation_page = new Operation_Page(Signalclass, Flog.RialON);
             NavigationService.Navigate(operation_page);
         }
     }

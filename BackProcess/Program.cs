@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Linq;
 using MISOTEN_APPLICATION.Screen.CommonClass;
 using System.Windows;
+using System.IO;
 
 namespace MISOTEN_APPLICATION.BackProcess
 {
@@ -62,7 +63,6 @@ namespace MISOTEN_APPLICATION.BackProcess
         public GodHand()
         {
             file_t.DMFirst_csv();
-            file_t.DSFirst_csv();
             file_t.First_csv("send");
             for (int index = 0; index < 5; index++)
             {
@@ -335,9 +335,6 @@ namespace MISOTEN_APPLICATION.BackProcess
         {
             try
             {
-
-                Debug.Print("start");
-
                 SENSOR_VALUE[] Temporary_masterdate = new SENSOR_VALUE[5];
                 SENSOR_VALUE[] Temporary_slavedate = new SENSOR_VALUE[5];
                 SignalClass signalClass = signalclass;
@@ -406,7 +403,7 @@ namespace MISOTEN_APPLICATION.BackProcess
                 // 50msスリープ  //await Task.Delay(100);
                 TimerClass.Sleep(Time.OperatSTime);
                 //スレーブに出力値を送信
-                signalClass.SetSendMotor(gods_senten);
+                //signalClass.SetSendMotor(gods_senten);
                 // 出力値書き込み(csvfile)
                 file_t.Log_csv(gods_senten.frist_godsentence.tip_pwm.ToString(), gods_senten.second_godsentence.tip_pwm.ToString(), gods_senten.third_godsentence.tip_pwm.ToString(), gods_senten.fifth_godsentence.tip_pwm.ToString(), gods_senten.fifth_godsentence.tip_pwm.ToString(),null,gods_senten.frist_godsentence.palm_pwm.ToString(), gods_senten.second_godsentence.palm_pwm.ToString(), gods_senten.third_godsentence.palm_pwm.ToString(), gods_senten.fifth_godsentence.palm_pwm.ToString(), gods_senten.fifth_godsentence.palm_pwm.ToString(), "\n");
             }
