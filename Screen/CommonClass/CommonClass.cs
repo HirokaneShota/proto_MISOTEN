@@ -90,6 +90,13 @@ namespace MISOTEN_APPLICATION.Screen.CommonClass
 
         // キャリブレーション : 手を閉じる
         public const int CalibClose = 1;
+
+        // 開始Flog
+        public const int NotStart = 0;
+        // リアルタイム開始操作
+        public const int RialON = 10;
+        // ログありで開始
+        public const int LogON = 20;
     }
 
     /* Uri */

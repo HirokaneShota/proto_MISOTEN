@@ -115,8 +115,8 @@ namespace MISOTEN_APPLICATION.Screen.SignalConnect
                 // シリアルポートセット
                 SignalClass.SetSerialport(masterport, DeviceId.MasterId);
                 SignalClass.SetSerialport(slaveprot, DeviceId.ReceiveId);
-                Dispatcher.Invoke((Action)(() => { Execution.Content = "受信バンドラ立ち上げ中..."+" ( 5秒 )"; }));
-                TimerClass.Sleep(5000);
+                Dispatcher.Invoke((Action)(() => { Execution.Content = "受信バンドラ立ち上げ中..."+" ( 1秒 )"; }));
+                TimerClass.Sleep(1000);
                 MasterPort = masterport;
                 SlaveProt = slaveprot;
 
@@ -134,9 +134,18 @@ namespace MISOTEN_APPLICATION.Screen.SignalConnect
         {
             // マスター受信値
             ReciveData MReciveData = new ReciveData();
-            // マスター受信値
+            // スレーブ受信値
             ReciveData SReciveData = new ReciveData();
-            
+
+            //
+            // 「初期化信号」
+            //
+
+            // "re01" 送信
+            //SignalClass.SignalSend(DeviceId.MasterId, SendSignal.MInit);
+            // "re02" 送信
+            //SignalClass.SignalSend(DeviceId.ReceiveId, SendSignal.SInit);
+
             //
             // 「マスター：接続要請信号」
             //
@@ -176,7 +185,7 @@ namespace MISOTEN_APPLICATION.Screen.SignalConnect
             //
             // 「スレーブ：接続要請信号」
             //
-
+            
             // バッファ内削除
             SignalClass.ReceiveClearBuffer(DeviceId.ReceiveId);
             Task<ReciveData> SRtask = Task.Run(() => { return SignalClass.GetSReciveData(); });
@@ -186,7 +195,7 @@ namespace MISOTEN_APPLICATION.Screen.SignalConnect
             // 計測開始("ct02" 送信から"ca20"受信まで)
             // 受信タスク終了まで待機
             SReciveData = SRtask.Result;
-            //file.SLog(SReciveData.RSignal);
+            file.SLog(SReciveData.RSignal);
             // 受信値チェック
             if (SReciveData.RSignal != ReceveSignal.SConnectRequest)
             {
@@ -205,7 +214,7 @@ namespace MISOTEN_APPLICATION.Screen.SignalConnect
             // 計測開始("cc02" 送信から"cc20"受信まで)
             // 受信タスク終了まで待機
             SReciveData = SRtask.Result;
-            //file.SLog(SReciveData.RSignal);
+            file.SLog(SReciveData.RSignal);
             // 受信値チェック
             if (SReciveData.RSignal != ReceveSignal.SConnectComple)
             {

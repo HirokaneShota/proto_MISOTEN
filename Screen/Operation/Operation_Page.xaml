@@ -23,8 +23,11 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="0.5*"/>
         </Grid.RowDefinitions>
-        <Image x:Name="Rogo"  Source=" ../../image/ROGO.png " Margin="50,50,50,20" Grid.RowSpan="3" Grid.ColumnSpan="3"/>
+        <Button x:Name="RogoButton" Margin="50,50,50,20" Grid.RowSpan="3" Grid.ColumnSpan="3" Background="White" Click="RogoButton_Click" BorderBrush="White" Foreground="White">
+            <Image Source=" ../../image/ROGO.png " VerticalAlignment="Center" />
+        </Button>
         <Button x:Name="EndButton" Content="終了" Grid.Row="3" Grid.Column="1" Margin="160,55,30,10" FontSize="24" FontWeight="Bold" FontFamily="Arial Black" Grid.ColumnSpan="2" Click="EndButton_Click"/>
         <Button x:Name="CalibrationButton" Content="キャリブレーション" Grid.Row="3" Margin="30,55,160,10" FontSize="24" FontWeight="Bold" FontFamily="Arial Black" Grid.ColumnSpan="2" Click="CalibrationButton_Click"/>
+        <TextBlock x:Name="StatusTextBlock" Grid.Column="1" Margin="210,10,20,80" TextWrapping="Wrap" FontSize="22" Text="設定なし" Grid.ColumnSpan="2"/>
     </Grid>
 </Page>

@@ -52,7 +52,8 @@ namespace MISOTEN_APPLICATION.BackProcess
                 // 現在時刻を取得
                 DateTime time = DateTime.Now;
                 dmuri_csv = URI.LogFolder + time.ToString("MMddhhmmss") + "_" + dmuri_csv;
-                File.Create(dmuri_csv);
+                FileStream file = File.Create(dmuri_csv);
+                file.Close();
             }
             catch (Exception ex)
             {
@@ -68,7 +69,8 @@ namespace MISOTEN_APPLICATION.BackProcess
                 // 現在時刻を取得
                 DateTime time = DateTime.Now;
                 dsuri_csv = URI.LogFolder + time.ToString("MMddhhmmss") + "_" + dsuri_csv;
-                File.Create(dsuri_csv);
+                FileStream file = File.Create(dsuri_csv);
+                file.Close();
             }
             catch (Exception ex)
             {
@@ -81,11 +83,12 @@ namespace MISOTEN_APPLICATION.BackProcess
         public void First_csv(string name)
         {
             try
-            { 
-            // 現在時刻を取得
-            DateTime time = DateTime.Now;
-            csv = URI.LogFolder + time.ToString("MMddhhmmss") + "_" + name +".csv";
-            File.Create(csv);
+            {
+                // 現在時刻を取得
+                DateTime time = DateTime.Now;
+                csv = URI.LogFolder + time.ToString("MMddhhmmss") + "_" + name + ".csv";
+                FileStream file = File.Create(csv);
+                file.Close();
             }
             catch (Exception ex)
             {

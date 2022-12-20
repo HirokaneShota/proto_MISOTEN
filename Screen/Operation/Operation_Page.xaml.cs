@@ -28,20 +28,32 @@ namespace MISOTEN_APPLICATION.Screen.Operation
         SignalClass Signalclass = new SignalClass();
         // 排他制御に使用するオブジェクト
         private static Object lockObject = new Object();
-
         // 処理終了フラグ
         int EndFlog = Flog.Start;
+        // 開始Flog
+        int StartFlog = Flog.NotStart;
 
-        public Operation_Page(SignalClass signalclass)
+        public Operation_Page(SignalClass signalclass , int flog)
         {
             InitializeComponent();
             Signalclass = signalclass;
+            StartFlog = flog;
         }
 
         void PageLoad(object sender, RoutedEventArgs e)
         {
             // センシング用タスク
             Task ReceveTask = Task.Run(() => { ReceveAsync(); });
+
+            if(StartFlog == Flog.LogON)
+            {
+                StatusTextBlock.Text = "LOGあり実装";
+            }
+            else if (StartFlog == Flog.RialON)
+            {
+                StatusTextBlock.Text = "リアルタイム実装";
+            }
+
         }
 
         /* センシング処理 */
@@ -59,7 +71,7 @@ namespace MISOTEN_APPLICATION.Screen.Operation
 
             // マスター:"sh01" 送信 : センシング停止信号
             Signalclass.SignalSend(DeviceId.MasterId, SendSignal.MSensingStop);
-            // レシーブ:"sh02" 送信 : センシング停止信号
+            // スレーブ:"sh02" 送信 : センシング停止信号
             Signalclass.SignalSend(DeviceId.ReceiveId, SendSignal.SSensingStop);
 
         }
@@ -68,23 +80,11 @@ namespace MISOTEN_APPLICATION.Screen.Operation
         private async Task<int> Playing(SignalClass signalclass)
         {
             GodHand godhand = new GodHand();
-
-            Debug.Print("Threshold_monitoring start");
             //var reslt = await godhand.Threshold_monitoring(signalclass);
-            Debug.Print("Threshold_monitoring end");
-            /*
-            GODS_SENTENCE gods_senten = new GODS_SENTENCE();
-            gods_senten.frist_godsentence.palm_pwm = 2500;
-            gods_senten.second_godsentence.palm_pwm = 2500;
-            gods_senten.third_godsentence.palm_pwm = 2500;
-            gods_senten.fourth_godsentence.palm_pwm = 2500;
-            gods_senten.fifth_godsentence.palm_pwm = 2500;
-            signalclass.SetSendMotor(gods_senten);
-
-            TimerClass.Sleep(1000);
-            */
-            while (true)//EndFlog != Flog.End)
+            Debug.Print("start");
+            while (EndFlog != Flog.End)
             {
+                //StartFlogに格納している(リアルタイムで開始:RialON ログありで開始:LogON)
                 var Reslt = await godhand.run(signalclass);
             };
 
@@ -117,6 +117,12 @@ namespace MISOTEN_APPLICATION.Screen.Operation
             // キャリブレーション準備画面へ移行
             var calibrationstandby_page = new CalibrationStandby_Page(Signalclass);
             NavigationService.Navigate(calibrationstandby_page);
+        }
+        // ロゴ画像ボタン
+        private void RogoButton_Click(object sender, RoutedEventArgs e)
+        {
+            // LogFileOpen
+            System.Diagnostics.Process.Start("explorer.exe", @"Log");
         }
     }
 }

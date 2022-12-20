@@ -30,6 +30,8 @@ namespace MISOTEN_APPLICATION.Screen.CommonClass
         public const string MSensingEnd = "se01";
         // センシング停止信号
         public const string MSensingStop = "sh01";
+        // 初期化信号
+        public const string MInit = "re01";
 
         //
         // スレーブ信号
@@ -51,6 +53,8 @@ namespace MISOTEN_APPLICATION.Screen.CommonClass
         public const string SSensingEnd = "se02";
         // センシング停止信号
         public const string SSensingStop = "sh02";
+        // 初期化信号
+        public const string SInit = "re02";
     }
     /* 受信信号クラスオブジェクト */
     class SendNumSigna

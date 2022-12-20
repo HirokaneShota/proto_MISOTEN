@@ -76,13 +76,13 @@ namespace MISOTEN_APPLICATION.Screen.Calibration
         /* 時間計測処理 */
         private void Measurement()
         {
-            /*
+            
             // 手を広げる処理
             Expand();
             // 手を握る処理
-            Grasp();*/
+            Grasp();
             // 手のひら最大数設定処理
-            Pushing();
+            // Pushing();
             
             Dispatcher.Invoke((Action)(() =>
             {
@@ -192,7 +192,6 @@ namespace MISOTEN_APPLICATION.Screen.Calibration
         private void CalibrationButton_Click(object sender, RoutedEventArgs e)
         {
             ProcFlog = Flog.CalibPush;
-
         }
 
 
@@ -214,10 +213,10 @@ namespace MISOTEN_APPLICATION.Screen.Calibration
             // 「キャリブレーション完了信号」
             //
 
-            // "ce02" 送信 : キャリブレーション終了
-            Signalclass.SignalSend(DeviceId.ReceiveId, SendSignal.SCalibrationComple);
             // "ce01" 送信 : キャリブレーション終了
             Signalclass.SignalSend(DeviceId.MasterId, SendSignal.MCalibrationComple);
+            // "ce02" 送信 : キャリブレーション終了
+            Signalclass.SignalSend(DeviceId.ReceiveId, SendSignal.SCalibrationComple);
             return;
         }
 
