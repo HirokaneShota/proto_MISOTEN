@@ -42,8 +42,8 @@ namespace MISOTEN_APPLICATION.Screen.SystemSelect
             Signalclass.ProtCut(DeviceId.MasterId);
 
             // スレーブ:"se02" 送信 : センシング終了信号
-            Signalclass.SignalSend(DeviceId.ReceiveId, SendSignal.SSensingEnd);
-            Signalclass.ProtCut(DeviceId.ReceiveId);
+            //Signalclass.SignalSend(DeviceId.ReceiveId, SendSignal.SSensingEnd);
+            //Signalclass.ProtCut(DeviceId.ReceiveId);
 
             SignalConnect_Page signalconnect_page = new SignalConnect_Page();
             NavigationService.Navigate(signalconnect_page);
@@ -55,7 +55,7 @@ namespace MISOTEN_APPLICATION.Screen.SystemSelect
             // マスター:"sr01" 送信 : センシングリセット信号
             Signalclass.SignalSend(DeviceId.MasterId, SendSignal.MSensingReset);
             // スレーブ:"sr02" 送信 : センシングリセット信号
-            Signalclass.SignalSend(DeviceId.ReceiveId, SendSignal.SSensingReset);
+            //Signalclass.SignalSend(DeviceId.ReceiveId, SendSignal.SSensingReset);
 
             // キャリブレーション準備画面へ移行
             var calibrationstandby_page = new CalibrationStandby_Page(Signalclass);
@@ -69,8 +69,8 @@ namespace MISOTEN_APPLICATION.Screen.SystemSelect
             Signalclass.SignalSend(DeviceId.MasterId, SendSignal.MSensingEnd);
             Signalclass.ProtCut(DeviceId.MasterId);
             // スレーブ:"se02" 送信 : センシング終了信号
-            Signalclass.SignalSend(DeviceId.ReceiveId, SendSignal.SSensingEnd);
-            Signalclass.ProtCut(DeviceId.ReceiveId);
+            //Signalclass.SignalSend(DeviceId.ReceiveId, SendSignal.SSensingEnd);
+            //Signalclass.ProtCut(DeviceId.ReceiveId);
 
             Window.GetWindow(this).Close();
         }
