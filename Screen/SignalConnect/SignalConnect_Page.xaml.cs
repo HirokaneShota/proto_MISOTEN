@@ -96,29 +96,31 @@ namespace MISOTEN_APPLICATION.Screen.SignalConnect
         private int ProtConnect(SerialPort masterport, SerialPort slaveprot)
         {
             Dispatcher.Invoke((Action)(() => { Execution.Content = "JSONファイル読み込み中..."; }));
-            //　file読み込み
-            string ResumeJson = File.ReadAllText("Json\\SerialPort.json");
-            // JSONデータからオブジェクトを復元
-            List<SerialPortData> product = JsonSerializer.Deserialize<List<SerialPortData>>(ResumeJson);
-            // masterシリアルポートに接続
+
             try
             {
+                //　file読み込み
+                string ResumeJson = File.ReadAllText(URI.ComJson);
+                // JSONデータからオブジェクトを復元
+                List<SerialPortData> product = JsonSerializer.Deserialize<List<SerialPortData>>(ResumeJson);
+                // masterシリアルポートに接続
+
                 // ポートセット
                 masterport = SettingPort(masterport, product[DeviceId.MasterId]);
-                slaveprot = SettingPort(slaveprot, product[DeviceId.ReceiveId]);
+                //slaveprot = SettingPort(slaveprot, product[DeviceId.ReceiveId]);
                 // ポートオープン
                 masterport.Open();
-                slaveprot.Open();
+                //slaveprot.Open();
                 // ファイル書き込み
                 file.MFirst();
                 file.SFirst();
                 // シリアルポートセット
                 SignalClass.SetSerialport(masterport, DeviceId.MasterId);
-                SignalClass.SetSerialport(slaveprot, DeviceId.ReceiveId);
-                Dispatcher.Invoke((Action)(() => { Execution.Content = "受信バンドラ立ち上げ中..."+" ( 1秒 )"; }));
+                //SignalClass.SetSerialport(slaveprot, DeviceId.ReceiveId);
+                Dispatcher.Invoke((Action)(() => { Execution.Content = "受信バンドラ立ち上げ中..." + " ( 1秒 )"; }));
                 TimerClass.Sleep(1000);
                 MasterPort = masterport;
-                SlaveProt = slaveprot;
+                //SlaveProt = slaveprot;
 
                 return Retrun.True;
             }
@@ -185,7 +187,7 @@ namespace MISOTEN_APPLICATION.Screen.SignalConnect
             //
             // 「スレーブ：接続要請信号」
             //
-            
+            /*
             // バッファ内削除
             SignalClass.ReceiveClearBuffer(DeviceId.ReceiveId);
             Task<ReciveData> SRtask = Task.Run(() => { return SignalClass.GetSReciveData(); });
@@ -220,7 +222,7 @@ namespace MISOTEN_APPLICATION.Screen.SignalConnect
             {
                 ErrorSentence = SReciveData.RSignal;
                 return Retrun.False;
-            }
+            }*/
             return Retrun.True;
         }
     }

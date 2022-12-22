@@ -23,26 +23,30 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="0.2*"/>
         </Grid.RowDefinitions>
-        <Button Name="CalibrationButton" Content="" Grid.Row="3" Grid.Column="1" Margin="20,55,20,10" FontSize="36" FontWeight="Bold" FontFamily="Arial Black" Click="CalibrationButton_Click"/>
+        <Button Name="CalibrationButton" Content="" Grid.Row="3" Grid.Column="1" Margin="20,55,20,10" FontSize="36" FontWeight="Bold" FontFamily="Arial Black"/>
         <Label Name="CountLabel" Grid.Column="1" Content="" Grid.Row="3" Margin="30,5,2,85" FontWeight="Bold" FontSize="14"/>
         <Button x:Name="EndButton" Content="計測終了" Grid.Row="3" Grid.Column="1" Margin="160,55,30,10" FontSize="24" FontWeight="Bold" FontFamily="Arial Black" Grid.ColumnSpan="2" Click="EndButton_Click"/>
         <Button x:Name="ReMeasureButton" Content="再計測" Grid.Row="3" Margin="30,55,160,10" FontSize="24" FontWeight="Bold" FontFamily="Arial Black" Grid.ColumnSpan="2" Click="ReMeasureButton_Click"/>
 
-        <Slider x:Name="LittleSlider" Grid.Row="0" Grid.ColumnSpan="3" SmallChange="1"  Minimum="0" Maximum="2400" TickFrequency="10" TickPlacement="None" Foreground="Black" Margin="50,110,80,3" ValueChanged="LittleSlider_ValueChanged"/>
-        <Slider x:Name="RingSlider" Grid.Row="1" Grid.ColumnSpan="3" SmallChange="1"  Minimum="0" Maximum="2400" TickFrequency="10" TickPlacement="None" Foreground="Black" Margin="50,40,80,71" ValueChanged="RingSlider_ValueChanged"/>
-        <Slider x:Name="MiddleSlider" Grid.Row="1" Grid.ColumnSpan="3" SmallChange="1"  Minimum="0" Maximum="2400" TickFrequency="10" TickPlacement="None" Foreground="Black" Margin="50,110,80,3" ValueChanged="MiddleSlider_ValueChanged"/>
-        <Slider x:Name="IndexSlider" Grid.Row="2" Grid.ColumnSpan="3" SmallChange="1"  Minimum="0" Maximum="2400" TickFrequency="10" TickPlacement="None" Foreground="Black" Margin="50,40,80,71" ValueChanged="IndexSlider_ValueChanged"/>
-        <Slider x:Name="ThumbSlider" Grid.Row="2" Grid.ColumnSpan="3" SmallChange="1"  Minimum="0" Maximum="2400" TickFrequency="10" TickPlacement="None" Foreground="Black" Margin="50,110,80,0" ValueChanged="ThumbSlider_ValueChanged"/>
+        <TextBlock  x:Name="LittleTextBlock" Text="0" Grid.Column="2" Margin="65,100,10,0" FontSize="15"/>
+        <TextBlock x:Name="RingTextBlock" Text="0" Grid.Column="2" Margin="65,30,10,70" FontSize="15" Grid.Row="1"/>
+        <TextBlock x:Name="MiddleTextBlock" Text="0" Grid.Column="2" Margin="65,100,10,0" FontSize="15" Grid.Row="1"/>
+        <TextBlock x:Name="IndexTextBlock" Text="0" Grid.Column="2" Margin="65,30,10,70" FontSize="15" Grid.Row="2"/>
+        <TextBlock x:Name="ThumbTextBlock" Text="0" Grid.Column="2" Margin="65,100,10,0" FontSize="15" Grid.Row="2"/>
+        <Slider x:Name="LittleSlider" Grid.Row="0" Grid.ColumnSpan="3" SmallChange="1" Value="500" Minimum="500" Maximum="2500" TickFrequency="10" TickPlacement="None" Foreground="Black" Margin="50,110,80,3" ValueChanged="LittleSlider_ValueChanged"/>
+        <Slider x:Name="RingSlider" Grid.Row="1" Grid.ColumnSpan="3" SmallChange="1" Value="500" Minimum="500" Maximum="2500" TickFrequency="10" TickPlacement="None" Foreground="Black" Margin="50,40,80,71" ValueChanged="RingSlider_ValueChanged"/>
+        <Slider x:Name="MiddleSlider" Grid.Row="1" Grid.ColumnSpan="3" SmallChange="1" Value="500" Minimum="500" Maximum="2500" TickFrequency="10" TickPlacement="None" Foreground="Black" Margin="50,110,80,3" ValueChanged="MiddleSlider_ValueChanged"/>
+        <Slider x:Name="IndexSlider" Grid.Row="2" Grid.ColumnSpan="3" SmallChange="1" Value="500" Minimum="500" Maximum="2500" TickFrequency="10" TickPlacement="None" Foreground="Black" Margin="50,40,80,71" ValueChanged="IndexSlider_ValueChanged"/>
+        <Slider x:Name="ThumbSlider" Grid.Row="2" Grid.ColumnSpan="3" SmallChange="1" Value="500" Minimum="500" Maximum="2500" TickFrequency="10" TickPlacement="None" Foreground="Black" Margin="50,110,80,0" ValueChanged="ThumbSlider_ValueChanged"/>
         <Label x:Name="Label" Content="手のひら最大値設定" Grid.Column="1" Margin="20,20,20,76" FontSize="25"/>
         <Label x:Name="LLabel" Content="小指付け根" Grid.Column="1" Margin="80,72,71,23" FontSize="19"/>
         <Label x:Name="RLabel" Content="薬指付け根" Grid.Column="1" Margin="80,2,71,92" FontSize="19" Grid.Row="1"/>
         <Label x:Name="MLabel" Content="中指付け根" Grid.Column="1" Margin="80,72,62,16" FontSize="19" Grid.Row="1"/>
         <Label x:Name="ILabel" Content="人差し指付け根" Grid.Column="1" Margin="63,2,53,92" FontSize="19" Grid.Row="2"/>
         <Label x:Name="TLabel" Content="親指付け根" Grid.Column="1" Margin="80,72,71,21" FontSize="19" Grid.Row="2"/>
-        <Label x:Name="LittleLabel" Content="0" Grid.Column="2" Margin="65,100,10,0" FontSize="15"/>
-        <Label x:Name="RingLabel" Content="0" Grid.Column="2" Margin="65,30,10,70" FontSize="15" Grid.Row="1"/>
-        <Label x:Name="MiddleLabel" Content="0" Grid.Column="2" Margin="65,100,10,0" FontSize="15" Grid.Row="1"/>
-        <Label x:Name="IndexLabel" Content="0" Grid.Column="2" Margin="65,30,10,70" FontSize="15" Grid.Row="2"/>
-        <Label x:Name="ThumbLabel" Content="0" Grid.Column="2" Margin="65,100,10,0" FontSize="15" Grid.Row="2"/>
+
+        <Button x:Name="MottorEndButton" Content="終了" Grid.Row="3" Grid.Column="1" Margin="160,55,30,10" FontSize="24" FontWeight="Bold" FontFamily="Arial Black" Grid.ColumnSpan="2" Click="MottorEndButton_Click"/>
+        <Button x:Name="SendButton" Content="送信" Grid.Row="3" Margin="30,55,160,10" FontSize="24" FontWeight="Bold" FontFamily="Arial Black" Grid.ColumnSpan="2" Click="SendButton_Click"/>
+
     </Grid>
 </Page>
