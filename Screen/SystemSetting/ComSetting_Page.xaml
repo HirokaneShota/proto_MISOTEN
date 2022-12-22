@@ -6,7 +6,8 @@
       xmlns:local="clr-namespace:MISOTEN_APPLICATION.Screen.SystemSetting"
       mc:Ignorable="d" 
       d:DesignHeight="600" d:DesignWidth="530"
-      Title="ComSetting_Page">
+      Title="ComSetting_Page"
+      Loaded="Window_Loaded">
 
     <Grid>
         <Grid.ColumnDefinitions>
@@ -36,8 +37,8 @@
         <Label Grid.Row="2" Grid.Column="1" Content="BPS" Margin="35,0,0,75" FontSize="20"/>
         <ComboBox Name="MasterBPSCmb" Grid.Column="1" Grid.ColumnSpan="2" Margin="16,45,16,0" Grid.Row="2" VerticalAlignment="Top" Text="115200" SelectionChanged="MasterBPSCmb_SelectionChanged"/>
         <ComboBox Name="ReceiveBPSCmb" Grid.Column="3" Grid.ColumnSpan="2" Margin="16,45,16,0" Grid.Row="2" VerticalAlignment="Top" SelectionChanged="ReceiveBPSCmb_SelectionChanged"/>
-        <Label Grid.Row="2" Grid.Column="2" Content="標準115200" Margin="0,6,0,75" FontSize="14" AutomationProperties.IsColumnHeader="True" Foreground="#FF6D6D6D"/>
-        <Label Grid.Row="2" Grid.Column="4" Content="標準115200" Margin="0,6,0,75" FontSize="14" AutomationProperties.IsColumnHeader="True" Foreground="#FF6D6D6D"/>
+        <Label Grid.Row="2" Grid.Column="2" Content="標準57600" Margin="0,6,0,75" FontSize="14" AutomationProperties.IsColumnHeader="True" Foreground="#FF6D6D6D"/>
+        <Label Grid.Row="2" Grid.Column="4" Content="標準9600" Margin="0,6,0,75" FontSize="14" AutomationProperties.IsColumnHeader="True" Foreground="#FF6D6D6D"/>
 
         <Button Name="FinishButton" Content="OK" HorizontalAlignment="Center" Margin="0,0,0,10" Width="70" Grid.Column="5" Grid.Row="4" Height="32" VerticalAlignment="Bottom" Click="FinishButton_Click"/>
     </Grid>

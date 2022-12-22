@@ -59,7 +59,57 @@ namespace MISOTEN_APPLICATION.Screen.SystemSetting
             SelPort(ReceivePartCmb);
             BPSPort(MasterBPSCmb);
             BPSPort(ReceiveBPSCmb);
+            // ポート表示
+            MasterBPSCmb.Text = "57600";
+            ReceiveBPSCmb.Text = "9600";
+            // JSON読み取り格納
+            ReadJson();
+        }
+        /* 画面表示 */
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            HwndSource source = HwndSource.FromHwnd(new WindowInteropHelper(Window.GetWindow(this)).Handle);
+            source.AddHook(new HwndSourceHook(WndProc));
+        }
 
+        /* JSON読み取り */
+        private void ReadJson()
+        {
+            // ファイル存在しない
+            if (!File.Exists(URI.ComJson)) return;
+            //　file読み込み
+            string ResumeJson = File.ReadAllText(URI.ComJson);
+                // JSONデータからオブジェクトを復元
+            List<SerialPortData> product = JsonSerializer.Deserialize<List<SerialPortData>>(ResumeJson);
+            // master ポート設定
+            MasterPartCmb.Text = product[DeviceId.MasterId].comName;
+            master.comName = product[DeviceId.MasterId].comName;
+
+            // master BPS設定
+            MasterBPSCmb.Text = product[DeviceId.MasterId].baudRate.ToString();
+            master.baudRate = product[DeviceId.MasterId].baudRate;
+
+            // slave ポート設定
+            ReceivePartCmb.Text = product[DeviceId.ReceiveId].comName;
+            receive.comName = product[DeviceId.ReceiveId].comName;
+
+            // slave BPS設定
+            ReceiveBPSCmb.Text = product[DeviceId.ReceiveId].baudRate.ToString();
+            receive.baudRate = product[DeviceId.ReceiveId].baudRate;
+        }
+
+        /*----------------------------
+        * USBデバイスを追加した時の処理
+        *---------------------------*/
+        private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            const int WM_DEVICECHANGE = 0x0219;
+            if (msg == WM_DEVICECHANGE)
+            {
+                SelPort(MasterPartCmb);
+                SelPort(ReceivePartCmb);
+            }
+            return IntPtr.Zero;
         }
 
         /*----------------------------
@@ -100,14 +150,20 @@ namespace MISOTEN_APPLICATION.Screen.SystemSetting
         /* マスターCOM選択Combbox */
         private void MasterPartCmb_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var port = MasterPartCmb.SelectedValue.ToString();
-            master.comName = port;
+            if (MasterPartCmb.SelectedValue != null)
+            {
+                var port = MasterPartCmb.SelectedValue.ToString();
+                master.comName = port;
+            }
         }
         /* レシーブCOM選択Combbox */
         private void ReceivePartCmb_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var port = ReceivePartCmb.SelectedValue.ToString();
-            receive.comName = port;
+            if (ReceivePartCmb.SelectedValue != null)
+            {
+                var port = ReceivePartCmb.SelectedValue.ToString();
+                receive.comName = port;
+            }
         }
         /* マスターBPS選択Combbox */
         private void MasterBPSCmb_SelectionChanged(object sender, SelectionChangedEventArgs e)
