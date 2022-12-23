@@ -78,7 +78,7 @@ namespace MISOTEN_APPLICATION.Screen.SignalConnect
             {
                 // ポートセット&オープン&ハンドラ
                 if ((ErrorSentence = signalclass.SetSerialport(DeviceId.MasterId)) != "") { return Retrun.False; }
-                //if ((ErrorSentence = signalclass.SetSerialport(DeviceId.ReceiveId)) != "") { return Retrun.False; }
+                if ((ErrorSentence = signalclass.SetSerialport(DeviceId.ReceiveId)) != "") { return Retrun.False; }
 
                 // ファイル書き込み
                 file.MFirst();
@@ -152,7 +152,7 @@ namespace MISOTEN_APPLICATION.Screen.SignalConnect
             //
             // 「スレーブ：接続要請信号」
             //
-            /*
+            
             // バッファ内削除
             signalclass.ReceiveClearBuffer(DeviceId.ReceiveId);
             Task<ReciveData> SRtask = Task.Run(() => { return signalclass.GetSReciveData(); });
@@ -187,7 +187,7 @@ namespace MISOTEN_APPLICATION.Screen.SignalConnect
             {
                 ErrorSentence = SReciveData.RSignal;
                 return Retrun.False;
-            }*/
+            }
             return Retrun.True;
         }
     }

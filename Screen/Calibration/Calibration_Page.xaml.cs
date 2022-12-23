@@ -209,9 +209,9 @@ namespace MISOTEN_APPLICATION.Screen.Calibration
             // "cs01" 送信 : キャリブレーションスタート
             Signalclass.SignalSend(DeviceId.MasterId, SendSignal.MCalibrationStart);
             // "cs02" 送信 : キャリブレーションスタート
-            //Signalclass.SignalSend(DeviceId.ReceiveId, SendSignal.SCalibrationStart);
+            Signalclass.SignalSend(DeviceId.ReceiveId, SendSignal.SCalibrationStart);
 
-            //while (EndFlog != Flog.End) ;
+            while (EndFlog != Flog.End) ;
 
             //
             // 「キャリブレーション完了信号」
@@ -220,7 +220,7 @@ namespace MISOTEN_APPLICATION.Screen.Calibration
             // "ce01" 送信 : キャリブレーション終了
             Signalclass.SignalSend(DeviceId.MasterId, SendSignal.MCalibrationComple);
             // "ce02" 送信 : キャリブレーション終了
-            //Signalclass.SignalSend(DeviceId.ReceiveId, SendSignal.SCalibrationComple);
+            Signalclass.SignalSend(DeviceId.ReceiveId, SendSignal.SCalibrationComple);
             return;
         }
 

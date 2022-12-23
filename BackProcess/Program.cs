@@ -406,12 +406,12 @@ namespace MISOTEN_APPLICATION.BackProcess
                 file_t.MTimeWrite_ms(",");
 
                 // スレーブに出力値(モーター)を送信
-                //signalClass.SetSendMotor(gods_senten);
-                // 50msスリープ  //await Task.Delay(100);
+                signalClass.SetSendMotor(gods_senten);
+                // 20msスリープ  //await Task.Delay(100);
                 TimerClass.Sleep(Time.OperatSTime);
 
                 // スレーブに出力値(電磁石)を送信
-                //signalClass.SetSendMagnet(gods_senten);
+                signalClass.SetSendMagnet(gods_senten);
                 // 出力値書き込み(csvfile)
                 file_t.Log_csv(gods_senten.frist_godsentence.tip_pwm.ToString(), gods_senten.second_godsentence.tip_pwm.ToString(), gods_senten.third_godsentence.tip_pwm.ToString(), gods_senten.fifth_godsentence.tip_pwm.ToString(), gods_senten.fifth_godsentence.tip_pwm.ToString(), null, gods_senten.frist_godsentence.palm_pwm.ToString(), gods_senten.second_godsentence.palm_pwm.ToString(), gods_senten.third_godsentence.palm_pwm.ToString(), gods_senten.fifth_godsentence.palm_pwm.ToString(), gods_senten.fifth_godsentence.palm_pwm.ToString(), "\n");
             }
