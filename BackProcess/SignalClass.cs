@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using System.Windows.Threading;
 using System.Windows;
 using MISOTEN_APPLICATION.Screen.CommonClass;
+using System.IO;
+using System.Text.Json;
 
 namespace MISOTEN_APPLICATION.BackProcess
 {
@@ -26,29 +28,74 @@ namespace MISOTEN_APPLICATION.BackProcess
         static Boolean[] SRSFlog = new Boolean[2] { false, false };
 
         // マスターシリアルポート
-        static SerialPort MSerialport;
+        static SerialPort MSerialport = null;
         // スレーブシリアルポート
-        static SerialPort SSerialport;
+        static SerialPort SSerialport = null;
 
         static FileClass file = new FileClass();
 
-        /* シリアルポートセッター */
-        public void SetSerialport(SerialPort serialport, int id)
+
+        /* レシーブ用受信値ゲッター */
+        public ReciveData GetSReciveData()
         {
-            // master受信用ハンドラ作成
-            if (id == DeviceId.MasterId)
+            // 受信するまで　※送受信時間かかれば処理変更
+            while ((!SRSFlog.All(i => i == true)) && (SRecive.RFlog != Flog.RSignal) && (SSerialport.IsOpen == true)) ;
+            ReciveData SendData = SRecive;
+            InitSignal(DeviceId.ReceiveId);
+            return SendData;
+        }
+
+        /* マスター用受信値ゲッター */
+        public ReciveData GetMReciveData()
+        {
+            // 受信するまで　※送受信時間かかれば処理変更
+            while ((!MRSFlog.All(i => i == true)) && (MRecive.RFlog != Flog.RSignal) && (MSerialport.IsOpen == true)) ;
+            ReciveData SendData = MRecive;
+            InitSignal(DeviceId.MasterId);
+            return SendData;
+        }
+
+        /* スレーブ用センサー値ゲッター */
+        public ReciveData_Sensor GetSSensor()
+        {
+            TimerClass time = new TimerClass();
+            double j = 0;
+            time.Start();
+            //file.SLog("受信待機");
+            // 受信するまで　※送受信時間かかれば処理変更
+            while (!SRSFlog.All(i => i == true)) ;
+            j = time.MiliElapsed();
+            //file.SLog(j.ToString());
+
+            lock (lockObject)
             {
-                ReceiveHandler(serialport);
-                MSerialport = serialport;
-            }
-            // slave受信用ハンドラ作成
-            else if (id == DeviceId.ReceiveId)
-            {
-                ReceiveHandler(serialport);
-                SSerialport = serialport;
+                // 初期化
+                InitSignal(DeviceId.ReceiveId);
+                Array.Clear(SRSFlog, 0, 2);
+                return SRecive.RSensor;
             }
         }
 
+        /* マスター用センサー値ゲッター */
+        public ReciveData_Sensor GetMSensor()
+        {
+            TimerClass time = new TimerClass();
+            time.Start();
+            //file.MLog("受信待機");
+            // 受信するまで　※送受信時間かかれば処理変更
+            while (!MRSFlog.All(i => i == true)) ;
+            //while (!(MRecive.RFlog == Flog.RNum)) ;
+            double j = time.MiliElapsed();
+            //file.MLog(j.ToString());
+            lock (lockObject)
+            {
+                // 初期化
+                //MRecive.RFlog = Flog.RNo;
+                InitSignal(DeviceId.MasterId);
+                Array.Clear(MRSFlog, 0, 4);
+                return MRecive.RSensor;
+            }
+        }
         /* 送信データセッター */
         public void SetSendData(GODS_SENTENCE sendData)
         {
@@ -120,6 +167,77 @@ namespace MISOTEN_APPLICATION.BackProcess
                 SRecive.RFlog = Flog.RNo;
             }
         }
+        /* シリアルポートセッター */
+        public void SetSerialport(SerialPort serialport, int id)
+        {
+            // master受信用ハンドラ作成
+            if (id == DeviceId.MasterId)
+            {
+                ReceiveHandler(serialport);
+                MSerialport = serialport;
+            }
+            // slave受信用ハンドラ作成
+            else if (id == DeviceId.ReceiveId)
+            {
+                ReceiveHandler(serialport);
+                SSerialport = serialport;
+            }
+        }
+
+        /* シリアルポートセッター */
+        public string SetSerialport(int id)
+        {
+            try
+            {
+                //　file読み込み
+                string ResumeJson = File.ReadAllText(URI.ComJson);
+                // JSONデータからオブジェクトを復元
+                List<SerialPortData> product = JsonSerializer.Deserialize<List<SerialPortData>>(ResumeJson);
+
+                // master受信用ハンドラ作成
+                if (id == DeviceId.MasterId)
+                {
+                    MSerialport = SettingPort(MSerialport, product[DeviceId.MasterId]);
+                    // Openしていないなら
+                    if(MSerialport.IsOpen == false) MSerialport.Open();
+                    ReceiveHandler(MSerialport);
+                }
+                // slave受信用ハンドラ作成
+                else if (id == DeviceId.ReceiveId)
+                {
+                    SSerialport = SettingPort(SSerialport, product[DeviceId.ReceiveId]);
+                    // Openしていないなら
+                    if (SSerialport.IsOpen == false) SSerialport.Open();
+                    ReceiveHandler(SSerialport);
+                }
+                return "";
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        /* ポートセット */
+        private SerialPort SettingPort(SerialPort serialPort, SerialPortData serialPortData)
+        {
+
+            // まだポートに繋がっていない場合
+            if (serialPort == null)
+            {
+                // serialPortの設定
+                serialPort = new SerialPort();
+                serialPort.PortName = serialPortData.comName;
+                serialPort.BaudRate = serialPortData.baudRate;
+                serialPort.DataBits = serialPortData.dataBits;
+                serialPort.Parity = Parity.None;
+                serialPort.StopBits = StopBits.One;
+                serialPort.Encoding = Encoding.UTF8;
+                serialPort.WriteTimeout = serialPortData.writeTimeout;
+            }
+            return serialPort;
+        }
+
 
         /* 受信バンドラ関数 */
         public void ReceiveHandler(SerialPort serialport)
@@ -342,68 +460,6 @@ namespace MISOTEN_APPLICATION.BackProcess
                 if (SSerialport.IsOpen == false) return;
                 // バッファークリア
                 SSerialport.DiscardInBuffer();
-            }
-        }
-
-        /* レシーブ用受信値ゲッター */
-        public ReciveData GetSReciveData()
-        {
-            // 受信するまで　※送受信時間かかれば処理変更
-            while ((!SRSFlog.All(i => i == true))&&(SRecive.RFlog != Flog.RSignal)&& (SSerialport.IsOpen == true)) ;
-            ReciveData SendData = SRecive;
-            InitSignal(DeviceId.ReceiveId);
-            return SendData;
-        }
-
-        /* マスター用受信値ゲッター */
-        public ReciveData GetMReciveData()
-        {
-            // 受信するまで　※送受信時間かかれば処理変更
-            while ((!MRSFlog.All(i => i == true)) && (MRecive.RFlog != Flog.RSignal) && (MSerialport.IsOpen == true)) ;
-            ReciveData SendData = MRecive;
-            InitSignal(DeviceId.MasterId);
-            return SendData;
-        }
-
-        /* スレーブ用センサー値ゲッター */
-        public ReciveData_Sensor GetSSensor()
-        {
-            TimerClass time = new TimerClass();
-            double j = 0;
-            time.Start();
-            //file.SLog("受信待機");
-            // 受信するまで　※送受信時間かかれば処理変更
-            while (!SRSFlog.All(i => i == true)) ;
-            j = time.MiliElapsed();
-            //file.SLog(j.ToString());
-            
-            lock (lockObject)
-            {
-                // 初期化
-                InitSignal(DeviceId.ReceiveId);
-                Array.Clear(SRSFlog, 0, 2);
-                return SRecive.RSensor;
-            }
-        }
-
-        /* マスター用センサー値ゲッター */
-        public ReciveData_Sensor GetMSensor()
-        {
-            TimerClass time = new TimerClass();
-            time.Start();
-            //file.MLog("受信待機");
-            // 受信するまで　※送受信時間かかれば処理変更
-            while (!MRSFlog.All(i => i == true)) ;
-            //while (!(MRecive.RFlog == Flog.RNum)) ;
-            double j = time.MiliElapsed();
-            //file.MLog(j.ToString());
-            lock (lockObject)
-            {
-                // 初期化
-                //MRecive.RFlog = Flog.RNo;
-                InitSignal(DeviceId.MasterId);
-                Array.Clear(MRSFlog, 0, 4);
-                return MRecive.RSensor;
             }
         }
 
