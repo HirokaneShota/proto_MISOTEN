@@ -17,6 +17,8 @@ using MISOTEN_APPLICATION.Screen.DevelopSystem;
 using MISOTEN_APPLICATION.Screen.SystemSetting;
 using System.Windows.Navigation;
 using MISOTEN_APPLICATION.Screen.SignalConnect;
+using MISOTEN_APPLICATION.BackProcess;
+using MISOTEN_APPLICATION.Screen.CommonClass;
 
 namespace MISOTEN_APPLICATION.Screen.SystemSelect
 {
@@ -30,6 +32,22 @@ namespace MISOTEN_APPLICATION.Screen.SystemSelect
             InitializeComponent();
             SignalConnectStandby_Page signalconnect_page = new SignalConnectStandby_Page();
             Navigate(signalconnect_page);
+        }
+        protected virtual void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            SignalClass signalclass = new SignalClass();
+            if ((signalclass.SetSerialport(DeviceId.MasterId)) == "")
+            {
+                // マスター:"re01" 送信
+                signalclass.SignalSend(DeviceId.MasterId, SendSignal.MInit);
+                signalclass.ProtCut(DeviceId.MasterId);
+            }
+            if ((signalclass.SetSerialport(DeviceId.ReceiveId)) == "")
+            {   
+                // スレーブ:"re02" 送信
+                signalclass.SignalSend(DeviceId.ReceiveId, SendSignal.SInit);
+                signalclass.ProtCut(DeviceId.ReceiveId);
+            }
         }
     }
 }
