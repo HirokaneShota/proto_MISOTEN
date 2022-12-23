@@ -47,7 +47,7 @@ namespace MISOTEN_APPLICATION.Screen.CommonClass
     class Time
     {
         // 画面遷移時間 3秒
-        public const int ScreenTrans = 3;
+        public const int ScreenTrans = 1;
         // マスターキャリブレーション　伸ばす
         public const int MECalibration = 10;
         // マスターキャリブレーション　握る
@@ -57,7 +57,7 @@ namespace MISOTEN_APPLICATION.Screen.CommonClass
         // スレーブキャリブレーション　握る
         public const int SGCalibration = 10;
         // 稼働状態 スリープ 50ms
-        public const double OperatSTime = 50.0f;
+        public const double OperatSTime = 0.0f;
     }
 
     class Flog

@@ -63,6 +63,7 @@ namespace MISOTEN_APPLICATION.BackProcess
         public GodHand()
         {
             file_t.DMFirst_csv();
+            file_t.MStartTime();
             file_t.First_csv("send");
             for (int index = 0; index < 5; index++)
             {
@@ -335,6 +336,8 @@ namespace MISOTEN_APPLICATION.BackProcess
         {
             try
             {
+                // タイマー
+                file_t.MReStartTime();
                 SENSOR_VALUE[] Temporary_masterdate = new SENSOR_VALUE[5];
                 SENSOR_VALUE[] Temporary_slavedate = new SENSOR_VALUE[5];
                 SignalClass signalClass = signalclass;
@@ -352,6 +355,7 @@ namespace MISOTEN_APPLICATION.BackProcess
                 Temporary_masterdate[2] = recivedata_sensor.Middle;
                 Temporary_masterdate[3] = recivedata_sensor.Index;
                 Temporary_masterdate[4] = recivedata_sensor.Thumb;
+
                 /*
                 Temporary_slavedate[0] = recivedata_sensor.Little;
                 Temporary_slavedate[1] = recivedata_sensor.Ring;
@@ -399,13 +403,17 @@ namespace MISOTEN_APPLICATION.BackProcess
                 gods_senten.third_godsentence = finger_power[2];
                 gods_senten.fourth_godsentence = finger_power[3];
                 gods_senten.fifth_godsentence = finger_power[4];
+                file_t.MTimeWrite_ms(",");
 
+                // スレーブに出力値(モーター)を送信
+                //signalClass.SetSendMotor(gods_senten);
                 // 50msスリープ  //await Task.Delay(100);
                 TimerClass.Sleep(Time.OperatSTime);
-                //スレーブに出力値を送信
-                //signalClass.SetSendMotor(gods_senten);
+
+                // スレーブに出力値(電磁石)を送信
+                //signalClass.SetSendMagnet(gods_senten);
                 // 出力値書き込み(csvfile)
-                file_t.Log_csv(gods_senten.frist_godsentence.tip_pwm.ToString(), gods_senten.second_godsentence.tip_pwm.ToString(), gods_senten.third_godsentence.tip_pwm.ToString(), gods_senten.fifth_godsentence.tip_pwm.ToString(), gods_senten.fifth_godsentence.tip_pwm.ToString(),null,gods_senten.frist_godsentence.palm_pwm.ToString(), gods_senten.second_godsentence.palm_pwm.ToString(), gods_senten.third_godsentence.palm_pwm.ToString(), gods_senten.fifth_godsentence.palm_pwm.ToString(), gods_senten.fifth_godsentence.palm_pwm.ToString(), "\n");
+                file_t.Log_csv(gods_senten.frist_godsentence.tip_pwm.ToString(), gods_senten.second_godsentence.tip_pwm.ToString(), gods_senten.third_godsentence.tip_pwm.ToString(), gods_senten.fifth_godsentence.tip_pwm.ToString(), gods_senten.fifth_godsentence.tip_pwm.ToString(), null, gods_senten.frist_godsentence.palm_pwm.ToString(), gods_senten.second_godsentence.palm_pwm.ToString(), gods_senten.third_godsentence.palm_pwm.ToString(), gods_senten.fifth_godsentence.palm_pwm.ToString(), gods_senten.fifth_godsentence.palm_pwm.ToString(), "\n");
             }
             catch (Exception ex)
             {

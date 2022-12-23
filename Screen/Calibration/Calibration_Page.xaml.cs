@@ -39,6 +39,8 @@ namespace MISOTEN_APPLICATION.Screen.Calibration
             // 再計測・計測終了ボタン
             EndButton.Visibility = Visibility.Hidden;
             ReMeasureButton.Visibility = Visibility.Hidden;
+            MottorEndButton.Visibility = Visibility.Hidden;
+            SendButton.Visibility = Visibility.Hidden;
 
             CalibrationButton.IsEnabled = false;
             SliderHidden();
@@ -66,11 +68,11 @@ namespace MISOTEN_APPLICATION.Screen.Calibration
             MLabel.Visibility = Visibility.Hidden;
             ILabel.Visibility = Visibility.Hidden;
             TLabel.Visibility = Visibility.Hidden;
-            LittleLabel.Visibility = Visibility.Hidden;
-            RingLabel.Visibility = Visibility.Hidden;
-            MiddleLabel.Visibility = Visibility.Hidden;
-            IndexLabel.Visibility = Visibility.Hidden;
-            ThumbLabel.Visibility = Visibility.Hidden;
+            LittleTextBlock.Visibility = Visibility.Hidden;
+            RingTextBlock.Visibility = Visibility.Hidden;
+            MiddleTextBlock.Visibility = Visibility.Hidden;
+            IndexTextBlock.Visibility = Visibility.Hidden;
+            ThumbTextBlock.Visibility = Visibility.Hidden;
         }
 
         /* 時間計測処理 */
@@ -78,17 +80,20 @@ namespace MISOTEN_APPLICATION.Screen.Calibration
         {
             
             // 手を広げる処理
-            Expand();
+            //Expand();
             // 手を握る処理
-            Grasp();
+            //Grasp();
             // 手のひら最大数設定処理
-            // Pushing();
+            Pushing();
             
             Dispatcher.Invoke((Action)(() =>
             {
                 CountLabel.Content = "再計測or計測終了を選択してください";
                 SliderHidden();
-                CalibrationButton.Visibility = Visibility.Hidden;
+
+                MottorEndButton.Visibility = Visibility.Hidden;
+                SendButton.Visibility = Visibility.Hidden;
+
                 EndButton.Visibility = Visibility.Visible;
                 ReMeasureButton.Visibility = Visibility.Visible;
             }));
@@ -166,6 +171,9 @@ namespace MISOTEN_APPLICATION.Screen.Calibration
             Dispatcher.Invoke((Action)(() =>
             {
                 CalibrationButton.IsEnabled = true;
+                CalibrationButton.Content = "終了";
+                CalibrationButton.Visibility = Visibility.Hidden;
+
                 LittleSlider.Visibility = Visibility.Visible;
                 RingSlider.Visibility = Visibility.Visible;
                 MiddleSlider.Visibility = Visibility.Visible;
@@ -177,22 +185,18 @@ namespace MISOTEN_APPLICATION.Screen.Calibration
                 MLabel.Visibility = Visibility.Visible;
                 ILabel.Visibility = Visibility.Visible;
                 TLabel.Visibility = Visibility.Visible;
-                LittleLabel.Visibility = Visibility.Visible;
-                RingLabel.Visibility = Visibility.Visible;
-                MiddleLabel.Visibility = Visibility.Visible;
-                IndexLabel.Visibility = Visibility.Visible;
-                ThumbLabel.Visibility = Visibility.Visible;
+                LittleTextBlock.Visibility = Visibility.Visible;
+                RingTextBlock.Visibility = Visibility.Visible;
+                MiddleTextBlock.Visibility = Visibility.Visible;
+                IndexTextBlock.Visibility = Visibility.Visible;
+                ThumbTextBlock.Visibility = Visibility.Visible;
                 CountLabel.Content = "手のひらの最大感度を設定してください";
-                CalibrationButton.Content = "終了";
+                MottorEndButton.Visibility = Visibility.Visible;
+                SendButton.Visibility = Visibility.Visible;
 
             }));
             while (ProcFlog != Flog.CalibPush) ;
           }
-        /* 終了ボタンクリック処理 */
-        private void CalibrationButton_Click(object sender, RoutedEventArgs e)
-        {
-            ProcFlog = Flog.CalibPush;
-        }
 
 
         /* スレーブ値受信処理 */
@@ -205,9 +209,9 @@ namespace MISOTEN_APPLICATION.Screen.Calibration
             // "cs01" 送信 : キャリブレーションスタート
             Signalclass.SignalSend(DeviceId.MasterId, SendSignal.MCalibrationStart);
             // "cs02" 送信 : キャリブレーションスタート
-            Signalclass.SignalSend(DeviceId.ReceiveId, SendSignal.SCalibrationStart);
+            //Signalclass.SignalSend(DeviceId.ReceiveId, SendSignal.SCalibrationStart);
 
-            while (EndFlog != Flog.End) ;
+            //while (EndFlog != Flog.End) ;
 
             //
             // 「キャリブレーション完了信号」
@@ -216,7 +220,7 @@ namespace MISOTEN_APPLICATION.Screen.Calibration
             // "ce01" 送信 : キャリブレーション終了
             Signalclass.SignalSend(DeviceId.MasterId, SendSignal.MCalibrationComple);
             // "ce02" 送信 : キャリブレーション終了
-            Signalclass.SignalSend(DeviceId.ReceiveId, SendSignal.SCalibrationComple);
+            //Signalclass.SignalSend(DeviceId.ReceiveId, SendSignal.SCalibrationComple);
             return;
         }
 
@@ -248,31 +252,41 @@ namespace MISOTEN_APPLICATION.Screen.Calibration
         }
 
         /* Slider数値変更 */
-        private void LittleSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) { LittleLabel.Content = ((int)e.NewValue).ToString(); MottorSend(); }
-        private void RingSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) { RingLabel.Content = ((int)e.NewValue).ToString(); MottorSend(); }
-        private void MiddleSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) { MiddleLabel.Content = ((int)e.NewValue).ToString(); MottorSend(); }
-        private void IndexSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) { IndexLabel.Content = ((int)e.NewValue).ToString(); MottorSend(); }
-        private void ThumbSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) { ThumbLabel.Content = ((int)e.NewValue).ToString(); MottorSend(); }
+        
+        private void LittleSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) { LittleTextBlock.Text = ((int)e.NewValue).ToString();}
+        private void RingSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) { RingTextBlock.Text = ((int)e.NewValue).ToString();}
+        private void MiddleSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) { MiddleTextBlock.Text = ((int)e.NewValue).ToString();}
+        private void IndexSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) { IndexTextBlock.Text = ((int)e.NewValue).ToString();}
+        private void ThumbSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) { ThumbTextBlock.Text = ((int)e.NewValue).ToString();}
+
+        /* 終了ボタンクリック処理 */
+        private void MottorEndButton_Click(object sender, RoutedEventArgs e)
+        {
+            // 設定値格納
+            GODS_SENTENCE gods_sentence = MottorSend();
+            // 終了フラグ
+            ProcFlog = Flog.CalibPush;
+        }
+        /* 送信ボタンクリック処理 */
+        private void SendButton_Click(object sender, RoutedEventArgs e) 
+        { 
+            // 送信処理
+            Signalclass.SetSendMotor(MottorSend());
+        }
+
 
         /* モータ値送信処理 */
-        private void MottorSend()
+        private GODS_SENTENCE MottorSend()
         {
             GODS_SENTENCE sendData = new GODS_SENTENCE();
-            SignalClass signalclass = new SignalClass();
-            // 初期化
-            sendData.frist_godsentence.tip_pwm = 0;
-            sendData.second_godsentence.tip_pwm = 0;
-            sendData.third_godsentence.tip_pwm = 0;
-            sendData.fourth_godsentence.tip_pwm = 0;
-            sendData.fifth_godsentence.tip_pwm = 0;
             // 格納
-            sendData.frist_godsentence.palm_pwm = Convert.ToInt32(LittleLabel.Content);
-            sendData.second_godsentence.palm_pwm = Convert.ToInt32(RingLabel.Content);
-            sendData.third_godsentence.palm_pwm = Convert.ToInt32(MiddleLabel.Content);
-            sendData.fourth_godsentence.palm_pwm = Convert.ToInt32(IndexLabel.Content);
-            sendData.fifth_godsentence.palm_pwm = Convert.ToInt32(ThumbLabel.Content);
-            // 送信処理
-            signalclass.SetSendData(sendData);
+            sendData.frist_godsentence.palm_pwm = Convert.ToInt32(LittleTextBlock.Text);
+            sendData.second_godsentence.palm_pwm = Convert.ToInt32(RingTextBlock.Text);
+            sendData.third_godsentence.palm_pwm = Convert.ToInt32(MiddleTextBlock.Text);
+            sendData.fourth_godsentence.palm_pwm = Convert.ToInt32(IndexTextBlock.Text);
+            sendData.fifth_godsentence.palm_pwm = Convert.ToInt32(ThumbTextBlock.Text);
+
+            return sendData;
         }
     }
 }
