@@ -104,6 +104,10 @@ namespace MISOTEN_APPLICATION.Screen.Calibration
                 CountLabel.Content = "再計測or計測終了を選択してください";
                 SliderHidden();
 
+                CalibrationButton.IsEnabled = true;
+                CalibrationButton.Content = "終了";
+                CalibrationButton.Visibility = Visibility.Hidden;
+
                 MottorEndButton.Visibility = Visibility.Hidden;
                 SendButton.Visibility = Visibility.Hidden;
 
