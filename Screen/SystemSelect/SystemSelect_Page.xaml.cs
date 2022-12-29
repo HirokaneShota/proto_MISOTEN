@@ -28,9 +28,11 @@ namespace MISOTEN_APPLICATION.Screen.SystemSelect
     public partial class SystemSelect_Page : Page
     {
         SignalClass Signalclass = new SignalClass();
-        public SystemSelect_Page(SignalClass signalclass)
+        GodHand ggodhand = new GodHand();
+        public SystemSelect_Page(SignalClass signalclass,GodHand godhand)
         {
             Signalclass = signalclass;
+            ggodhand = godhand;
             InitializeComponent();
         }
 
@@ -52,13 +54,14 @@ namespace MISOTEN_APPLICATION.Screen.SystemSelect
          /* キャリブレーション */
         private void CalibrationButton_Click(object sender, RoutedEventArgs e)
         {
+            
             // マスター:"sr01" 送信 : センシングリセット信号
             Signalclass.SignalSend(DeviceId.MasterId, SendSignal.MSensingReset);
             // スレーブ:"sr02" 送信 : センシングリセット信号
             Signalclass.SignalSend(DeviceId.ReceiveId, SendSignal.SSensingReset);
-
+            
             // キャリブレーション準備画面へ移行
-            var calibrationstandby_page = new CalibrationStandby_Page(Signalclass);
+            var calibrationstandby_page = new CalibrationStandby_Page(Signalclass, ggodhand);
             NavigationService.Navigate(calibrationstandby_page);
         }
 

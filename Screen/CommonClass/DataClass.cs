@@ -101,4 +101,18 @@ namespace MISOTEN_APPLICATION.Screen.CommonClass
         public GOD_SENTENCE fifth_godsentence;   // 親指
     }
 
+    //圧力と軌跡の個別の移動量
+    public struct PRESS_TRAJECT
+    {
+        public int pressure;
+        public float traject;
+    }
+
+    //前々回、前回、今回のデータ
+    public struct PT_LOGS
+    {
+        public PRESS_TRAJECT last_last_time;
+        public PRESS_TRAJECT last_time;
+        public PRESS_TRAJECT this_time;
+    }
 }

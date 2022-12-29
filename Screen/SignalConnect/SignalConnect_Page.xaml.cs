@@ -86,7 +86,7 @@ namespace MISOTEN_APPLICATION.Screen.SignalConnect
 
                 Dispatcher.Invoke((Action)(() => { Execution.Content = "受信バンドラ立ち上げ中..." + " ( 1秒 )"; }));
                 TimerClass.Sleep(1000);
-
+                
                 return Retrun.True;
             }
             catch (Exception ex)
@@ -99,6 +99,7 @@ namespace MISOTEN_APPLICATION.Screen.SignalConnect
         /* ポート受信処理 */
         private int ProtReceve()
         {
+            
             // マスター受信値
             ReciveData MReciveData = new ReciveData();
             // スレーブ受信値
@@ -109,9 +110,9 @@ namespace MISOTEN_APPLICATION.Screen.SignalConnect
             //
 
             // "re01" 送信
-            //signalclass.SignalSend(DeviceId.MasterId, SendSignal.MInit);
+            signalclass.SignalSend(DeviceId.MasterId, SendSignal.MInit);
             // "re02" 送信
-            //signalclass.SignalSend(DeviceId.ReceiveId, SendSignal.SInit);
+            signalclass.SignalSend(DeviceId.ReceiveId, SendSignal.SInit);
 
             //
             // 「マスター：接続要請信号」

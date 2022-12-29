@@ -23,28 +23,32 @@ namespace MISOTEN_APPLICATION.Screen.Operation
     /// </summary>
     public partial class OperationStandby_Page : Page
     {
+        // 信号クラス実体化
         SignalClass Signalclass = new SignalClass();
-        public OperationStandby_Page(SignalClass signalclass)
+        // ゴッドハンド実体化
+        GodHand ggodhand = new GodHand();
+        // スタート内容フラグ
+        int StartFlog = 0;
+
+        public OperationStandby_Page(SignalClass signalclass, GodHand godhand,int flog)
         {
             InitializeComponent();
             Signalclass = signalclass;
+            ggodhand = godhand;
+            StartFlog = flog;
         }
         void PageLoad(object sender, RoutedEventArgs e)
         {
-
+            if(StartFlog == Flog.MLogON || StartFlog == Flog.SLogON)
+            {
+                CountLabel.Content = "手を広げた状態で開始ボタンを押してください";
+            }
         }
 
-        private void LogStartButton_Click(object sender, RoutedEventArgs e)
+        private void StartButton_Click(object sender, RoutedEventArgs e)
         {
             // 稼働ページへ移行
-            var operation_page = new Operation_Page(Signalclass , Flog.LogON);
-            NavigationService.Navigate(operation_page);
-        }
-
-        private void RealTimeStartButton_Click(object sender, RoutedEventArgs e)
-        {
-            // 稼働ページへ移行
-            var operation_page = new Operation_Page(Signalclass, Flog.RialON);
+            var operation_page = new Operation_Page(Signalclass, ggodhand, StartFlog);
             NavigationService.Navigate(operation_page);
         }
     }

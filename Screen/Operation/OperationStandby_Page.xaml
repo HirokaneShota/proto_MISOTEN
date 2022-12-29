@@ -24,7 +24,7 @@
             <RowDefinition Height="0.5*"/>
         </Grid.RowDefinitions>
         <Image x:Name="Rogo"  Source=" ../../image/ROGO.png " Margin="50,50,50,20" Grid.RowSpan="3" Grid.ColumnSpan="3"/>
-        <Button x:Name="RealTimeStart" Content="リアルタイム開始" Grid.Row="3" Grid.Column="1" Margin="160,40,30,10" FontSize="28" FontWeight="Bold" FontFamily="Arial Black" Grid.ColumnSpan="2" Click="RealTimeStartButton_Click"/>
-        <Button x:Name="LogStart" Content="ログ開始" Grid.Row="3" Margin="30,40,160,10" FontSize="28" FontWeight="Bold" FontFamily="Arial Black" Grid.ColumnSpan="2" Click="LogStartButton_Click"/>
+        <Label Name="CountLabel" Content="" Grid.Row="3" Margin="123,5,123,85" FontWeight="Bold" FontSize="14" Grid.ColumnSpan="3"/>
+        <Button x:Name="Start" Content="開始" Grid.Row="3" Margin="28,40,29,10" FontSize="40" FontWeight="Bold" FontFamily="Arial Black" Click="StartButton_Click" Grid.Column="1"/>
     </Grid>
 </Page>

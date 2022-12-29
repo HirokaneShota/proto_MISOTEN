@@ -95,8 +95,10 @@ namespace MISOTEN_APPLICATION.Screen.CommonClass
         public const int NotStart = 0;
         // リアルタイム開始操作
         public const int RialON = 10;
-        // ログありで開始
-        public const int LogON = 20;
+        // ログありで開始(マスター)
+        public const int MLogON = 21;
+        // ログありで開始(スレーブ)
+        public const int SLogON = 22;
     }
 
     /* Uri */

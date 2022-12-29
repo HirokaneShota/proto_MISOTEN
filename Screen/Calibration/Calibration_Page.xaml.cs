@@ -31,11 +31,15 @@ namespace MISOTEN_APPLICATION.Screen.Calibration
         int ProcFlog = Flog.CalibNone;
         // 処理終了フラグ
         int EndFlog = Flog.Start;
+        // スタート内容フラグ
+        int StartFlog = Flog.CalibNone;
+        // ゴッドハンド実体化
+        GodHand ggodhand = new GodHand();
 
-        public Calibration_Page(SignalClass signalclass)
+        public Calibration_Page(SignalClass _signalclass,int _flog, GodHand _godhand)
         {
             InitializeComponent();
-            Signalclass = signalclass;
+            Signalclass = _signalclass;
             // 再計測・計測終了ボタン
             EndButton.Visibility = Visibility.Hidden;
             ReMeasureButton.Visibility = Visibility.Hidden;
@@ -44,6 +48,8 @@ namespace MISOTEN_APPLICATION.Screen.Calibration
 
             CalibrationButton.IsEnabled = false;
             SliderHidden();
+            StartFlog = _flog;
+            ggodhand = _godhand;
         }
 
         void PageLoad(object sender, RoutedEventArgs e)
@@ -78,13 +84,20 @@ namespace MISOTEN_APPLICATION.Screen.Calibration
         /* 時間計測処理 */
         private void Measurement()
         {
-            
-            // 手を広げる処理
-            //Expand();
-            // 手を握る処理
-            //Grasp();
-            // 手のひら最大数設定処理
-            Pushing();
+            // ログあり開始(マスター)&ログあり開始(スレーブ)
+            if (StartFlog == Flog.MLogON || StartFlog == Flog.SLogON)
+            {
+                // 手を広げる処理
+                Expand();
+                // 手を握る処理
+                //Grasp();
+            }
+            // リアルタイム&ログあり開始(スレーブ)
+            if(StartFlog == Flog.RialON || StartFlog == Flog.SLogON)
+            {
+                // 手のひら最大数設定処理
+                Pushing();
+            }
             
             Dispatcher.Invoke((Action)(() =>
             {
@@ -108,7 +121,7 @@ namespace MISOTEN_APPLICATION.Screen.Calibration
             TimeSpan BeforeTime = SW.Elapsed;
 
             // キャリブレーション処理タスク
-            Task CalibrationTask = Task.Run(() => { CalibrationAsync(Flog.CalibOpen, Signalclass); });
+            Task CalibrationTask = Task.Run(() => { CalibrationAsync(StartFlog, Signalclass); });
 
             // 手を広げる
             while (ProcFlog != Flog.CalibOpen)
@@ -170,6 +183,7 @@ namespace MISOTEN_APPLICATION.Screen.Calibration
             /* Slider隠す */
             Dispatcher.Invoke((Action)(() =>
             {
+                // サーボモータキャリブレーション
                 CalibrationButton.IsEnabled = true;
                 CalibrationButton.Content = "終了";
                 CalibrationButton.Visibility = Visibility.Hidden;
@@ -227,23 +241,31 @@ namespace MISOTEN_APPLICATION.Screen.Calibration
         /* キャリブレーション処理 */
         private async void CalibrationAsync(int flog, SignalClass signalclass)
         {
-            GodHand godhand = new GodHand();
-            var reslt = await godhand.calibration(flog, signalclass);
-            ProcFlog = flog;
+            // マスター
+            if(flog == Flog.MLogON)
+            {
+                var reslt = await ggodhand.calibration(0, signalclass);
+            }
+            // スレーブ
+            else if(flog == Flog.SLogON)
+            {
+                var reslt = await ggodhand.calibration(1, signalclass);
+            }
+            ProcFlog = Flog.CalibOpen;
             return;
         }
 
-        // 計測終了
+        /* 計測終了 */
         private void EndButton_Click(object sender, RoutedEventArgs e)
         {
             // レシーブ受信タスク終了
             lock (lockObject) EndFlog = Flog.End;
             // 稼働準備画面へ移行
-            var operationstandby_page = new OperationStandby_Page(Signalclass);
+            var operationstandby_page = new OperationStandby_Page(Signalclass, ggodhand, StartFlog);
             NavigationService.Navigate(operationstandby_page);
         }
 
-        // 再度計測
+        /* 再度計測 */
         private void ReMeasureButton_Click(object sender, RoutedEventArgs e)
         {
             // キャリブレーション準備画面へ移行
@@ -263,7 +285,7 @@ namespace MISOTEN_APPLICATION.Screen.Calibration
         private void MottorEndButton_Click(object sender, RoutedEventArgs e)
         {
             // 設定値格納
-            GODS_SENTENCE gods_sentence = MottorSend();
+            ggodhand.servocalibration(MottorSend());
             // 終了フラグ
             ProcFlog = Flog.CalibPush;
         }

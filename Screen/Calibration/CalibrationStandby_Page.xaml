@@ -23,7 +23,11 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="0.2*"/>
         </Grid.RowDefinitions>
-        <Button Content="計測開始" Grid.Row="3" Grid.Column="1" Margin="20,55,20,10" FontSize="36" FontWeight="Bold" FontFamily="Arial Black" ToolTip="キャリブレーション開始" Click="CalibrationStartButton_Click"/>
+        <Button x:Name="CalibrationStartButton" Content="計測開始" Grid.Row="3" Grid.Column="1" Margin="20,55,20,10" FontSize="36" FontWeight="Bold" FontFamily="Arial Black" ToolTip="キャリブレーション開始" Click="CalibrationStartButton_Click"/>
+        <Button x:Name="RealTime" Content="リアルタイム" Grid.Row="3" Grid.Column="1" Margin="160,55,30,10" FontSize="28" FontWeight="Bold" FontFamily="Arial Black" Grid.ColumnSpan="2" Click="RealTimeButton_Click"/>
+        <Button x:Name="Log" Content="ログ" Grid.Row="3" Margin="30,55,160,10" FontSize="28" FontWeight="Bold" FontFamily="Arial Black" Grid.ColumnSpan="2" Click="LogButton_Click"/>
+        <Button x:Name="SlaveStart" Content="スレーブ開始" Grid.Row="3" Grid.Column="1" Margin="160,55,30,10" FontSize="28" FontWeight="Bold" FontFamily="Arial Black" Grid.ColumnSpan="2" Click="SlaveStartButton_Click"/>
+        <Button x:Name="MasterStart" Content="マスター開始" Grid.Row="3" Margin="30,55,160,10" FontSize="28" FontWeight="Bold" FontFamily="Arial Black" Grid.ColumnSpan="2" Click="MasterStartButton_Click"/>
         <Label Name="CountLabel" Grid.Column="1" Content="装着が完了したら、ボタンを押下してください" Grid.Row="3" Margin="2,5,2,85" FontWeight="Bold" FontSize="14"/>
         <MediaElement Name="WearingMovie" Margin="50,50,50,20" Grid.RowSpan="3" Grid.ColumnSpan="3">
             <MediaElement.Triggers>

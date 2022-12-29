@@ -55,6 +55,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="BackProcess\DataBase.cs" />
     <Compile Include="BackProcess\FileClass.cs" />
     <Compile Include="BackProcess\GodConverter.cs" />
     <Compile Include="BackProcess\GodFinger.cs" />
@@ -213,6 +214,9 @@
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json">
       <Version>13.0.2</Version>
+    </PackageReference>
+    <PackageReference Include="System.Data.SQLite">
+      <Version>1.0.117</Version>
     </PackageReference>
     <PackageReference Include="System.Text.Encoding">
       <Version>4.3.0</Version>
