@@ -92,7 +92,6 @@ namespace MISOTEN_APPLICATION.BackProcess
         {
             try
             {
-                Debug.Print("start");
                 SENSOR_VALUE[] Temporary_masterdate = new SENSOR_VALUE[5];
                 SENSOR_VALUE[] Temporary_slavedate = new SENSOR_VALUE[5];
                 SignalClass signalClass = signalclass;
@@ -104,7 +103,7 @@ namespace MISOTEN_APPLICATION.BackProcess
 
                 // センサー値書き込み(csvfile)
                 file_t.MDLog_csv(recivedata_sensor);
-
+                
                 Temporary_masterdate[0] = recivedata_sensor.Little;
                 Temporary_masterdate[1] = recivedata_sensor.Ring;
                 Temporary_masterdate[2] = recivedata_sensor.Middle;
@@ -132,6 +131,7 @@ namespace MISOTEN_APPLICATION.BackProcess
                 signalClass.SetSendMotor(gods_senten);
                 // 出力値書き込み(csvfile)
                 file_t.Log_csv(gods_senten.frist_godsentence.tip_pwm.ToString(), gods_senten.second_godsentence.tip_pwm.ToString(), gods_senten.third_godsentence.tip_pwm.ToString(), gods_senten.fifth_godsentence.tip_pwm.ToString(), gods_senten.fifth_godsentence.tip_pwm.ToString(), null, gods_senten.frist_godsentence.palm_pwm.ToString(), gods_senten.second_godsentence.palm_pwm.ToString(), gods_senten.third_godsentence.palm_pwm.ToString(), gods_senten.fifth_godsentence.palm_pwm.ToString(), gods_senten.fifth_godsentence.palm_pwm.ToString(), "\n");
+                Debug.Print(gods_senten.frist_godsentence.tip_pwm.ToString()+","+ gods_senten.second_godsentence.tip_pwm.ToString()+","+ gods_senten.third_godsentence.tip_pwm.ToString()+","+ gods_senten.fifth_godsentence.tip_pwm.ToString()+","+ gods_senten.fifth_godsentence.tip_pwm.ToString()+","+gods_senten.frist_godsentence.palm_pwm.ToString()+","+ gods_senten.second_godsentence.palm_pwm.ToString()+","+ gods_senten.third_godsentence.palm_pwm.ToString()+","+ gods_senten.fifth_godsentence.palm_pwm.ToString()+","+ gods_senten.fifth_godsentence.palm_pwm.ToString()+",");
             }
             catch (Exception ex)
             {
@@ -397,6 +397,8 @@ namespace MISOTEN_APPLICATION.BackProcess
             GodConverter godconverter = new GodConverter();
             ReciveData_Sensor recivedata_sensor = new ReciveData_Sensor();
             recivedata_sensor = signalClass.GetMSensor();
+            // センサー値書き込み(csvfile)
+            file_t.MDLog_csv(recivedata_sensor);
             Temporary_masterdate[0] = recivedata_sensor.Little;
             Temporary_masterdate[1] = recivedata_sensor.Ring;
             Temporary_masterdate[2] = recivedata_sensor.Middle;
@@ -474,7 +476,8 @@ namespace MISOTEN_APPLICATION.BackProcess
             GODS_SENTENCE gods_senten = new GODS_SENTENCE();
 
             recivedata_sensor = signalClass.GetSSensor();
-
+            // センサー値書き込み(csvfile)
+            file_t.SDLog_csv(recivedata_sensor);
             Temporary_slavedate[0] = recivedata_sensor.Little;
             Temporary_slavedate[1] = recivedata_sensor.Ring;
             Temporary_slavedate[2] = recivedata_sensor.Middle;

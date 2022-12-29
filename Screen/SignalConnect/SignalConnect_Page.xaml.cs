@@ -110,9 +110,9 @@ namespace MISOTEN_APPLICATION.Screen.SignalConnect
             //
 
             // "re01" 送信
-            signalclass.SignalSend(DeviceId.MasterId, SendSignal.MInit);
+            //signalclass.SignalSend(DeviceId.MasterId, SendSignal.MInit);
             // "re02" 送信
-            signalclass.SignalSend(DeviceId.ReceiveId, SendSignal.SInit);
+            //signalclass.SignalSend(DeviceId.ReceiveId, SendSignal.SInit);
 
             //
             // 「マスター：接続要請信号」
