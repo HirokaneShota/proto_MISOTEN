@@ -28,7 +28,7 @@ namespace MISOTEN_APPLICATION.Screen.SystemSelect
     public partial class SystemSelect_Page : Page
     {
         SignalClass Signalclass = new SignalClass();
-        GodHand ggodhand = new GodHand();
+        GodHand ggodhand;
         public SystemSelect_Page(SignalClass signalclass,GodHand godhand)
         {
             Signalclass = signalclass;

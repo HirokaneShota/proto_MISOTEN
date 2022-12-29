@@ -92,6 +92,11 @@ namespace MISOTEN_APPLICATION.BackProcess
             maxforce = _maxforce;
         }
 
+        public void setPreValue(JOINT _pre_value)
+        {
+            pre_value = _pre_value;
+        }
+
         /* マスターセンサー値　getter */
         public SENSOR_VALUE getMSensorValue()
         {

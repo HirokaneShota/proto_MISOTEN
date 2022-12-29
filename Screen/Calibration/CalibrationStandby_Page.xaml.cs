@@ -25,19 +25,18 @@ namespace MISOTEN_APPLICATION.Screen.Calibration
     {
         SignalClass Signalclass = new SignalClass();
         // ゴッドハンド実体化
-        GodHand ggodhand = new GodHand();
+        GodHand ggodhand;
         public CalibrationStandby_Page(SignalClass signalclass)
         {
             InitializeComponent();
             Signalclass = signalclass;
-
+            ggodhand = new GodHand();
         }
         public CalibrationStandby_Page(SignalClass signalclass, GodHand _godhand)
         {
             InitializeComponent();
             Signalclass = signalclass;
             ggodhand = _godhand;
-
         }
         void PageLoad(object sender, RoutedEventArgs e)
         {

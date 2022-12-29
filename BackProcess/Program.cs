@@ -57,7 +57,7 @@ namespace MISOTEN_APPLICATION.BackProcess
             new LENGTH(1.0f,1.0f,1.0f)
         };
         public float[] absolute_distance = new float[] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f };
-        public float all_traject = 0.0f;
+        public float[] all_traject = new float[] { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
         //動作している指
         //[0=小指][1=薬指][2=中指][3=人差し指][4=親指]
         public Boolean[] movement_finger = new Boolean[] { true, true, true, true, true };
@@ -92,6 +92,7 @@ namespace MISOTEN_APPLICATION.BackProcess
         {
             try
             {
+                Debug.Print("start");
                 SENSOR_VALUE[] Temporary_masterdate = new SENSOR_VALUE[5];
                 SENSOR_VALUE[] Temporary_slavedate = new SENSOR_VALUE[5];
                 SignalClass signalClass = signalclass;
@@ -130,8 +131,7 @@ namespace MISOTEN_APPLICATION.BackProcess
                 //スレーブに出力値を送信
                 signalClass.SetSendMotor(gods_senten);
                 // 出力値書き込み(csvfile)
-                file_t.Log_csv(gods_senten.frist_godsentence.tip_pwm.ToString(), gods_senten.second_godsentence.tip_pwm.ToString(), gods_senten.third_godsentence.tip_pwm.ToString(), gods_senten.fifth_godsentence.tip_pwm.ToString(), gods_senten.fifth_godsentence.tip_pwm.ToString(), null, gods_senten.frist_godsentence.palm_pwm.ToString(), gods_senten.second_godsentence.palm_pwm.ToString(), gods_senten.third_godsentence.palm_pwm.ToString(), gods_senten.fourth_godsentence.palm_pwm.ToString(), gods_senten.fifth_godsentence.palm_pwm.ToString(), "\n");
-                Debug.Print("電磁石:" + gods_senten.frist_godsentence.tip_pwm.ToString() + "," + gods_senten.second_godsentence.tip_pwm.ToString() + "," + gods_senten.third_godsentence.tip_pwm.ToString() + "," + gods_senten.fifth_godsentence.tip_pwm.ToString() + "," + gods_senten.fifth_godsentence.tip_pwm.ToString()+","+ " サーボ:" + gods_senten.frist_godsentence.palm_pwm.ToString() + "," + gods_senten.second_godsentence.palm_pwm.ToString() + "," + gods_senten.third_godsentence.palm_pwm.ToString() + "," + gods_senten.fourth_godsentence.palm_pwm.ToString() + "," + gods_senten.fifth_godsentence.palm_pwm.ToString());
+                file_t.Log_csv(gods_senten.frist_godsentence.tip_pwm.ToString(), gods_senten.second_godsentence.tip_pwm.ToString(), gods_senten.third_godsentence.tip_pwm.ToString(), gods_senten.fifth_godsentence.tip_pwm.ToString(), gods_senten.fifth_godsentence.tip_pwm.ToString(), null, gods_senten.frist_godsentence.palm_pwm.ToString(), gods_senten.second_godsentence.palm_pwm.ToString(), gods_senten.third_godsentence.palm_pwm.ToString(), gods_senten.fifth_godsentence.palm_pwm.ToString(), gods_senten.fifth_godsentence.palm_pwm.ToString(), "\n");
             }
             catch (Exception ex)
             {
@@ -168,6 +168,10 @@ namespace MISOTEN_APPLICATION.BackProcess
             STATING_VALUE[] result_start = new STATING_VALUE[5];
             //手を閉じたときの初期データ
             JOINT[] result_end = new JOINT[5];
+            //初期の指の角度を格納
+            JOINT[] pre_value = new JOINT[5];
+
+            GodConverter godconverter = new GodConverter();
 
             //引数dでマスターかスレーブを選択
             if (_calibration_select == 0)
@@ -176,15 +180,29 @@ namespace MISOTEN_APPLICATION.BackProcess
                 Task task1 = Task.Run(() =>
                 {
                     result_master = calibration_inspection(true, _signalclass).Result;
+                    result_master[0].second_joint = godconverter.resistToAngle(result_master[0].second_joint);
+                    result_master[0].third_joint = godconverter.resistToAngle(result_master[0].third_joint);
+                    result_master[1].second_joint = godconverter.resistToAngle(result_master[1].second_joint);
+                    result_master[1].third_joint = godconverter.resistToAngle(result_master[1].third_joint);
+                    result_master[2].second_joint = godconverter.resistToAngle(result_master[2].second_joint);
+                    result_master[2].third_joint = godconverter.resistToAngle(result_master[2].third_joint);
+                    result_master[3].second_joint = godconverter.resistToAngle(result_master[3].second_joint);
+                    result_master[3].third_joint = godconverter.resistToAngle(result_master[3].third_joint);
+                    result_master[4].second_joint = godconverter.resistToAngle(result_master[4].second_joint);
+                    result_master[4].third_joint = godconverter.bendToAngle(result_master[4].third_joint);
+
                     for (int index = 0; index < 5; index++)
                     {
                         int finger_count = index;
                         result_start[finger_count].master.second = result_master[finger_count].second_joint;
                         result_start[finger_count].master.third = result_master[finger_count].third_joint;
+                        pre_value[finger_count].second = result_master[finger_count].second_joint;
+                        pre_value[finger_count].third = result_master[finger_count].third_joint;
                         Console.WriteLine("task1:" + finger_count);
                     }
                 });
                 /*開いたときのスレーブ処理
+                 * 
                 Task task2 = Task.Run(() =>
                 {
                     //スレーブ
@@ -202,6 +220,8 @@ namespace MISOTEN_APPLICATION.BackProcess
                 for (int index = 0; index < 5; index++)
                 {
                     godfinger[index].setStatingValue(result_start[index]);
+                    godfinger[index].setPreValue(pre_value[index]);
+                    all_traject[index] = 0.0f;
                 }
             }
             else
@@ -210,11 +230,24 @@ namespace MISOTEN_APPLICATION.BackProcess
                 Task task2 = Task.Run(() =>
                 {
                     result_slave = calibration_inspection(false, _signalclass).Result;
+                    result_slave[0].second_joint = godconverter.resistToAngle(result_slave[0].second_joint);
+                    result_slave[0].third_joint = godconverter.bendToAngle(result_slave[0].third_joint);
+                    result_slave[1].second_joint = godconverter.resistToAngle(result_slave[1].second_joint);
+                    result_slave[1].third_joint = godconverter.bendToAngle(result_slave[1].third_joint);
+                    result_slave[2].second_joint = godconverter.resistToAngle(result_slave[2].second_joint);
+                    result_slave[2].third_joint = godconverter.bendToAngle(result_slave[2].third_joint);
+                    result_slave[3].second_joint = godconverter.resistToAngle(result_slave[3].second_joint);
+                    result_slave[3].third_joint = godconverter.bendToAngle(result_slave[3].third_joint);
+                    result_slave[4].second_joint = godconverter.resistToAngle(result_slave[4].second_joint);
+                    result_slave[4].third_joint = godconverter.bendToAngle(result_slave[4].third_joint);
+
                     for (int index = 0; index < 5; index++)
                     {
                         int finger_count = index;
                         result_start[finger_count].slave.second = result_slave[finger_count].second_joint;
                         result_start[finger_count].slave.third = result_slave[finger_count].third_joint;
+                        pre_value[finger_count].second = result_slave[finger_count].second_joint;
+                        pre_value[finger_count].third = result_slave[finger_count].third_joint;
                         Console.WriteLine("task2:" + finger_count);
                     }
                 });
@@ -222,6 +255,8 @@ namespace MISOTEN_APPLICATION.BackProcess
                 for (int index = 0; index < 5; index++)
                 {
                     godfinger[index].setStatingValue(result_start[index]);
+                    godfinger[index].setPreValue(pre_value[index]);
+                    all_traject[index] = 0.0f;
                 }
                 //閉じたときのスレーブ処理
                 /*
@@ -271,6 +306,7 @@ namespace MISOTEN_APPLICATION.BackProcess
                     //getterで通信クラスからスレーブの値を受け取る
                     Console.WriteLine("スレーブ");
                     recivedata_sensor = _signalclass.GetSSensor();
+                    Debug.Print("小指:"+recivedata_sensor.Little.second_joint + "," + recivedata_sensor.Little.third_joint + "," + recivedata_sensor.Little.tip_pressure + "," + recivedata_sensor.Little.tip_pressure);
                 }
                 Temporary_sensordate[0] = recivedata_sensor.Little;
                 Temporary_sensordate[1] = recivedata_sensor.Ring;
@@ -369,19 +405,28 @@ namespace MISOTEN_APPLICATION.BackProcess
             //前回の指の角度
             JOINT[] pre_joint = new JOINT[5];//情報を入れる部分がない、情報が一つの指しかない
             //軌跡の移動量
-            float[] traject = new float[] {0.0f,0.0f,0.0f,0.0f,0.0f};//情報が一つの指しかない
-
+            //float[] traject = new float[5];//情報が一つの指しかない
+            JOINT[] now_joint = new JOINT[5];
             //指の角度に変換する部分がない
-
+            Temporary_masterdate[0].second_joint = godconverter.resistToAngle(Temporary_masterdate[0].second_joint);
+            Temporary_masterdate[0].third_joint = godconverter.resistToAngle(Temporary_masterdate[0].third_joint);
+            Temporary_masterdate[1].second_joint = godconverter.resistToAngle(Temporary_masterdate[1].second_joint);
+            Temporary_masterdate[1].third_joint = godconverter.resistToAngle(Temporary_masterdate[1].third_joint);
+            Temporary_masterdate[2].second_joint = godconverter.resistToAngle(Temporary_masterdate[2].second_joint);
+            Temporary_masterdate[2].third_joint = godconverter.resistToAngle(Temporary_masterdate[2].third_joint);
+            Temporary_masterdate[3].second_joint = godconverter.resistToAngle(Temporary_masterdate[3].second_joint);
+            Temporary_masterdate[3].third_joint = godconverter.resistToAngle(Temporary_masterdate[3].third_joint);
+            Temporary_masterdate[4].second_joint = godconverter.resistToAngle(Temporary_masterdate[4].second_joint);
+            Temporary_masterdate[4].third_joint = godconverter.bendToAngle(Temporary_masterdate[4].third_joint);
 
             List<Task> arrayTask = new List<Task>();
             for (int count = 0; count < 5; count++)
             {
                 int finger_count = count;
                 Task finger = Task.Run(() => {
-                    
+                    //前回の指の角度を取得
                     pre_joint[finger_count] = godfinger[finger_count].getPreValue();
-
+                    
                     godfinger[finger_count].setMSensorValue(Temporary_masterdate[finger_count]);
 
                     //軌跡の移動距離計算
@@ -390,15 +435,18 @@ namespace MISOTEN_APPLICATION.BackProcess
                         (Temporary_masterdate[finger_count].second_joint * 1.2))
                     {
                         //マスターの指先の個々の軌跡を出力
-                        traject[finger_count] += 
+                        all_traject[finger_count] += 
                         godconverter.angleToTrajectory(godfinger[finger_count], 0) * 1;
                     }
                     else
                     {
                         //マスターの指先の個々の軌跡を出力
-                        traject[finger_count] += 
+                        all_traject[finger_count] += 
                         godconverter.angleToTrajectory(godfinger[finger_count], 0) * -1;
                     }
+                    now_joint[finger_count].second = Temporary_masterdate[finger_count].second_joint;
+                    now_joint[finger_count].third = Temporary_masterdate[finger_count].third_joint;
+                    godfinger[finger_count].setPreValue(now_joint[finger_count]);
                 });
                 arrayTask.Add(finger);
             }
@@ -407,7 +455,7 @@ namespace MISOTEN_APPLICATION.BackProcess
             //データベース格納
             for (int count = 0; count < 5; count++)
             {
-                dataBase.DataInsert(count,traject[count],
+                dataBase.DataInsert(count,all_traject[count],
                     Temporary_masterdate[count].tip_pressure, 
                     Temporary_masterdate[count].palm_pressure);
             }
@@ -434,17 +482,32 @@ namespace MISOTEN_APPLICATION.BackProcess
             Temporary_slavedate[4] = recivedata_sensor.Thumb;
 
             JOINT[] pre_joint = new JOINT[5];//前回の指の角度
+            JOINT[] now_joint = new JOINT[5];
+
             float[] part_traject = new float[5];//軌跡の個別移動量
-            PT_LOGS pt_logs = new PT_LOGS();
+            PT_LOGS[] pt_logs = new PT_LOGS[5];
             int[] pressure = new int[] { 0, 0 };
             float[] test_data = new float[] { 1.0f, 1.0f, 1.0f, 1.0f ,1.0f};
             SENSOR_VALUE[] output = new SENSOR_VALUE[5];
+
+            Temporary_slavedate[0].second_joint = godconverter.resistToAngle(Temporary_slavedate[0].second_joint);
+            Temporary_slavedate[0].third_joint = godconverter.bendToAngle(Temporary_slavedate[0].third_joint);
+            Temporary_slavedate[1].second_joint = godconverter.resistToAngle(Temporary_slavedate[1].second_joint);
+            Temporary_slavedate[1].third_joint = godconverter.bendToAngle(Temporary_slavedate[1].third_joint);
+            Temporary_slavedate[2].second_joint = godconverter.resistToAngle(Temporary_slavedate[2].second_joint);
+            Temporary_slavedate[2].third_joint = godconverter.bendToAngle(Temporary_slavedate[2].third_joint);
+            Temporary_slavedate[3].second_joint = godconverter.resistToAngle(Temporary_slavedate[3].second_joint);
+            Temporary_slavedate[3].third_joint = godconverter.bendToAngle(Temporary_slavedate[3].third_joint);
+            Temporary_slavedate[4].second_joint = godconverter.resistToAngle(Temporary_slavedate[4].second_joint);
+            Temporary_slavedate[4].third_joint = godconverter.bendToAngle(Temporary_slavedate[4].third_joint);
 
             //各指の全体ンお軌跡の計算
             List<Task> arrayTask = new List<Task>();
             for (int count = 0; count < 5; count++)
             {
                 Task finger = Task.Run(() => {
+
+                    pre_joint[count] = godfinger[count].getPreValue();
                     godfinger[count].setSSensorValue(Temporary_slavedate[count]);
                     //軌跡の移動量
                     if (pre_joint[count].second + pre_joint[count].third + (pre_joint[count].second * 1.2) <
@@ -452,13 +515,16 @@ namespace MISOTEN_APPLICATION.BackProcess
                         (Temporary_slavedate[count].second_joint * 1.2))
                     {
                         part_traject[count] = godconverter.angleToTrajectory(godfinger[count], 1) * 1;
-                        all_traject += part_traject[count];
+                        all_traject[count] += part_traject[count];
                     }
                     else
                     {
                         part_traject[count] = godconverter.angleToTrajectory(godfinger[count], 1) * -1;
-                        all_traject += part_traject[count];
+                        all_traject[count] += part_traject[count];
                     }
+                    now_joint[count].second = Temporary_slavedate[count].second_joint;
+                    now_joint[count].third = Temporary_slavedate[count].third_joint;
+                    godfinger[count].setPreValue(now_joint[count]);
                 });
                 arrayTask.Add(finger);
             }
@@ -467,13 +533,13 @@ namespace MISOTEN_APPLICATION.BackProcess
 
             for (int count = 0; count < 5; count++)
             {
-                pt_logs = godfinger[count].getPTLogs();
-                pt_logs.last_last_time = pt_logs.last_time;
-                pt_logs.last_time = pt_logs.this_time;
-                pt_logs.this_time.traject = part_traject[count];
-                pressure = dataBase.DataIndex(count, all_traject);
-                pt_logs.this_time.pressure = pressure[0];
-                godfinger[0].setPTLogs(pt_logs);
+                pt_logs[count] = godfinger[count].getPTLogs();
+                pt_logs[count].last_last_time = pt_logs[count].last_time;
+                pt_logs[count].last_time = pt_logs[count].this_time;
+                pt_logs[count].this_time.traject = part_traject[count];
+                pressure = dataBase.DataIndex(count, all_traject[count]);
+                pt_logs[count].this_time.pressure = pressure[0];
+                godfinger[0].setPTLogs(pt_logs[count]);
                 output[count].palm_pressure = pressure[1];
             }
 

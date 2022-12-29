@@ -34,7 +34,7 @@ namespace MISOTEN_APPLICATION.Screen.Calibration
         // スタート内容フラグ
         int StartFlog = Flog.CalibNone;
         // ゴッドハンド実体化
-        GodHand ggodhand = new GodHand();
+        GodHand ggodhand;
 
         public Calibration_Page(SignalClass _signalclass,int _flog, GodHand _godhand)
         {

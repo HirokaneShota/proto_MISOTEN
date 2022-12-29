@@ -33,7 +33,7 @@ namespace MISOTEN_APPLICATION.Screen.Operation
         // スタート内容フラグ
         int StartFlog = Flog.NotStart;
         // ゴッドハンド実体化
-        GodHand ggodhand = new GodHand();
+        GodHand ggodhand;
 
         public Operation_Page(SignalClass signalclass , GodHand godhand, int flog)
         {

@@ -26,7 +26,7 @@ namespace MISOTEN_APPLICATION.Screen.Operation
         // 信号クラス実体化
         SignalClass Signalclass = new SignalClass();
         // ゴッドハンド実体化
-        GodHand ggodhand = new GodHand();
+        GodHand ggodhand ;
         // スタート内容フラグ
         int StartFlog = 0;
 
