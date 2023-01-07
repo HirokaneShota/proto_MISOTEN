@@ -109,9 +109,13 @@ namespace MISOTEN_APPLICATION.Screen.SignalConnect
             //
 
             // "re01" 送信
-            //signalclass.SignalSend(DeviceId.MasterId, SendSignal.MInit);
+            signalclass.SignalSend(DeviceId.MasterId, SendSignal.MInit);
             // "re02" 送信
             //signalclass.SignalSend(DeviceId.ReceiveId, SendSignal.SInit);
+
+            // "Time.fristTime"ms 待機(マイコン初期化待機時間)
+            Dispatcher.Invoke((Action)(() => { Execution.Content = "初期化待機中...( " + Time.fristTime / 1000 + "s )"; }));
+            TimerClass.Sleep(Time.fristTime);
 
             //
             // 「マスター：接続要請信号」
