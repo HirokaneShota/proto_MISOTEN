@@ -70,10 +70,8 @@ namespace MISOTEN_APPLICATION.Screen.SystemSelect
         {
             // マスター:"se01" 送信 : センシング終了信号
             Signalclass.SignalSend(DeviceId.MasterId, SendSignal.MSensingEnd);
-            Signalclass.ProtCut(DeviceId.MasterId);
             // スレーブ:"se02" 送信 : センシング終了信号
             Signalclass.SignalSend(DeviceId.ReceiveId, SendSignal.SSensingEnd);
-            Signalclass.ProtCut(DeviceId.ReceiveId);
 
             Window.GetWindow(this).Close();
         }
