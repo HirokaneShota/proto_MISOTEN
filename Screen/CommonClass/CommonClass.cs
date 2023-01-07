@@ -58,6 +58,8 @@ namespace MISOTEN_APPLICATION.Screen.CommonClass
         public const int SGCalibration = 10;
         // 稼働状態 スリープ 20ms
         public const double OperatSTime = 20.0f;
+        // 初期化状態 スリープ 5ms
+        public const double  fristTime= 5.0f;
     }
 
     class Flog
